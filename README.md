@@ -1,1 +1,0 @@
-# degei-logistic
