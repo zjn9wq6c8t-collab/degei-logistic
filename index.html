@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DEGEI LOGISTIC SRL – Transport România ⇆ Italia | ADR | 40t</title>
+  <meta name="description" content="DEGEI LOGISTIC SRL – companie premium de transport marfă cu camioane de 40t, curse România–Italia–România, marfă generală și ADR. Dispecerat vorbitor de italiană." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --primary: #0ea5e9;
+      --accent: #f97316;
+      --light: #f8fafc;
+      --muted: #64748b;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      font-family:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:#0f172a;
+      color:#e2e8f0;
+    }
+    a { color:inherit; text-decoration:none; }
+    header {
+      position:sticky; top:0; z-index:50;
+      background:rgba(15,23,42,.9);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(148,163,184,.2);
+    }
+    .container { width:min(1120px,100%); margin:0 auto; padding:0 1rem; }
+    .nav { display:flex; align-items:center; justify-content:space-between; gap:1rem; height:4.2rem; }
+    .logo { font-weight:700; line-height:1.05; }
+    .logo small { font-weight:400; font-size:.65rem; color:#94a3b8; }
+    .nav-links { display:flex; gap:1.5rem; }
+    .nav-links a { font-size:.85rem; color:#cbd5f5; }
+    .btn {
+      display:inline-flex; align-items:center; gap:.4rem;
+      background:var(--primary); color:#0f172a;
+      padding:.55rem .85rem; border-radius:.75rem;
+      font-weight:600; border:none; cursor:pointer;
+    }
+    .lang-select {
+      background:rgba(15,23,42,.4);
+      border:1px solid rgba(148,163,184,.2);
+      color:#e2e8f0; border-radius:.5rem; padding:.35rem .5rem;
+      font-size:.75rem;
+    }
+    .hero { padding:4.5rem 0 3.5rem; background:radial-gradient(circle at top,rgba(14,165,233,.25),rgba(15,23,42,1) 55%); }
+    .hero-grid { display:grid; grid-template-columns:1.1fr .9fr; gap:2.5rem; align-items:center; }
+    .badge { display:inline-flex; gap:.4rem; background:rgba(148,163,184,.07); border:1px solid rgba(148,163,184,.18); padding:.3rem .85rem .3rem .4rem; border-radius:999px; margin-bottom:1rem; }
+    .hero-card { background:rgba(15,23,42,.4); border:1px solid rgba(148,163,184,.18); border-radius:1.2rem; padding:1.5rem; display:grid; gap:1rem; }
+    section { padding:3.5rem 0; }
+    .section-title { font-size:1.3rem; margin-bottom:1.5rem; }
+    .grid { display:grid; gap:1.5rem; }
+    .services-grid { grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+    .card { background:rgba(15,23,42,.3); border:1px solid rgba(148,163,184,.12); border-radius:1rem; padding:1.25rem; }
+    .muted { color:#94a3b8; }
+    .two-cols { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; }
+    .contact-box { background:linear-gradient(135deg,rgba(14,165,233,.25),rgba(15,23,42,0.2)); border:1px solid rgba(148,163,184,.2); border-radius:1.2rem; padding:1.25rem 1.5rem; display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+    footer { padding:2.5rem 0; border-top:1px solid rgba(148,163,184,.15); color:#94a3b8; font-size:.8rem; }
+    .table-like { border:1px solid rgba(148,163,184,.12); border-radius:.75rem; overflow:hidden; }
+    .table-like div { display:flex; justify-content:space-between; gap:1rem; padding:.5rem .75rem; border-bottom:1px solid rgba(148,163,184,.05); }
+    .table-like div:last-child { border-bottom:none; }
+    .tag { background:rgba(15,23,42,.3); border:1px solid rgba(148,163,184,.15); padding:.35rem .55rem; border-radius:.5rem; font-size:.7rem; display:inline-flex; gap:.3rem; align-items:center; }
+    .burger { display:none; background:none; border:none; color:#e2e8f0; font-size:1.4rem; }
+    @media (max-width:880px) {
+      .hero-grid { grid-template-columns:1fr; }
+      .nav-links { display:none; }
+      .burger { display:block; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <div class="nav">
+      <div class="logo">
+        DEGEI LOGISTIC SRL
+        <small data-lang-ro="Transport România ⇆ Italia | ADR | 40t"
+               data-lang-it="Trasporti Romania ⇆ Italia | ADR | 40t"
+               data-lang-en="Romania ⇆ Italy transports | ADR | 40t">
+          Transport România ⇆ Italia | ADR | 40t
+        </small>
+      </div>
+      <nav class="nav-links">
+        <a href="#servicii" data-lang-ro="Servicii" data-lang-it="Servizi" data-lang-en="Services">Servicii</a>
+        <a href="#adr" data-lang-ro="Marfă ADR" data-lang-it="Merci ADR" data-lang-en="ADR Cargo">Marfă ADR</a>
+        <a href="#rute" data-lang-ro="Rute" data-lang-it="Rotte" data-lang-en="Routes">Rute</a>
+        <a href="#contact" data-lang-ro="Contact" data-lang-it="Contatti" data-lang-en="Contact">Contact</a>
+      </nav>
+      <select class="lang-select" id="lang" onchange="setLang(this.value)">
+        <option value="ro">RO</option>
+        <option value="it">IT</option>
+        <option value="en">EN</option>
+      </select>
+      <a class="btn" href="https://wa.me/40785174705" target="_blank" rel="noreferrer">
+        <i class="fa-brands fa-whatsapp"></i><span data-lang-ro="WhatsApp" data-lang-it="WhatsApp" data-lang-en="WhatsApp">WhatsApp</span>
+      </a>
+      <button class="burger" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="acasa">
+    <div class="container hero-grid">
+      <div>
+        <div class="badge">
+          <i class="fa-solid fa-truck-fast"></i>
+          <span data-lang-ro="Curse regulate România – Italia – România"
+                data-lang-it="Corse regolari Romania – Italia – Romania"
+                data-lang-en="Regular Romania – Italy – Romania trips">
+            Curse regulate România – Italia – România
+          </span>
+        </div>
+        <h1 data-lang-ro="Transport premium cu camioane de 40t, inclusiv marfă ADR"
+            data-lang-it="Trasporto premium con camion da 40t, anche merci ADR"
+            data-lang-en="Premium transport with 40t trucks, including ADR cargo">
+          Transport premium cu camioane de 40t, inclusiv marfă ADR
+        </h1>
+        <p data-lang-ro="DEGEI LOGISTIC SRL oferă transport rutier internațional România–Italia pentru marfă generală și mărfuri periculoase (ADR), cu personal vorbitor de italiană și experiență directă pe piața italiană."
+           data-lang-it="DEGEI LOGISTIC SRL offre trasporti internazionali Romania–Italia per merce generale e merci pericolose (ADR), con personale che parla italiano ed esperienza diretta sul mercato italiano."
+           data-lang-en="DEGEI LOGISTIC SRL provides international road transport Romania–Italy for general cargo and hazardous (ADR) goods, with Italian-speaking staff and strong experience on the Italian market.">
+          DEGEI LOGISTIC SRL oferă transport rutier internațional România–Italia pentru marfă generală și mărfuri periculoase (ADR), cu personal vorbitor de italiană și experiență directă pe piața italiană.
+        </p>
+        <div style="display:flex; gap:.75rem; flex-wrap:wrap; margin-top:1.2rem;">
+          <a class="btn" href="#contact">
+            <i class="fa-solid fa-phone"></i>
+            <span data-lang-ro="Cere ofertă" data-lang-it="Richiedi offerta" data-lang-en="Request quote">Cere ofertă</span>
+          </a>
+          <a class="btn" style="background:rgba(148,163,184,.1);color:#e2e8f0" href="mailto:office@degeilogistic.com">
+            <i class="fa-solid fa-envelope"></i> office@degeilogistic.com
+          </a>
+        </div>
+        <p style="margin-top:1rem;font-size:.8rem;color:#94a3b8;">
+          <span data-lang-ro="Administrator:" data-lang-it="Amministratore:" data-lang-en="Administrator:">Administrator:</span>
+          <strong style="color:#e2e8f0;">Ionescu Denis</strong> |
+          C.U.I.: RO 36256981 | Reg. Com.: J15/693/29.06.2016
+        </p>
+      </div>
+      <div class="hero-card">
+        <h3 data-lang-ro="Date firmă" data-lang-it="Dati aziendali" data-lang-en="Company details">Date firmă</h3>
+        <small>DEGEI LOGISTIC SRL</small>
+        <div class="table-like">
+          <div><span><i class="fa-solid fa-location-dot"></i> <span data-lang-ro="Sediu" data-lang-it="Sede" data-lang-en="Head office">Sediu</span></span><span>Găeşti 135200, Dâmboviţa</span></div>
+          <div><span><i class="fa-solid fa-phone"></i> RO</span><span><a href="tel:+40785174705">+40 785 174 705</a></span></div>
+          <div><span><i class="fa-solid fa-phone"></i> IT</span><span><a href="tel:+393662123545">+39 366 212 3545</a></span></div>
+          <div><span><i class="fa-solid fa-globe"></i> BursaTransport</span><span>#273564</span></div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:.5rem;">
+          <span class="tag"><i class="fa-solid fa-truck"></i> 40t</span>
+          <span class="tag"><i class="fa-solid fa-radioactive"></i> ADR</span>
+          <span class="tag"><i class="fa-solid fa-language"></i> IT speaking</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="servicii">
+    <div class="container">
+      <h2 class="section-title" data-lang-ro="Serviciile noastre" data-lang-it="I nostri servizi" data-lang-en="Our services">Serviciile noastre</h2>
+      <div class="grid services-grid">
+        <div class="card">
+          <h3 data-lang-ro="România ⇆ Italia"
+              data-lang-it="Romania ⇆ Italia"
+              data-lang-en="Romania ⇆ Italy">
+            România ⇆ Italia
+          </h3>
+          <p class="muted" data-lang-ro="Curse regulate pentru clienți industriali și comercianți, inclusiv încărcări de la adrese din Italia."
+             data-lang-it="Corse regolari per clienti industriali e commercianti, inclusi ritiri da indirizzi in Italia."
+             data-lang-en="Regular trips for industrial and commercial clients, including pick-ups from Italian addresses.">
+            Curse regulate pentru clienți industriali și comercianți, inclusiv încărcări de la adrese din Italia.
+          </p>
+        </div>
+        <div class="card">
+          <h3 data-lang-ro="Transport marfă generală" data-lang-it="Trasporto merce generale" data-lang-en="General cargo transport">Transport marfă generală</h3>
+          <p class="muted" data-lang-ro="Camioane de 40t pentru paleți, utilaje ușoare, bunuri comerciale, distribuție."
+             data-lang-it="Camion da 40t per pallet, merci commerciali, piccole attrezzature."
+             data-lang-en="40t trucks for pallets, commercial goods, light equipment.">
+            Camioane de 40t pentru paleți, utilaje ușoare, bunuri comerciale, distribuție.
+          </p>
+        </div>
+        <div class="card">
+          <h3 data-lang-ro="Marfă periculoasă (ADR)" data-lang-it="Merci pericolose (ADR)" data-lang-en="Hazardous cargo (ADR)">Marfă periculoasă (ADR)</h3>
+          <p class="muted" data-lang-ro="Șoferi instruiți ADR, documentație și echipare conformă pentru Italia–România."
+             data-lang-it="Autisti formati ADR, documentazione e dotazioni conformi per Italia–Romania."
+             data-lang-en="ADR trained drivers, documentation and equipment, Italy–Romania.">
+            Șoferi instruiți ADR, documentație și echipare conformă pentru Italia–România.
+          </p>
+        </div>
+        <div class="card">
+          <h3 data-lang-ro="Dispecerat vorbitor de italiană" data-lang-it="Disponenti che parlano italiano" data-lang-en="Italian-speaking dispatch">Dispecerat vorbitor de italiană</h3>
+          <p class="muted" data-lang-ro="Comunicare directă cu administratorul, fără bariere de limbă cu firmele din Italia."
+             data-lang-it="Comunicazione diretta con l’amministratore, senza barriere linguistiche con aziende italiane."
+             data-lang-en="Direct communication with the manager, no language barrier with Italian companies.">
+            Comunicare directă cu administratorul, fără bariere de limbă cu firmele din Italia.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="adr">
+    <div class="container two-cols">
+      <div>
+        <h2 class="section-title" data-lang-ro="Transport marfă ADR"
+            data-lang-it="Trasporto merci ADR"
+            data-lang-en="ADR cargo transport">
+          Transport marfă ADR
+        </h2>
+        <p data-lang-ro="Manipulăm și transportăm mărfuri periculoase conform normelor ADR, cu respectarea traseelor italiene și românești."
+           data-lang-it="Gestiamo e trasportiamo merci pericolose secondo la normativa ADR, rispettando le tratte italiane e rumene."
+           data-lang-en="We handle and transport hazardous goods according to ADR rules, on both Italian and Romanian routes.">
+          Manipulăm și transportăm mărfuri periculoase conform normelor ADR, cu respectarea traseelor italiene și românești.
+        </p>
+      </div>
+      <div class="card">
+        <h3 data-lang-ro="Pentru ofertă rapidă" data-lang-it="Per un preventivo veloce" data-lang-en="For a quick quote">Pentru ofertă rapidă</h3>
+        <p class="muted" data-lang-ro="Trimiteți pe e-mail tipul mărfii, punctul de încărcare / descărcare și data."
+           data-lang-it="Inviate via e-mail tipo merce, luogo di carico/scarico e data."
+           data-lang-en="Send via e-mail the cargo type, loading/unloading point and date.">
+          Trimiteți pe e-mail tipul mărfii, punctul de încărcare / descărcare și data.
+        </p>
+        <a class="btn" href="mailto:office@degeilogistic.com?subject=Cerere oferta transport&body=Buna ziua,%0D%0AAs dori o oferta de transport pentru urmatoarele detalii:">
+          <i class="fa-solid fa-envelope"></i> Email
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="rute">
+    <div class="container">
+      <h2 class="section-title" data-lang-ro="Rute principale" data-lang-it="Rotte principali" data-lang-en="Main routes">Rute principale</h2>
+      <div class="grid services-grid">
+        <div class="card">
+          <h3 data-lang-ro="Italia → România" data-lang-it="Italia → Romania" data-lang-en="Italy → Romania">Italia → România</h3>
+          <p class="muted" data-lang-ro="Colectăm din zone industriale și orase mari din Italia."
+             data-lang-it="Ritiriamo da zone industriali e città principali in Italia."
+             data-lang-en="Pick-ups from Italian industrial areas and main cities.">
+            Colectăm din zone industriale și orase mari din Italia.
+          </p>
+        </div>
+        <div class="card">
+          <h3 data-lang-ro="România → Italia" data-lang-it="Romania → Italia" data-lang-en="Romania → Italy">România → Italia</h3>
+          <p class="muted" data-lang-ro="Încărcări din Muntenia, Oltenia, Ardeal către clienți și depozite din Italia."
+             data-lang-it="Carichi da Muntenia, Oltenia, Ardeal verso clienti e depositi in Italia."
+             data-lang-en="Loads from Muntenia, Oltenia, Ardeal to Italian clients and depots.">
+            Încărcări din Muntenia, Oltenia, Ardeal către clienți și depozite din Italia.
+          </p>
+        </div>
+        <div class="card">
+          <h3 data-lang-ro="Curse dedicate" data-lang-it="Corse dedicate" data-lang-en="Dedicated trips">Curse dedicate</h3>
+          <p class="muted" data-lang-ro="Pentru marfă urgentă, sensibilă sau ADR se poate aloca camion dedicat."
+             data-lang-it="Per merci urgenti, sensibili o ADR possiamo dedicare un camion."
+             data-lang-en="For urgent, sensitive or ADR cargo we can allocate a dedicated truck.">
+            Pentru marfă urgentă, sensibilă sau ADR se poate aloca camion dedicat.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="container">
+      <h2 class="section-title" data-lang-ro="Contact"
+          data-lang-it="Contatti"
+          data-lang-en="Contact">
+        Contact
+      </h2>
+      <div class="contact-box">
+        <div>
+          <h3 style="margin:0 0 .35rem;">Ionescu Denis – Administrator</h3>
+          <p class="muted" style="margin:0;">
+            Tel. RO: <a href="tel:+40785174705">+40 785 174 705</a> (WhatsApp) • Tel. IT: <a href="tel:+393662123545">+39 366 212 3545</a><br>
+            E-mail: <a href="mailto:office@degeilogistic.com">office@degeilogistic.com</a><br>
+            <span data-lang-ro="Sediu: Găeşti 135200, Str. Cuza Vodă, Bl. 39, Sc. B, Et. 1, Ap. 25, Jud. Dâmboviţa"
+                  data-lang-it="Sede: Găeşti 135200, Str. Cuza Vodă, Bl. 39, Sc. B, Et. 1, Ap. 25, Distretto Dâmboviţa"
+                  data-lang-en="Head office: Găeşti 135200, Str. Cuza Vodă, Bl. 39, Sc. B, Et. 1, Ap. 25, Dâmboviţa County">
+              Sediu: Găeşti 135200, Str. Cuza Vodă, Bl. 39, Sc. B, Et. 1, Ap. 25, Jud. Dâmboviţa
+            </span>
+          </p>
+        </div>
+        <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+          <a class="btn" href="https://wa.me/40785174705" target="_blank" rel="noreferrer"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+          <a class="btn" style="background:#f97316" href="tel:+40785174705"><i class="fa-solid fa-phone"></i>
+            <span data-lang-ro="Sună acum" data-lang-it="Chiama ora" data-lang-en="Call now">Sună acum</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container" style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+    <div>© <span id="year"></span> DEGEI LOGISTIC SRL – C.U.I.: RO 36256981 | Reg. Com.: J15/693/29.06.2016</div>
+    <div>www.degeilogistic.com</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  function setLang(lang) {
+    document.querySelectorAll('[data-lang-' + lang + ']').forEach(function(el) {
+      el.textContent = el.getAttribute('data-lang-' + lang);
+    });
+  }
+
+  function toggleMenu() {
+    const nav = document.querySelector('.nav-links');
+    if (nav.style.display === 'flex') {
+      nav.style.display = 'none';
+    } else {
+      nav.style.display = 'flex';
+      nav.style.flexDirection = 'column';
+      nav.style.position = 'absolute';
+      nav.style.top = '4.2rem';
+      nav.style.right = '1rem';
+      nav.style.background = 'rgba(15,23,42,.95)';
+      nav.style.padding = '1rem';
+      nav.style.border = '1px solid rgba(148,163,184,.2)';
+      nav.style.borderRadius = '.75rem';
+      nav.style.gap = '.75rem';
+    }
+  }
+</script>
+</body>
+</html>
