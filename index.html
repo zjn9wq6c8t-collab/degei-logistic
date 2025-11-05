@@ -351,7 +351,6 @@
     <div>GitHub Pages • site static gratuit</div>
   </div>
 </footer>
-
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
   function toggleMenu() {
@@ -371,15 +370,21 @@
       menu.style.gap = '.75rem';
     }
   }
-    if ('scrollRestoration' in history) {
+  if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
   }
-  window.addEventListener('load', function() {
+  window.addEventListener('load', function () {
     window.scrollTo(0, 0);
+  });
+  window.addEventListener('pageshow', function (event) {
+    if (event.persisted) {
+      window.scrollTo(0, 0);
+    }
   });
 </script>
 </body>
 </html>
+
 
 
 
