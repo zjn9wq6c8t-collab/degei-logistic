@@ -38,6 +38,7 @@ TARGET_PHRASES = [
 
 GENERIC_TARGETS = {"TRANSPORTATOR", "CARRIER", "HAULIER", "VETTORE"}
 FOOTER_TARGETS = {"DEGEI LOGISTIC", "RO36256981"}
+TRANSPORTER_NAME_TARGETS = {"DEGEI LOGISTIC", "RO36256981"}
 SIGNATURE_LABEL_TARGETS = {
     "SEMNATURA SI STAMPILA",
     "SEMNATURA SI SEMNATURA",
@@ -158,9 +159,10 @@ def phrase_box(line_words: list[dict], phrase: str) -> Box | None:
     return None
 
 
-def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[tuple[float, float]]]:
+def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[list[Box]], list[tuple[float, float]]]:
     anchors: list[Anchor] = []
     all_word_boxes: list[list[Box]] = []
+    all_image_boxes: list[list[Box]] = []
     page_sizes: list[tuple[float, float]] = []
 
     with pdfplumber.open(str(pdf_path)) as pdf:
@@ -177,12 +179,23 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[tu
                 for w in words
             ]
             all_word_boxes.append(boxes)
+            all_image_boxes.append(
+                [
+                    Box(float(img["x0"]), float(img["top"]), float(img["x1"]), float(img["bottom"]))
+                    for img in page.images
+                    if float(img.get("width", 0)) >= 30 and float(img.get("height", 0)) >= 30
+                ]
+            )
 
             lines = group_lines(words)
             for line in lines:
                 line_norm = line["norm"]
                 for phrase, base_score in TARGET_PHRASES:
                     if contains_phrase(line_norm, phrase):
+                        if phrase in SIGNATURE_LABEL_TARGETS and (
+                            len(line_norm) > 55 or line["box"].width > page.width * 0.55
+                        ):
+                            continue
                         # Generic words appear often in legal/payment paragraphs. They are valid
                         # anchors only when they look like a short field label, not body text.
                         if phrase in GENERIC_TARGETS:
@@ -202,6 +215,12 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[tu
                             float(page.height),
                         ):
                             score += 65
+                        if phrase in TRANSPORTER_NAME_TARGETS and looks_like_carrier_signature_block(
+                            anchor_box,
+                            float(page.width),
+                            float(page.height),
+                        ):
+                            score += 95
                         anchors.append(
                             Anchor(
                                 page_index=page_index,
@@ -211,19 +230,29 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[tu
                                 line_text=line["text"],
                             )
                         )
-    return anchors, all_word_boxes, page_sizes
+    return anchors, all_word_boxes, all_image_boxes, page_sizes
 
 
 def looks_like_carrier_footer(box: Box, page_w: float, page_h: float) -> bool:
     return box.top > page_h * 0.68 and box.x0 > page_w * 0.45
 
 
+def looks_like_carrier_signature_block(box: Box, page_w: float, page_h: float) -> bool:
+    return page_h * 0.14 < box.top < page_h * 0.62 and box.x0 > page_w * 0.48
+
+
 def is_footer_anchor(anchor: Anchor, page_w: float, page_h: float) -> bool:
     return anchor.phrase in FOOTER_TARGETS and looks_like_carrier_footer(anchor.box, page_w, page_h)
 
 
+def is_signature_block_anchor(anchor: Anchor, page_w: float, page_h: float) -> bool:
+    return anchor.phrase in TRANSPORTER_NAME_TARGETS and looks_like_carrier_signature_block(anchor.box, page_w, page_h)
+
+
 def anchor_rank(anchor: Anchor, page_w: float, page_h: float) -> tuple[int, int, float]:
     if anchor.phrase in DEDICATED_TARGETS:
+        return (3, anchor.score, anchor.box.top)
+    if is_signature_block_anchor(anchor, page_w, page_h):
         return (3, anchor.score, anchor.box.top)
     if is_footer_anchor(anchor, page_w, page_h):
         return (2, anchor.score, anchor.box.top)
@@ -253,11 +282,38 @@ def clamp_rect(rect: Box, page_w: float, page_h: float, margin: float = 18) -> B
     return Box(x0, top, x0 + width, top + height)
 
 
-def stamp_size_for_anchor(anchor: Anchor, page_w: float, page_h: float, requested_w: float, ratio: float) -> tuple[float, float]:
+def reference_stamp_box(anchor: Anchor, image_boxes: list[Box]) -> Box | None:
+    candidates = [
+        box
+        for box in image_boxes
+        if 45 <= box.width <= 150
+        and 45 <= box.height <= 150
+        and 0.55 <= box.width / max(box.height, 1.0) <= 1.55
+        and box.x1 < anchor.box.x0 - 18
+        and abs(((box.top + box.bottom) / 2) - ((anchor.box.top + anchor.box.bottom) / 2)) < 170
+    ]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda b: b.area)
+
+
+def stamp_size_for_anchor(
+    anchor: Anchor,
+    page_w: float,
+    page_h: float,
+    requested_w: float,
+    ratio: float,
+    image_boxes: list[Box] | None = None,
+) -> tuple[float, float]:
     # Make sends a pixel-like target width. Convert it to a professional PDF size
     # based on the signature zone so it matches client stamps instead of dominating them.
     requested_w = max(70.0, requested_w)
-    if is_footer_anchor(anchor, page_w, page_h):
+    ref = reference_stamp_box(anchor, image_boxes or []) if is_signature_block_anchor(anchor, page_w, page_h) else None
+    if ref is not None:
+        width = min(max(requested_w, ref.width, 98.0), 120.0, page_w * 0.21)
+        max_height = 82.0
+        min_width = 92.0
+    elif is_footer_anchor(anchor, page_w, page_h):
         width = min(requested_w, 96.0, page_w * 0.16)
         max_height = 46.0
         min_width = 56.0
@@ -332,6 +388,42 @@ def fallback_candidates(page_w: float, page_h: float, stamp_w: float, stamp_h: f
         for xi, x in enumerate(xs):
             out.append((f"fallback_{yi}_{xi}", Box(x, y, x + stamp_w, y + stamp_h)))
     return out
+
+
+def signature_block_text_bottom(anchor: Anchor, word_boxes: list[Box], page_w: float) -> float:
+    bottom = anchor.box.bottom
+    for box in word_boxes:
+        if box.x0 > page_w * 0.45 and anchor.box.top - 8 <= box.top <= anchor.box.top + 65:
+            bottom = max(bottom, box.bottom)
+    return bottom
+
+
+def choose_signature_block_candidate(
+    anchor: Anchor,
+    word_boxes: list[Box],
+    image_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+    stamp_w: float,
+    stamp_h: float,
+) -> tuple[str, Box]:
+    ref = reference_stamp_box(anchor, image_boxes)
+    text_bottom = signature_block_text_bottom(anchor, word_boxes, page_w)
+    center_x = min(max((anchor.box.x0 + anchor.box.x1) / 2, page_w * 0.64), page_w - stamp_w / 2 - 35)
+    x = center_x - stamp_w / 2
+    preferred_top = text_bottom + 8
+    if ref is not None:
+        preferred_top = max(preferred_top, ref.top + 12)
+    candidates = [
+        ("below_signature_block_match_client", Box(x, preferred_top, x + stamp_w, preferred_top + stamp_h)),
+        ("below_signature_block_right", Box(min(max(anchor.box.x0, 28), page_w - stamp_w - 28), preferred_top, min(max(anchor.box.x0, 28), page_w - stamp_w - 28) + stamp_w, preferred_top + stamp_h)),
+        ("signature_block_lower", Box(x, preferred_top + 18, x + stamp_w, preferred_top + 18 + stamp_h)),
+    ]
+    safe_candidates = [
+        (reason, clamp_rect(rect, page_w, page_h))
+        for reason, rect in candidates
+    ]
+    return choose_best_candidate(safe_candidates, word_boxes, page_w, page_h, anchor)
 
 
 def score_rect(rect: Box, word_boxes: list[Box], page_w: float, page_h: float, anchor: Anchor | None) -> float:
@@ -433,6 +525,7 @@ def choose_footer_candidate(
 def choose_placements(
     anchors: list[Anchor],
     word_boxes: list[list[Box]],
+    image_boxes: list[list[Box]],
     page_sizes: list[tuple[float, float]],
     stamp_w: float,
     stamp_ratio: float,
@@ -454,8 +547,25 @@ def choose_placements(
 
     for page_index, anchor in sorted(by_page.items(), key=lambda kv: kv[0]):
         page_w, page_h = page_sizes[page_index]
-        page_stamp_w, page_stamp_h = stamp_size_for_anchor(anchor, page_w, page_h, stamp_w, stamp_ratio)
-        if is_footer_anchor(anchor, page_w, page_h):
+        page_stamp_w, page_stamp_h = stamp_size_for_anchor(
+            anchor,
+            page_w,
+            page_h,
+            stamp_w,
+            stamp_ratio,
+            image_boxes[page_index],
+        )
+        if is_signature_block_anchor(anchor, page_w, page_h):
+            best_reason, best_rect = choose_signature_block_candidate(
+                anchor,
+                word_boxes[page_index],
+                image_boxes[page_index],
+                page_w,
+                page_h,
+                page_stamp_w,
+                page_stamp_h,
+            )
+        elif is_footer_anchor(anchor, page_w, page_h):
             best_reason, best_rect = choose_footer_candidate(
                 anchor,
                 word_boxes[page_index],
@@ -524,10 +634,11 @@ def stamp_pdf(
     with Image.open(stamp_image) as img:
         ratio = img.height / max(img.width, 1)
 
-    anchors, word_boxes, page_sizes = find_anchors(input_pdf)
+    anchors, word_boxes, image_boxes, page_sizes = find_anchors(input_pdf)
     placements = choose_placements(
         anchors,
         word_boxes,
+        image_boxes,
         page_sizes,
         stamp_width,
         ratio,
