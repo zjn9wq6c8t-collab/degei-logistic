@@ -269,7 +269,10 @@ def placement_candidates(anchor: Anchor, page_w: float, page_h: float, stamp_w: 
         preferred_x = center_x - (stamp_w / 2)
         preferred_top = a.top - stamp_h - 8
         right_column_x = page_w - stamp_w - 80
+        right_of_name_x = a.x1 + 8
+        right_of_name_top = a.top - stamp_h - 4
         return [
+            ("right_of_footer_name", Box(right_of_name_x, right_of_name_top, right_of_name_x + stamp_w, right_of_name_top + stamp_h)),
             ("above_footer_name", Box(preferred_x, preferred_top, preferred_x + stamp_w, preferred_top + stamp_h)),
             ("above_footer_right", Box(right_column_x, preferred_top, right_column_x + stamp_w, preferred_top + stamp_h)),
             ("footer_column_center", Box(page_w * 0.64, preferred_top, page_w * 0.64 + stamp_w, preferred_top + stamp_h)),
@@ -322,14 +325,53 @@ def choose_best_candidate(
     page_h: float,
     anchor: Anchor | None,
 ) -> tuple[str, Box]:
-    scored = [
-        (reason, rect, score_rect(rect, word_boxes, page_w, page_h, anchor), overlap_ratio(rect, word_boxes))
-        for reason, rect in candidates
-    ]
+    scored = score_candidates(candidates, word_boxes, page_w, page_h, anchor)
     safe = [item for item in scored if item[3] <= 0.015]
     pool = safe or scored
     best_reason, best_rect, _score, _text_overlap = max(pool, key=lambda item: item[2])
     return best_reason, best_rect
+
+
+def score_candidates(
+    candidates: list[tuple[str, Box]],
+    word_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+    anchor: Anchor | None,
+) -> list[tuple[str, Box, float, float]]:
+    return [
+        (reason, rect, score_rect(rect, word_boxes, page_w, page_h, anchor), overlap_ratio(rect, word_boxes))
+        for reason, rect in candidates
+    ]
+
+
+def choose_footer_candidate(
+    anchor: Anchor,
+    word_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+    stamp_w: float,
+    stamp_ratio: float,
+) -> tuple[str, Box]:
+    attempts = [stamp_w, stamp_w * 0.86, stamp_w * 0.72, stamp_w * 0.58]
+    best_any: tuple[str, Box, float, float] | None = None
+    for width in attempts:
+        width = max(52.0, width)
+        height = width * stamp_ratio
+        candidates = [
+            (reason, clamp_rect(rect, page_w, page_h))
+            for reason, rect in placement_candidates(anchor, page_w, page_h, width, height)
+        ]
+        scored = score_candidates(candidates, word_boxes, page_w, page_h, anchor)
+        safe = [item for item in scored if item[3] <= 0.015]
+        if safe:
+            reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
+            return reason, rect
+        attempt_best = max(scored, key=lambda item: item[2])
+        if best_any is None or attempt_best[2] > best_any[2]:
+            best_any = attempt_best
+    assert best_any is not None
+    return best_any[0], best_any[1]
 
 
 def choose_placements(
@@ -357,17 +399,27 @@ def choose_placements(
     for page_index, anchor in sorted(by_page.items(), key=lambda kv: kv[0]):
         page_w, page_h = page_sizes[page_index]
         page_stamp_w, page_stamp_h = stamp_size_for_anchor(anchor, page_w, page_h, stamp_w, stamp_ratio)
-        candidates = [
-            (reason, clamp_rect(rect, page_w, page_h))
-            for reason, rect in placement_candidates(anchor, page_w, page_h, page_stamp_w, page_stamp_h)
-        ]
-        best_reason, best_rect = choose_best_candidate(
-            candidates,
-            word_boxes[page_index],
-            page_w,
-            page_h,
-            anchor,
-        )
+        if is_footer_anchor(anchor, page_w, page_h):
+            best_reason, best_rect = choose_footer_candidate(
+                anchor,
+                word_boxes[page_index],
+                page_w,
+                page_h,
+                page_stamp_w,
+                stamp_ratio,
+            )
+        else:
+            candidates = [
+                (reason, clamp_rect(rect, page_w, page_h))
+                for reason, rect in placement_candidates(anchor, page_w, page_h, page_stamp_w, page_stamp_h)
+            ]
+            best_reason, best_rect = choose_best_candidate(
+                candidates,
+                word_boxes[page_index],
+                page_w,
+                page_h,
+                anchor,
+            )
         placements.append(
             Placement(
                 page_index=page_index,
