@@ -16,7 +16,7 @@ from pathlib import Path
 from stamp_engine import stamp_pdf
 
 
-ENGINE_VERSION = "2026-07-07-footer-v4"
+ENGINE_VERSION = "2026-07-07-footer-v6"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -210,9 +210,12 @@ class StampHandler(BaseHTTPRequestHandler):
                 },
             )
         except ValueError as exc:
-            self.write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc)})
+            self.write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "version": ENGINE_VERSION, "error": str(exc)})
         except Exception as exc:
-            self.write_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": f"Eroare stampilare: {exc}"})
+            self.write_json(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                {"ok": False, "version": ENGINE_VERSION, "error": f"Eroare stampilare: {exc}"},
+            )
         finally:
             shutil.rmtree(work_dir, ignore_errors=True)
 
