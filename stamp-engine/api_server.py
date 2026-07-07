@@ -16,7 +16,7 @@ from pathlib import Path
 from stamp_engine import stamp_pdf
 
 
-ENGINE_VERSION = "2026-07-07-footer-v6"
+ENGINE_VERSION = "2026-07-07-signature-block-v7"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
