@@ -16,6 +16,7 @@ from pathlib import Path
 from stamp_engine import stamp_pdf
 
 
+ENGINE_VERSION = "2026-07-07-footer-v4"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -118,7 +119,10 @@ class StampHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         parsed = urllib.parse.urlparse(self.path)
         if parsed.path == "/health":
-            self.write_json(HTTPStatus.OK, {"ok": True, "service": "degei-stamp-engine"})
+            self.write_json(
+                HTTPStatus.OK,
+                {"ok": True, "service": "degei-stamp-engine", "version": ENGINE_VERSION},
+            )
             return
 
         if parsed.path.startswith("/files/"):
@@ -179,6 +183,7 @@ class StampHandler(BaseHTTPRequestHandler):
                     HTTPStatus.UNPROCESSABLE_ENTITY,
                     {
                         "ok": False,
+                        "version": ENGINE_VERSION,
                         "needs_review": True,
                         "error": "Nu am gasit o zona clara de semnatura/stampila transportator. Nu trimit PDF stampilat la ghici.",
                         "anchor_count": result["anchor_count"],
@@ -196,6 +201,7 @@ class StampHandler(BaseHTTPRequestHandler):
                 HTTPStatus.OK,
                 {
                     "ok": True,
+                    "version": ENGINE_VERSION,
                     "file_url": file_url,
                     "filename": filename,
                     "placements": result["placements"],
@@ -215,7 +221,7 @@ def main() -> None:
     port = int(os.environ.get("PORT", "8080"))
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     server = ThreadingHTTPServer(("0.0.0.0", port), StampHandler)
-    print(f"DEGEI Stamp Engine listening on port {port}", flush=True)
+    print(f"DEGEI Stamp Engine {ENGINE_VERSION} listening on port {port}", flush=True)
     server.serve_forever()
 
 
