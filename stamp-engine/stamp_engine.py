@@ -37,6 +37,12 @@ TARGET_PHRASES = [
 ]
 
 GENERIC_TARGETS = {"TRANSPORTATOR", "CARRIER", "HAULIER", "VETTORE"}
+FOOTER_TARGETS = {"DEGEI LOGISTIC", "RO36256981"}
+DEDICATED_TARGETS = {
+    phrase
+    for phrase, _score in TARGET_PHRASES
+    if phrase not in FOOTER_TARGETS and phrase not in GENERIC_TARGETS
+}
 
 
 @dataclass(frozen=True)
@@ -83,6 +89,10 @@ def norm(text: str) -> str:
     text = text.upper()
     text = re.sub(r"[^A-Z0-9]+", " ", text)
     return re.sub(r"\s+", " ", text).strip()
+
+
+def contains_phrase(line_norm: str, phrase: str) -> bool:
+    return re.search(rf"(^| ){re.escape(phrase)}($| )", line_norm) is not None
 
 
 def group_lines(words: list[dict]) -> list[dict]:
@@ -158,7 +168,7 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[tu
             for line in lines:
                 line_norm = line["norm"]
                 for phrase, base_score in TARGET_PHRASES:
-                    if phrase in line_norm:
+                    if contains_phrase(line_norm, phrase):
                         # Generic words appear often in legal/payment paragraphs. They are valid
                         # anchors only when they look like a short field label, not body text.
                         if phrase in GENERIC_TARGETS:
@@ -172,6 +182,12 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[tu
                             score += 15
                         if anchor_box.top > page.height * 0.45:
                             score += 8
+                        if phrase in FOOTER_TARGETS and looks_like_carrier_footer(
+                            anchor_box,
+                            float(page.width),
+                            float(page.height),
+                        ):
+                            score += 65
                         anchors.append(
                             Anchor(
                                 page_index=page_index,
@@ -182,6 +198,22 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[tu
                             )
                         )
     return anchors, all_word_boxes, page_sizes
+
+
+def looks_like_carrier_footer(box: Box, page_w: float, page_h: float) -> bool:
+    return box.top > page_h * 0.68 and box.x0 > page_w * 0.45
+
+
+def is_footer_anchor(anchor: Anchor, page_w: float, page_h: float) -> bool:
+    return anchor.phrase in FOOTER_TARGETS and looks_like_carrier_footer(anchor.box, page_w, page_h)
+
+
+def anchor_rank(anchor: Anchor, page_w: float, page_h: float) -> tuple[int, int, float]:
+    if anchor.phrase in DEDICATED_TARGETS:
+        return (3, anchor.score, anchor.box.top)
+    if is_footer_anchor(anchor, page_w, page_h):
+        return (2, anchor.score, anchor.box.top)
+    return (1, anchor.score, anchor.box.top)
 
 
 def overlap_area(a: Box, b: Box) -> float:
@@ -207,9 +239,42 @@ def clamp_rect(rect: Box, page_w: float, page_h: float, margin: float = 18) -> B
     return Box(x0, top, x0 + width, top + height)
 
 
+def stamp_size_for_anchor(anchor: Anchor, page_w: float, page_h: float, requested_w: float, ratio: float) -> tuple[float, float]:
+    # Make sends a pixel-like target width. Convert it to a professional PDF size
+    # based on the signature zone so it matches client stamps instead of dominating them.
+    requested_w = max(70.0, requested_w)
+    if is_footer_anchor(anchor, page_w, page_h):
+        width = min(requested_w, 112.0, page_w * 0.19)
+        max_height = 52.0
+        min_width = 62.0
+    elif anchor.phrase in FOOTER_TARGETS:
+        width = min(requested_w, 112.0, page_w * 0.19)
+        max_height = 52.0
+        min_width = 62.0
+    else:
+        width = min(requested_w, 132.0, page_w * 0.22)
+        max_height = 62.0
+        min_width = 78.0
+    if ratio > 0:
+        width = min(width, max_height / ratio)
+    width = max(min_width, width)
+    return width, width * ratio
+
+
 def placement_candidates(anchor: Anchor, page_w: float, page_h: float, stamp_w: float, stamp_h: float) -> list[tuple[str, Box]]:
     a = anchor.box
     gap = 12
+    if is_footer_anchor(anchor, page_w, page_h):
+        center_x = (a.x0 + a.x1) / 2
+        preferred_x = center_x - (stamp_w / 2)
+        preferred_top = a.top - stamp_h - 8
+        right_column_x = page_w - stamp_w - 80
+        return [
+            ("above_footer_name", Box(preferred_x, preferred_top, preferred_x + stamp_w, preferred_top + stamp_h)),
+            ("above_footer_right", Box(right_column_x, preferred_top, right_column_x + stamp_w, preferred_top + stamp_h)),
+            ("footer_column_center", Box(page_w * 0.64, preferred_top, page_w * 0.64 + stamp_w, preferred_top + stamp_h)),
+            ("footer_slightly_higher", Box(preferred_x, preferred_top - 18, preferred_x + stamp_w, preferred_top - 18 + stamp_h)),
+        ]
     return [
         ("right_of_anchor", Box(a.x1 + gap, max(a.top - 18, 0), a.x1 + gap + stamp_w, max(a.top - 18, 0) + stamp_h)),
         ("below_anchor", Box(min(max(a.x0, 20), page_w - stamp_w - 20), a.bottom + gap, min(max(a.x0, 20), page_w - stamp_w - 20) + stamp_w, a.bottom + gap + stamp_h)),
@@ -272,8 +337,7 @@ def choose_placements(
     word_boxes: list[list[Box]],
     page_sizes: list[tuple[float, float]],
     stamp_w: float,
-    stamp_h: float,
-    max_pages: int = 2,
+    stamp_ratio: float,
     allow_fallback: bool = False,
 ) -> list[Placement]:
     placements: list[Placement] = []
@@ -283,14 +347,19 @@ def choose_placements(
         high_anchors = sorted(anchors, key=lambda a: a.score, reverse=True)[:1]
 
     by_page: dict[int, Anchor] = {}
-    for anchor in sorted(high_anchors, key=lambda a: a.score, reverse=True):
+    for anchor in sorted(
+        high_anchors,
+        key=lambda a: anchor_rank(a, *page_sizes[a.page_index]),
+        reverse=True,
+    ):
         by_page.setdefault(anchor.page_index, anchor)
 
-    for page_index, anchor in sorted(by_page.items(), key=lambda kv: (-kv[1].score, kv[0]))[:max_pages]:
+    for page_index, anchor in sorted(by_page.items(), key=lambda kv: kv[0]):
         page_w, page_h = page_sizes[page_index]
+        page_stamp_w, page_stamp_h = stamp_size_for_anchor(anchor, page_w, page_h, stamp_w, stamp_ratio)
         candidates = [
             (reason, clamp_rect(rect, page_w, page_h))
-            for reason, rect in placement_candidates(anchor, page_w, page_h, stamp_w, stamp_h)
+            for reason, rect in placement_candidates(anchor, page_w, page_h, page_stamp_w, page_stamp_h)
         ]
         best_reason, best_rect = choose_best_candidate(
             candidates,
@@ -312,9 +381,11 @@ def choose_placements(
     if not placements and page_count and allow_fallback:
         page_index = page_count - 1
         page_w, page_h = page_sizes[page_index]
+        page_stamp_w = min(max(stamp_w, 78.0), 112.0, page_w * 0.19)
+        page_stamp_h = page_stamp_w * stamp_ratio
         candidates = [
             (reason, clamp_rect(rect, page_w, page_h))
-            for reason, rect in fallback_candidates(page_w, page_h, stamp_w, stamp_h)
+            for reason, rect in fallback_candidates(page_w, page_h, page_stamp_w, page_stamp_h)
         ]
         best_reason, best_rect = choose_best_candidate(
             candidates,
@@ -344,7 +415,6 @@ def stamp_pdf(
 ) -> dict:
     with Image.open(stamp_image) as img:
         ratio = img.height / max(img.width, 1)
-    stamp_height = stamp_width * ratio
 
     anchors, word_boxes, page_sizes = find_anchors(input_pdf)
     placements = choose_placements(
@@ -352,7 +422,7 @@ def stamp_pdf(
         word_boxes,
         page_sizes,
         stamp_width,
-        stamp_height,
+        ratio,
         allow_fallback=allow_fallback,
     )
 
