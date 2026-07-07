@@ -38,6 +38,20 @@ TARGET_PHRASES = [
 
 GENERIC_TARGETS = {"TRANSPORTATOR", "CARRIER", "HAULIER", "VETTORE"}
 FOOTER_TARGETS = {"DEGEI LOGISTIC", "RO36256981"}
+SIGNATURE_LABEL_TARGETS = {
+    "SEMNATURA SI STAMPILA",
+    "SEMNATURA SI SEMNATURA",
+    "STAMPILA TRANSPORTATOR",
+    "SIGNATURE AND STAMP",
+    "SIGN AND STAMP",
+}
+CONFIRMATION_HEADING_TARGETS = {
+    "CARRIER CONFIRMATION",
+    "HAULIER CONFIRMATION",
+    "TRANSPORTATOR CONFIRMARE",
+    "CONFIRMARE TRANSPORTATOR",
+    "CONFIRMAREA TRANSPORTATORULUI",
+}
 DEDICATED_TARGETS = {
     phrase
     for phrase, _score in TARGET_PHRASES
@@ -244,17 +258,17 @@ def stamp_size_for_anchor(anchor: Anchor, page_w: float, page_h: float, requeste
     # based on the signature zone so it matches client stamps instead of dominating them.
     requested_w = max(70.0, requested_w)
     if is_footer_anchor(anchor, page_w, page_h):
-        width = min(requested_w, 112.0, page_w * 0.19)
-        max_height = 52.0
-        min_width = 62.0
+        width = min(requested_w, 96.0, page_w * 0.16)
+        max_height = 46.0
+        min_width = 56.0
     elif anchor.phrase in FOOTER_TARGETS:
-        width = min(requested_w, 112.0, page_w * 0.19)
-        max_height = 52.0
-        min_width = 62.0
+        width = min(requested_w, 96.0, page_w * 0.16)
+        max_height = 46.0
+        min_width = 56.0
     else:
-        width = min(requested_w, 132.0, page_w * 0.22)
-        max_height = 62.0
-        min_width = 78.0
+        width = min(requested_w, 112.0, page_w * 0.19)
+        max_height = 54.0
+        min_width = 70.0
     if ratio > 0:
         width = min(width, max_height / ratio)
     width = max(min_width, width)
@@ -267,16 +281,38 @@ def placement_candidates(anchor: Anchor, page_w: float, page_h: float, stamp_w: 
     if is_footer_anchor(anchor, page_w, page_h):
         center_x = (a.x0 + a.x1) / 2
         preferred_x = center_x - (stamp_w / 2)
-        preferred_top = a.top - stamp_h - 8
+        preferred_top = a.top - stamp_h - 22
         right_column_x = page_w - stamp_w - 80
         right_of_name_x = a.x1 + 8
-        right_of_name_top = a.top - stamp_h - 4
+        right_of_name_top = a.top - stamp_h - 18
         return [
-            ("right_of_footer_name", Box(right_of_name_x, right_of_name_top, right_of_name_x + stamp_w, right_of_name_top + stamp_h)),
             ("above_footer_name", Box(preferred_x, preferred_top, preferred_x + stamp_w, preferred_top + stamp_h)),
+            ("right_of_footer_name", Box(right_of_name_x, right_of_name_top, right_of_name_x + stamp_w, right_of_name_top + stamp_h)),
             ("above_footer_right", Box(right_column_x, preferred_top, right_column_x + stamp_w, preferred_top + stamp_h)),
             ("footer_column_center", Box(page_w * 0.64, preferred_top, page_w * 0.64 + stamp_w, preferred_top + stamp_h)),
             ("footer_slightly_higher", Box(preferred_x, preferred_top - 18, preferred_x + stamp_w, preferred_top - 18 + stamp_h)),
+        ]
+    if anchor.phrase in SIGNATURE_LABEL_TARGETS:
+        centered_x = (a.x0 + a.x1) / 2 - (stamp_w / 2)
+        preferred_top = a.top - stamp_h - 8
+        right_x = min(a.x1 + gap, page_w - stamp_w - 28)
+        left_x = min(max(a.x0, 28), page_w - stamp_w - 28)
+        return [
+            ("above_signature_label_center", Box(centered_x, preferred_top, centered_x + stamp_w, preferred_top + stamp_h)),
+            ("above_signature_label_left", Box(left_x, preferred_top, left_x + stamp_w, preferred_top + stamp_h)),
+            ("above_signature_label_right", Box(right_x, preferred_top, right_x + stamp_w, preferred_top + stamp_h)),
+            ("right_of_signature_label", Box(right_x, a.top - stamp_h / 2, right_x + stamp_w, a.top - stamp_h / 2 + stamp_h)),
+            ("higher_signature_label_center", Box(centered_x, preferred_top - 18, centered_x + stamp_w, preferred_top - 18 + stamp_h)),
+        ]
+    if anchor.phrase in CONFIRMATION_HEADING_TARGETS:
+        left_x = min(max(a.x0, 28), page_w - stamp_w - 28)
+        right_x = min(max(a.x1 + gap, 28), page_w - stamp_w - 28)
+        below_top = a.bottom + 8
+        return [
+            ("under_confirmation_heading", Box(left_x, below_top, left_x + stamp_w, below_top + stamp_h)),
+            ("right_of_confirmation_heading", Box(right_x, max(a.top - 8, 0), right_x + stamp_w, max(a.top - 8, 0) + stamp_h)),
+            ("above_confirmation_heading", Box(left_x, a.top - stamp_h - 8, left_x + stamp_w, a.top - 8)),
+            ("right_lower", Box(page_w - stamp_w - 55, max(a.bottom + 10, page_h * 0.58), page_w - 55, max(a.bottom + 10, page_h * 0.58) + stamp_h)),
         ]
     return [
         ("right_of_anchor", Box(a.x1 + gap, max(a.top - 18, 0), a.x1 + gap + stamp_w, max(a.top - 18, 0) + stamp_h)),
@@ -339,8 +375,24 @@ def score_candidates(
     page_h: float,
     anchor: Anchor | None,
 ) -> list[tuple[str, Box, float, float]]:
+    reason_bonus = {
+        "above_signature_label_center": 180.0,
+        "above_signature_label_left": 140.0,
+        "above_signature_label_right": 120.0,
+        "higher_signature_label_center": 80.0,
+        "under_confirmation_heading": 150.0,
+        "right_of_confirmation_heading": 120.0,
+        "above_footer_name": 180.0,
+        "right_of_footer_name": 100.0,
+        "above_footer_right": 80.0,
+    }
     return [
-        (reason, rect, score_rect(rect, word_boxes, page_w, page_h, anchor), overlap_ratio(rect, word_boxes))
+        (
+            reason,
+            rect,
+            score_rect(rect, word_boxes, page_w, page_h, anchor) + reason_bonus.get(reason, 0.0),
+            overlap_ratio(rect, word_boxes),
+        )
         for reason, rect in candidates
     ]
 
@@ -365,6 +417,10 @@ def choose_footer_candidate(
         scored = score_candidates(candidates, word_boxes, page_w, page_h, anchor)
         safe = [item for item in scored if item[3] <= 0.015]
         if safe:
+            preferred = [item for item in safe if item[0] == "above_footer_name"]
+            if preferred:
+                reason, rect, _score, _overlap = max(preferred, key=lambda item: item[2])
+                return reason, rect
             reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
             return reason, rect
         attempt_best = max(scored, key=lambda item: item[2])
