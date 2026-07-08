@@ -1,4 +1,5 @@
 pdfplumber==0.11.9
+pdf2image==1.17.0
 pypdf==6.10.0
 reportlab==4.4.9
 Pillow==12.2.0
