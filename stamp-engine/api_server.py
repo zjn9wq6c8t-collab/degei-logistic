@@ -16,7 +16,7 @@ from pathlib import Path
 import stamp_engine as _stamp_engine
 
 
-ENGINE_VERSION = "2026-07-08-signature-block-v9"
+ENGINE_VERSION = "2026-07-08-visual-safety-v10"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -25,109 +25,10 @@ FILE_TTL_SECONDS = int(os.environ.get("STAMP_FILE_TTL_SECONDS", str(2 * 60 * 60)
 
 
 def patch_stamp_engine() -> None:
-    def looks_like_carrier_footer(box, page_w: float, page_h: float) -> bool:
-        return box.top > page_h * 0.78 and box.x0 > page_w * 0.45
-
-    def looks_like_carrier_signature_block(box, page_w: float, page_h: float) -> bool:
-        return page_h * 0.14 < box.top < page_h * 0.78 and box.x0 > page_w * 0.48
-
-    def stamp_size_for_anchor(anchor, page_w: float, page_h: float, requested_w: float, ratio: float, image_boxes=None):
-        requested_w = max(70.0, requested_w)
-        ref = (
-            _stamp_engine.reference_stamp_box(anchor, image_boxes or [])
-            if _stamp_engine.is_signature_block_anchor(anchor, page_w, page_h)
-            else None
-        )
-        if ref is not None:
-            target_height = min(max(ref.height * 1.08, 70.0), 94.0, page_h * 0.13)
-            width = min(
-                max(target_height / max(ratio, 0.1), ref.width * 1.08, 108.0),
-                188.0,
-                page_w * 0.32,
-            )
-            max_height = 94.0
-            min_width = min(108.0, page_w * 0.24)
-        elif _stamp_engine.is_footer_anchor(anchor, page_w, page_h):
-            width = min(requested_w, 96.0, page_w * 0.16)
-            max_height = 46.0
-            min_width = 56.0
-        elif anchor.phrase in _stamp_engine.FOOTER_TARGETS:
-            width = min(requested_w, 96.0, page_w * 0.16)
-            max_height = 46.0
-            min_width = 56.0
-        else:
-            width = min(requested_w, 112.0, page_w * 0.19)
-            max_height = 54.0
-            min_width = 70.0
-        if ratio > 0:
-            width = min(width, max_height / ratio)
-        width = max(min_width, width)
-        return width, width * ratio
-
-    def choose_signature_block_candidate(anchor, word_boxes, image_boxes, page_w, page_h, stamp_w, stamp_h):
-        ref = _stamp_engine.reference_stamp_box(anchor, image_boxes)
-        text_bottom = _stamp_engine.signature_block_text_bottom(anchor, word_boxes, page_w)
-        best_any = None
-        for scale in (1.0, 0.92, 0.84, 0.76):
-            width = max(82.0, stamp_w * scale)
-            height = width * (stamp_h / max(stamp_w, 1.0))
-            center_x = min(max((anchor.box.x0 + anchor.box.x1) / 2, page_w * 0.64), page_w - width / 2 - 35)
-            x = center_x - width / 2
-            preferred_top = text_bottom + 8
-            if ref is not None:
-                ref_centered_top = ref.top + (ref.height - height) / 2
-                preferred_top = max(preferred_top, ref_centered_top, ref.top + 6)
-            right_x = min(max(anchor.box.x0, 28), page_w - width - 28)
-            candidates = [
-                ("below_signature_block_match_client", _stamp_engine.Box(x, preferred_top, x + width, preferred_top + height)),
-                ("below_signature_block_right", _stamp_engine.Box(right_x, preferred_top, right_x + width, preferred_top + height)),
-                ("signature_block_lower", _stamp_engine.Box(x, preferred_top + 18, x + width, preferred_top + 18 + height)),
-            ]
-            if ref is not None:
-                aligned_top = max(text_bottom + 8, ref.top + (ref.height - height) / 2)
-                candidates.append(
-                    ("signature_block_align_client_stamp", _stamp_engine.Box(right_x, aligned_top, right_x + width, aligned_top + height))
-                )
-            safe_candidates = [
-                (reason, _stamp_engine.clamp_rect(rect, page_w, page_h))
-                for reason, rect in candidates
-            ]
-            scored = _stamp_engine.score_candidates(safe_candidates, word_boxes, page_w, page_h, anchor)
-            safe = [item for item in scored if item[3] <= 0.012]
-            if safe:
-                reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
-                return reason, rect
-            attempt_best = max(scored, key=lambda item: item[2])
-            if best_any is None or attempt_best[2] > best_any[2]:
-                best_any = attempt_best
-        assert best_any is not None
-        return best_any[0], best_any[1]
-
-    def score_candidates(candidates, word_boxes, page_w, page_h, anchor):
-        reason_bonus = {
-            "below_signature_block_match_client": 220.0,
-            "signature_block_align_client_stamp": 210.0,
-            "below_signature_block_right": 170.0,
-            "signature_block_lower": 80.0,
-            "above_signature_label_center": 180.0,
-            "above_signature_label_left": 140.0,
-            "above_signature_label_right": 120.0,
-            "higher_signature_label_center": 80.0,
-            "under_confirmation_heading": 150.0,
-            "right_of_confirmation_heading": 120.0,
-            "above_footer_name": 180.0,
-            "right_of_footer_name": 100.0,
-            "above_footer_right": 80.0,
-        }
-        return [
-            (
-                reason,
-                rect,
-                _stamp_engine.score_rect(rect, word_boxes, page_w, page_h, anchor) + reason_bonus.get(reason, 0.0),
-                _stamp_engine.overlap_ratio(rect, word_boxes),
-            )
-            for reason, rect in candidates
-        ]
+    # All production placement logic lives in stamp_engine.py. Older deployments
+    # patched several helpers here; keeping this hook as a no-op avoids stale
+    # overrides shadowing the visual safety checks.
+    return
 
     _stamp_engine.looks_like_carrier_footer = looks_like_carrier_footer
     _stamp_engine.looks_like_carrier_signature_block = looks_like_carrier_signature_block
