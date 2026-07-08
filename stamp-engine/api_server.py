@@ -16,7 +16,7 @@ from pathlib import Path
 import stamp_engine as _stamp_engine
 
 
-ENGINE_VERSION = "2026-07-08-visual-safety-v10"
+ENGINE_VERSION = "2026-07-08-visual-safety-v11-smaller-stamp"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -25,16 +25,46 @@ FILE_TTL_SECONDS = int(os.environ.get("STAMP_FILE_TTL_SECONDS", str(2 * 60 * 60)
 
 
 def patch_stamp_engine() -> None:
-    # All production placement logic lives in stamp_engine.py. Older deployments
-    # patched several helpers here; keeping this hook as a no-op avoids stale
-    # overrides shadowing the visual safety checks.
-    return
+    # Keep the visual placement logic in stamp_engine.py, but let the API tune
+    # final size quickly when Make sends stamp_width as a broad target.
+    def stamp_size_for_anchor(anchor, page_w, page_h, requested_w, ratio, image_boxes=None):
+        requested_w = max(70.0, requested_w)
+        ref = (
+            _stamp_engine.reference_stamp_box(anchor, image_boxes or [])
+            if _stamp_engine.is_signature_block_anchor(anchor, page_w, page_h)
+            else None
+        )
+        if ref is not None:
+            target_height = min(max(ref.height * 0.92, 58.0), 82.0, page_h * 0.11)
+            width = min(
+                max(target_height / max(ratio, 0.1), ref.width * 0.92, 92.0),
+                165.0,
+                page_w * 0.28,
+            )
+            max_height = 82.0
+            min_width = min(92.0, page_w * 0.20)
+        elif anchor.phrase in _stamp_engine.SUPPLIER_SIGNATURE_TARGETS:
+            width = min(requested_w, 118.0, page_w * 0.20)
+            max_height = 58.0
+            min_width = 82.0
+        elif _stamp_engine.is_footer_anchor(anchor, page_w, page_h):
+            width = min(requested_w, 96.0, page_w * 0.16)
+            max_height = 46.0
+            min_width = 56.0
+        elif anchor.phrase in _stamp_engine.FOOTER_TARGETS:
+            width = min(requested_w, 96.0, page_w * 0.16)
+            max_height = 46.0
+            min_width = 56.0
+        else:
+            width = min(requested_w, 112.0, page_w * 0.19)
+            max_height = 54.0
+            min_width = 70.0
+        if ratio > 0:
+            width = min(width, max_height / ratio)
+        width = max(min_width, width)
+        return width, width * ratio
 
-    _stamp_engine.looks_like_carrier_footer = looks_like_carrier_footer
-    _stamp_engine.looks_like_carrier_signature_block = looks_like_carrier_signature_block
     _stamp_engine.stamp_size_for_anchor = stamp_size_for_anchor
-    _stamp_engine.choose_signature_block_candidate = choose_signature_block_candidate
-    _stamp_engine.score_candidates = score_candidates
 
 
 patch_stamp_engine()
