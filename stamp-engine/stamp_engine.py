@@ -15,6 +15,11 @@ from pypdf import PdfReader, PdfWriter
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 
+try:
+    from pdf2image import convert_from_path
+except Exception:  # pragma: no cover - production should install pdf2image/poppler.
+    convert_from_path = None
+
 
 TARGET_PHRASES = [
     ("CARRIER CONFIRMATION", 145),
@@ -34,11 +39,15 @@ TARGET_PHRASES = [
     ("SIGN AND STAMP", 100),
     ("DEGEI LOGISTIC", 75),
     ("RO36256981", 70),
+    ("FURNIZOR", 65),
+    ("PRESTATOR", 65),
+    ("SUBCONTRACTANT", 65),
 ]
 
 GENERIC_TARGETS = {"TRANSPORTATOR", "CARRIER", "HAULIER", "VETTORE"}
 FOOTER_TARGETS = {"DEGEI LOGISTIC", "RO36256981"}
 TRANSPORTER_NAME_TARGETS = {"DEGEI LOGISTIC", "RO36256981"}
+SUPPLIER_SIGNATURE_TARGETS = {"FURNIZOR", "PRESTATOR", "SUBCONTRACTANT"}
 SIGNATURE_LABEL_TARGETS = {
     "SEMNATURA SI STAMPILA",
     "SEMNATURA SI SEMNATURA",
@@ -56,7 +65,10 @@ CONFIRMATION_HEADING_TARGETS = {
 DEDICATED_TARGETS = {
     phrase
     for phrase, _score in TARGET_PHRASES
-    if phrase not in FOOTER_TARGETS and phrase not in GENERIC_TARGETS
+    if phrase not in FOOTER_TARGETS
+    and phrase not in GENERIC_TARGETS
+    and phrase not in TRANSPORTER_NAME_TARGETS
+    and phrase not in SUPPLIER_SIGNATURE_TARGETS
 }
 
 
@@ -221,6 +233,12 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                             float(page.height),
                         ):
                             score += 95
+                        if phrase in SUPPLIER_SIGNATURE_TARGETS and looks_like_supplier_signature_heading(
+                            anchor_box,
+                            float(page.width),
+                            float(page.height),
+                        ):
+                            score += 180
                         anchors.append(
                             Anchor(
                                 page_index=page_index,
@@ -234,11 +252,15 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
 
 
 def looks_like_carrier_footer(box: Box, page_w: float, page_h: float) -> bool:
-    return box.top > page_h * 0.68 and box.x0 > page_w * 0.45
+    return box.top > page_h * 0.78 and box.x0 > page_w * 0.45
 
 
 def looks_like_carrier_signature_block(box: Box, page_w: float, page_h: float) -> bool:
-    return page_h * 0.14 < box.top < page_h * 0.62 and box.x0 > page_w * 0.48
+    return page_h * 0.38 < box.top < page_h * 0.88 and box.x0 > page_w * 0.46
+
+
+def looks_like_supplier_signature_heading(box: Box, page_w: float, page_h: float) -> bool:
+    return box.top > page_h * 0.55 and box.x0 > page_w * 0.50
 
 
 def is_footer_anchor(anchor: Anchor, page_w: float, page_h: float) -> bool:
@@ -246,10 +268,16 @@ def is_footer_anchor(anchor: Anchor, page_w: float, page_h: float) -> bool:
 
 
 def is_signature_block_anchor(anchor: Anchor, page_w: float, page_h: float) -> bool:
-    return anchor.phrase in TRANSPORTER_NAME_TARGETS and looks_like_carrier_signature_block(anchor.box, page_w, page_h)
+    if anchor.phrase in TRANSPORTER_NAME_TARGETS:
+        return looks_like_carrier_signature_block(anchor.box, page_w, page_h)
+    if anchor.phrase in SUPPLIER_SIGNATURE_TARGETS:
+        return looks_like_supplier_signature_heading(anchor.box, page_w, page_h)
+    return False
 
 
 def anchor_rank(anchor: Anchor, page_w: float, page_h: float) -> tuple[int, int, float]:
+    if anchor.phrase in SUPPLIER_SIGNATURE_TARGETS and looks_like_supplier_signature_heading(anchor.box, page_w, page_h):
+        return (4, anchor.score + 180, anchor.box.top)
     if anchor.phrase in DEDICATED_TARGETS:
         return (3, anchor.score, anchor.box.top)
     if is_signature_block_anchor(anchor, page_w, page_h):
@@ -283,6 +311,17 @@ def clamp_rect(rect: Box, page_w: float, page_h: float, margin: float = 18) -> B
 
 
 def reference_stamp_box(anchor: Anchor, image_boxes: list[Box]) -> Box | None:
+    if anchor.phrase in SUPPLIER_SIGNATURE_TARGETS:
+        candidates = [
+            box
+            for box in image_boxes
+            if 45 <= box.width <= 170
+            and 45 <= box.height <= 190
+            and box.x1 < anchor.box.x0 - 35
+            and abs(((box.top + box.bottom) / 2) - (anchor.box.bottom + 55)) < 180
+        ]
+        if candidates:
+            return max(candidates, key=lambda b: b.area)
     candidates = [
         box
         for box in image_boxes
@@ -310,9 +349,18 @@ def stamp_size_for_anchor(
     requested_w = max(70.0, requested_w)
     ref = reference_stamp_box(anchor, image_boxes or []) if is_signature_block_anchor(anchor, page_w, page_h) else None
     if ref is not None:
-        width = min(max(requested_w, ref.width, 98.0), 120.0, page_w * 0.21)
-        max_height = 82.0
-        min_width = 92.0
+        target_height = min(max(ref.height * 1.08, 70.0), 94.0, page_h * 0.13)
+        width = min(
+            max(target_height / max(ratio, 0.1), ref.width * 1.08, 108.0),
+            188.0,
+            page_w * 0.32,
+        )
+        max_height = 94.0
+        min_width = min(108.0, page_w * 0.24)
+    elif anchor.phrase in SUPPLIER_SIGNATURE_TARGETS:
+        width = min(requested_w, 118.0, page_w * 0.20)
+        max_height = 58.0
+        min_width = 82.0
     elif is_footer_anchor(anchor, page_w, page_h):
         width = min(requested_w, 96.0, page_w * 0.16)
         max_height = 46.0
@@ -334,6 +382,16 @@ def stamp_size_for_anchor(
 def placement_candidates(anchor: Anchor, page_w: float, page_h: float, stamp_w: float, stamp_h: float) -> list[tuple[str, Box]]:
     a = anchor.box
     gap = 12
+    if anchor.phrase in SUPPLIER_SIGNATURE_TARGETS and looks_like_supplier_signature_heading(anchor.box, page_w, page_h):
+        center_x = min(max((a.x0 + a.x1) / 2, page_w * 0.72), page_w - stamp_w / 2 - 30)
+        x = center_x - stamp_w / 2
+        below_top = a.bottom + 28
+        return [
+            ("under_supplier_signature_heading", Box(x, below_top, x + stamp_w, below_top + stamp_h)),
+            ("under_supplier_signature_right", Box(page_w - stamp_w - 55, below_top, page_w - 55, below_top + stamp_h)),
+            ("supplier_signature_lower", Box(x, below_top + 34, x + stamp_w, below_top + 34 + stamp_h)),
+            ("supplier_signature_low_right", Box(page_w - stamp_w - 55, page_h - stamp_h - 112, page_w - 55, page_h - 112)),
+        ]
     if is_footer_anchor(anchor, page_w, page_h):
         center_x = (a.x0 + a.x1) / 2
         preferred_x = center_x - (stamp_w / 2)
@@ -398,6 +456,67 @@ def signature_block_text_bottom(anchor: Anchor, word_boxes: list[Box], page_w: f
     return bottom
 
 
+def render_visual_pages(pdf_path: Path, page_indexes: set[int], dpi: int = 120) -> dict[int, Image.Image]:
+    if convert_from_path is None:
+        return {}
+
+    rendered: dict[int, Image.Image] = {}
+    for page_index in sorted(page_indexes):
+        try:
+            images = convert_from_path(
+                str(pdf_path),
+                dpi=dpi,
+                first_page=page_index + 1,
+                last_page=page_index + 1,
+                fmt="png",
+                thread_count=1,
+            )
+        except Exception:
+            continue
+        if images:
+            rendered[page_index] = images[0].convert("RGB")
+    return rendered
+
+
+def visual_ink_ratio(rect: Box, page_image: Image.Image | None, page_w: float, page_h: float) -> float:
+    if page_image is None or rect.area <= 0:
+        return 0.0
+
+    scale_x = page_image.width / max(page_w, 1.0)
+    scale_y = page_image.height / max(page_h, 1.0)
+    pad = 3.0
+    left = max(0, int((rect.x0 + pad) * scale_x))
+    top = max(0, int((rect.top + pad) * scale_y))
+    right = min(page_image.width, int((rect.x1 - pad) * scale_x))
+    bottom = min(page_image.height, int((rect.bottom - pad) * scale_y))
+    if right <= left or bottom <= top:
+        return 1.0
+
+    gray = page_image.crop((left, top, right, bottom)).convert("L")
+    hist = gray.histogram()
+    total = sum(hist)
+    if total <= 0:
+        return 1.0
+
+    dark = sum(hist[:232])
+    medium = sum(hist[232:244])
+    return (dark + medium * 0.35) / total
+
+
+def is_safe_rect(
+    rect: Box,
+    word_boxes: list[Box],
+    page_image: Image.Image | None,
+    page_w: float,
+    page_h: float,
+) -> bool:
+    if overlap_ratio(rect, word_boxes) > 0.012:
+        return False
+    if visual_ink_ratio(rect, page_image, page_w, page_h) > 0.022:
+        return False
+    return True
+
+
 def choose_signature_block_candidate(
     anchor: Anchor,
     word_boxes: list[Box],
@@ -406,24 +525,48 @@ def choose_signature_block_candidate(
     page_h: float,
     stamp_w: float,
     stamp_h: float,
+    page_image: Image.Image | None = None,
 ) -> tuple[str, Box]:
     ref = reference_stamp_box(anchor, image_boxes)
     text_bottom = signature_block_text_bottom(anchor, word_boxes, page_w)
-    center_x = min(max((anchor.box.x0 + anchor.box.x1) / 2, page_w * 0.64), page_w - stamp_w / 2 - 35)
-    x = center_x - stamp_w / 2
-    preferred_top = text_bottom + 8
-    if ref is not None:
-        preferred_top = max(preferred_top, ref.top + 12)
-    candidates = [
-        ("below_signature_block_match_client", Box(x, preferred_top, x + stamp_w, preferred_top + stamp_h)),
-        ("below_signature_block_right", Box(min(max(anchor.box.x0, 28), page_w - stamp_w - 28), preferred_top, min(max(anchor.box.x0, 28), page_w - stamp_w - 28) + stamp_w, preferred_top + stamp_h)),
-        ("signature_block_lower", Box(x, preferred_top + 18, x + stamp_w, preferred_top + 18 + stamp_h)),
-    ]
-    safe_candidates = [
-        (reason, clamp_rect(rect, page_w, page_h))
-        for reason, rect in candidates
-    ]
-    return choose_best_candidate(safe_candidates, word_boxes, page_w, page_h, anchor)
+    best_any: tuple[str, Box, float, float] | None = None
+    for scale in (1.0, 0.92, 0.84, 0.76):
+        width = max(82.0, stamp_w * scale)
+        height = width * (stamp_h / max(stamp_w, 1.0))
+        center_x = min(max((anchor.box.x0 + anchor.box.x1) / 2, page_w * 0.64), page_w - width / 2 - 35)
+        x = center_x - width / 2
+        preferred_top = text_bottom + 8
+        if ref is not None:
+            ref_centered_top = ref.top + (ref.height - height) / 2
+            preferred_top = max(preferred_top, ref_centered_top, ref.top + 6)
+        right_x = min(max(anchor.box.x0, 28), page_w - width - 28)
+        candidates = [
+            ("below_signature_block_match_client", Box(x, preferred_top, x + width, preferred_top + height)),
+            ("below_signature_block_right", Box(right_x, preferred_top, right_x + width, preferred_top + height)),
+            ("signature_block_lower", Box(x, preferred_top + 18, x + width, preferred_top + 18 + height)),
+        ]
+        if ref is not None:
+            aligned_top = max(text_bottom + 8, ref.top + (ref.height - height) / 2)
+            candidates.append(
+                ("signature_block_align_client_stamp", Box(right_x, aligned_top, right_x + width, aligned_top + height))
+            )
+        safe_candidates = [
+            (reason, clamp_rect(rect, page_w, page_h))
+            for reason, rect in candidates
+        ]
+        scored = score_candidates(safe_candidates, word_boxes, page_w, page_h, anchor, page_image)
+        safe = [
+            item for item in scored
+            if is_safe_rect(item[1], word_boxes, page_image, page_w, page_h)
+        ]
+        if safe:
+            reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
+            return reason, rect
+        attempt_best = max(scored, key=lambda item: item[2])
+        if best_any is None or attempt_best[2] > best_any[2]:
+            best_any = attempt_best
+    assert best_any is not None
+    return best_any[0], best_any[1]
 
 
 def score_rect(rect: Box, word_boxes: list[Box], page_w: float, page_h: float, anchor: Anchor | None) -> float:
@@ -446,15 +589,34 @@ def score_rect(rect: Box, word_boxes: list[Box], page_w: float, page_h: float, a
     return score
 
 
+def score_rect_with_visual(
+    rect: Box,
+    word_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+    anchor: Anchor | None,
+    page_image: Image.Image | None = None,
+) -> float:
+    score = score_rect(rect, word_boxes, page_w, page_h, anchor)
+    ink = visual_ink_ratio(rect, page_image, page_w, page_h)
+    if ink > 0.008:
+        score -= ink * 18000.0
+    return score
+
+
 def choose_best_candidate(
     candidates: list[tuple[str, Box]],
     word_boxes: list[Box],
     page_w: float,
     page_h: float,
     anchor: Anchor | None,
+    page_image: Image.Image | None = None,
 ) -> tuple[str, Box]:
-    scored = score_candidates(candidates, word_boxes, page_w, page_h, anchor)
-    safe = [item for item in scored if item[3] <= 0.015]
+    scored = score_candidates(candidates, word_boxes, page_w, page_h, anchor, page_image)
+    safe = [
+        item for item in scored
+        if is_safe_rect(item[1], word_boxes, page_image, page_w, page_h)
+    ]
     pool = safe or scored
     best_reason, best_rect, _score, _text_overlap = max(pool, key=lambda item: item[2])
     return best_reason, best_rect
@@ -466,8 +628,13 @@ def score_candidates(
     page_w: float,
     page_h: float,
     anchor: Anchor | None,
+    page_image: Image.Image | None = None,
 ) -> list[tuple[str, Box, float, float]]:
     reason_bonus = {
+        "below_signature_block_match_client": 220.0,
+        "signature_block_align_client_stamp": 210.0,
+        "below_signature_block_right": 170.0,
+        "signature_block_lower": 80.0,
         "above_signature_label_center": 180.0,
         "above_signature_label_left": 140.0,
         "above_signature_label_right": 120.0,
@@ -482,7 +649,7 @@ def score_candidates(
         (
             reason,
             rect,
-            score_rect(rect, word_boxes, page_w, page_h, anchor) + reason_bonus.get(reason, 0.0),
+            score_rect_with_visual(rect, word_boxes, page_w, page_h, anchor, page_image) + reason_bonus.get(reason, 0.0),
             overlap_ratio(rect, word_boxes),
         )
         for reason, rect in candidates
@@ -496,6 +663,7 @@ def choose_footer_candidate(
     page_h: float,
     stamp_w: float,
     stamp_ratio: float,
+    page_image: Image.Image | None = None,
 ) -> tuple[str, Box]:
     attempts = [stamp_w, stamp_w * 0.86, stamp_w * 0.72, stamp_w * 0.58]
     best_any: tuple[str, Box, float, float] | None = None
@@ -506,8 +674,11 @@ def choose_footer_candidate(
             (reason, clamp_rect(rect, page_w, page_h))
             for reason, rect in placement_candidates(anchor, page_w, page_h, width, height)
         ]
-        scored = score_candidates(candidates, word_boxes, page_w, page_h, anchor)
-        safe = [item for item in scored if item[3] <= 0.015]
+        scored = score_candidates(candidates, word_boxes, page_w, page_h, anchor, page_image)
+        safe = [
+            item for item in scored
+            if is_safe_rect(item[1], word_boxes, page_image, page_w, page_h)
+        ]
         if safe:
             preferred = [item for item in safe if item[0] == "above_footer_name"]
             if preferred:
@@ -530,6 +701,7 @@ def choose_placements(
     stamp_w: float,
     stamp_ratio: float,
     allow_fallback: bool = False,
+    visual_pages: dict[int, Image.Image] | None = None,
 ) -> list[Placement]:
     placements: list[Placement] = []
     page_count = len(page_sizes)
@@ -547,6 +719,7 @@ def choose_placements(
 
     for page_index, anchor in sorted(by_page.items(), key=lambda kv: kv[0]):
         page_w, page_h = page_sizes[page_index]
+        page_image = (visual_pages or {}).get(page_index)
         page_stamp_w, page_stamp_h = stamp_size_for_anchor(
             anchor,
             page_w,
@@ -564,6 +737,7 @@ def choose_placements(
                 page_h,
                 page_stamp_w,
                 page_stamp_h,
+                page_image,
             )
         elif is_footer_anchor(anchor, page_w, page_h):
             best_reason, best_rect = choose_footer_candidate(
@@ -573,6 +747,7 @@ def choose_placements(
                 page_h,
                 page_stamp_w,
                 stamp_ratio,
+                page_image,
             )
         else:
             candidates = [
@@ -585,7 +760,10 @@ def choose_placements(
                 page_w,
                 page_h,
                 anchor,
+                page_image,
             )
+        if not is_safe_rect(best_rect, word_boxes[page_index], page_image, page_w, page_h):
+            continue
         placements.append(
             Placement(
                 page_index=page_index,
@@ -611,7 +789,10 @@ def choose_placements(
             page_w,
             page_h,
             None,
+            (visual_pages or {}).get(page_index),
         )
+        if not is_safe_rect(best_rect, word_boxes[page_index], (visual_pages or {}).get(page_index), page_w, page_h):
+            return placements
         placements.append(
             Placement(
                 page_index=page_index,
@@ -635,6 +816,10 @@ def stamp_pdf(
         ratio = img.height / max(img.width, 1)
 
     anchors, word_boxes, image_boxes, page_sizes = find_anchors(input_pdf)
+    visual_page_indexes = {anchor.page_index for anchor in anchors}
+    if allow_fallback and page_sizes:
+        visual_page_indexes.add(len(page_sizes) - 1)
+    visual_pages = render_visual_pages(input_pdf, visual_page_indexes)
     placements = choose_placements(
         anchors,
         word_boxes,
@@ -643,6 +828,7 @@ def stamp_pdf(
         stamp_width,
         ratio,
         allow_fallback=allow_fallback,
+        visual_pages=visual_pages,
     )
 
     reader = PdfReader(str(input_pdf))
