@@ -16,7 +16,7 @@ from pathlib import Path
 import stamp_engine as _stamp_engine
 
 
-ENGINE_VERSION = "2026-07-08-visual-safety-v11-smaller-stamp"
+ENGINE_VERSION = "2026-07-13-fallback-all-pages-v12"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -25,6 +25,8 @@ FILE_TTL_SECONDS = int(os.environ.get("STAMP_FILE_TTL_SECONDS", str(2 * 60 * 60)
 
 
 def patch_stamp_engine() -> None:
+    original_choose_placements = _stamp_engine.choose_placements
+
     # Keep the visual placement logic in stamp_engine.py, but let the API tune
     # final size quickly when Make sends stamp_width as a broad target.
     def stamp_size_for_anchor(anchor, page_w, page_h, requested_w, ratio, image_boxes=None):
@@ -64,7 +66,172 @@ def patch_stamp_engine() -> None:
         width = max(min_width, width)
         return width, width * ratio
 
+    def fallback_candidates(page_w, page_h, stamp_w, stamp_h):
+        right_margins = [55, 85, 120, 160, 210]
+        bottom_margins = [65, 95, 130, 170, 215, 265]
+        out = []
+        for yi, bottom_margin in enumerate(bottom_margins):
+            y = page_h - stamp_h - bottom_margin
+            for xi, right_margin in enumerate(right_margins):
+                x = page_w - stamp_w - right_margin
+                out.append(
+                    (
+                        f"fallback_bottom_right_{yi}_{xi}",
+                        _stamp_engine.Box(x, y, x + stamp_w, y + stamp_h),
+                    )
+                )
+        return out
+
+    def choose_fallback_page_candidate(word_boxes, page_w, page_h, stamp_w, stamp_ratio, page_image=None):
+        attempts = [stamp_w, stamp_w * 0.90, stamp_w * 0.80, stamp_w * 0.70, stamp_w * 0.60]
+        best_any = None
+        for width in attempts:
+            width = max(52.0, width)
+            height = width * stamp_ratio
+            candidates = [
+                (reason, _stamp_engine.clamp_rect(rect, page_w, page_h))
+                for reason, rect in fallback_candidates(page_w, page_h, width, height)
+            ]
+            scored = _stamp_engine.score_candidates(candidates, word_boxes, page_w, page_h, None, page_image)
+            safe = [
+                item
+                for item in scored
+                if _stamp_engine.is_safe_rect(item[1], word_boxes, page_image, page_w, page_h)
+            ]
+            if safe:
+                reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
+                return reason, rect
+            attempt_best = max(scored, key=lambda item: item[2])
+            if best_any is None or attempt_best[2] > best_any[2]:
+                best_any = attempt_best
+        if best_any is None:
+            return None
+        return best_any[0], best_any[1]
+
+    def choose_placements(
+        anchors,
+        word_boxes,
+        image_boxes,
+        page_sizes,
+        stamp_w,
+        stamp_ratio,
+        allow_fallback=False,
+        visual_pages=None,
+    ):
+        placements = original_choose_placements(
+            anchors,
+            word_boxes,
+            image_boxes,
+            page_sizes,
+            stamp_w,
+            stamp_ratio,
+            allow_fallback=False,
+            visual_pages=visual_pages,
+        )
+        page_count = len(page_sizes)
+        if placements or not page_count or not allow_fallback:
+            return placements
+
+        for page_index in range(page_count):
+            page_w, page_h = page_sizes[page_index]
+            page_stamp_w = min(max(stamp_w, 78.0), 112.0, page_w * 0.19)
+            best = choose_fallback_page_candidate(
+                word_boxes[page_index],
+                page_w,
+                page_h,
+                page_stamp_w,
+                stamp_ratio,
+                (visual_pages or {}).get(page_index),
+            )
+            if best is None:
+                continue
+            best_reason, best_rect = best
+            placements.append(
+                _stamp_engine.Placement(
+                    page_index=page_index,
+                    rect=best_rect,
+                    score=_stamp_engine.score_rect(best_rect, word_boxes[page_index], page_w, page_h, None),
+                    anchor_phrase="FALLBACK_EACH_PAGE",
+                    reason=best_reason,
+                )
+            )
+        return placements
+
+    def stamp_pdf(input_pdf, stamp_image, output_pdf, stamp_width=175.0, allow_fallback=False):
+        with _stamp_engine.Image.open(stamp_image) as img:
+            ratio = img.height / max(img.width, 1)
+
+        anchors, word_boxes, image_boxes, page_sizes = _stamp_engine.find_anchors(input_pdf)
+        visual_page_indexes = {anchor.page_index for anchor in anchors}
+        if allow_fallback and page_sizes:
+            visual_page_indexes.update(range(len(page_sizes)))
+        visual_pages = _stamp_engine.render_visual_pages(input_pdf, visual_page_indexes)
+        placements = choose_placements(
+            anchors,
+            word_boxes,
+            image_boxes,
+            page_sizes,
+            stamp_width,
+            ratio,
+            allow_fallback=allow_fallback,
+            visual_pages=visual_pages,
+        )
+
+        reader = _stamp_engine.PdfReader(str(input_pdf))
+        writer = _stamp_engine.PdfWriter()
+        stamp_reader = _stamp_engine.ImageReader(str(stamp_image))
+
+        placement_by_page = {p.page_index: p for p in placements}
+        for page_index, page in enumerate(reader.pages):
+            if page_index not in placement_by_page:
+                writer.add_page(page)
+                continue
+
+            page_w = float(page.mediabox.width)
+            page_h = float(page.mediabox.height)
+            p = placement_by_page[page_index]
+            packet = _stamp_engine.io.BytesIO()
+            c = _stamp_engine.canvas.Canvas(packet, pagesize=(page_w, page_h))
+            x = p.rect.x0
+            y = page_h - p.rect.bottom
+            c.drawImage(stamp_reader, x, y, width=p.rect.width, height=p.rect.height, mask="auto")
+            c.save()
+            packet.seek(0)
+            overlay = _stamp_engine.PdfReader(packet).pages[0]
+            page.merge_page(overlay)
+            writer.add_page(page)
+
+        output_pdf.parent.mkdir(parents=True, exist_ok=True)
+        with output_pdf.open("wb") as f:
+            writer.write(f)
+
+        return {
+            "input": str(input_pdf),
+            "output": str(output_pdf),
+            "placements": [
+                {
+                    "page": p.page_index + 1,
+                    "rect_top_left": {
+                        "x0": round(p.rect.x0, 2),
+                        "top": round(p.rect.top, 2),
+                        "x1": round(p.rect.x1, 2),
+                        "bottom": round(p.rect.bottom, 2),
+                    },
+                    "score": round(p.score, 2),
+                    "anchor": p.anchor_phrase,
+                    "reason": p.reason,
+                }
+                for p in placements
+            ],
+            "anchor_count": len(anchors),
+            "stamped": bool(placements),
+            "needs_review": not bool(placements),
+        }
+
     _stamp_engine.stamp_size_for_anchor = stamp_size_for_anchor
+    _stamp_engine.fallback_candidates = fallback_candidates
+    _stamp_engine.choose_placements = choose_placements
+    _stamp_engine.stamp_pdf = stamp_pdf
 
 
 patch_stamp_engine()
@@ -208,7 +375,10 @@ class StampHandler(BaseHTTPRequestHandler):
                 raise ValueError("pdf_url si stamp_url sunt obligatorii.")
 
             stamp_width = float(payload.get("stamp_width", 175.0))
-            allow_fallback = bool(payload.get("allow_fallback", False))
+            # Fallback is now a required safety behavior: if no clear carrier
+            # confirmation zone is found, stamp every page in the safest
+            # bottom-right free area instead of returning needs_review.
+            allow_fallback = True
             filename = clean_filename(str(payload.get("filename", "comanda_stampilata.pdf")))
 
             input_pdf = work_dir / "input.pdf"
