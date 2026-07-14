@@ -16,7 +16,7 @@ from pathlib import Path
 import stamp_engine as _stamp_engine
 
 
-ENGINE_VERSION = "2026-07-13-fallback-all-pages-v12"
+ENGINE_VERSION = "2026-07-14-repeated-carrier-block-v13"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -26,6 +26,59 @@ FILE_TTL_SECONDS = int(os.environ.get("STAMP_FILE_TTL_SECONDS", str(2 * 60 * 60)
 
 def patch_stamp_engine() -> None:
     original_choose_placements = _stamp_engine.choose_placements
+
+    def select_transporter_signature_anchors(anchors, word_boxes, image_boxes, page_sizes):
+        signature_anchors = [
+            anchor
+            for anchor in anchors
+            if anchor.phrase in _stamp_engine.TRANSPORTER_NAME_TARGETS
+            and _stamp_engine.is_signature_block_anchor(
+                anchor,
+                *page_sizes[anchor.page_index],
+            )
+        ]
+        page_indexes = {anchor.page_index for anchor in signature_anchors}
+        if len(page_indexes) <= 1:
+            return None
+
+        anchors_by_page = {}
+        reference_pages = set()
+        for anchor in signature_anchors:
+            anchors_by_page.setdefault(anchor.page_index, []).append(anchor)
+            if _stamp_engine.reference_stamp_box(
+                anchor,
+                image_boxes[anchor.page_index],
+            ) is not None:
+                reference_pages.add(anchor.page_index)
+
+        if reference_pages:
+            chosen_pages = reference_pages
+        else:
+            def page_rank(page_index):
+                page_w, page_h = page_sizes[page_index]
+                anchor = max(
+                    anchors_by_page[page_index],
+                    key=lambda item: _stamp_engine.anchor_rank(item, page_w, page_h),
+                )
+                free_below = page_h - _stamp_engine.signature_block_text_bottom(
+                    anchor,
+                    word_boxes[page_index],
+                    page_w,
+                )
+                return free_below >= 72.0, page_index, free_below
+
+            chosen_pages = {max(page_indexes, key=page_rank)}
+
+        return [
+            max(
+                anchors_by_page[page_index],
+                key=lambda item: _stamp_engine.anchor_rank(
+                    item,
+                    *page_sizes[page_index],
+                ),
+            )
+            for page_index in sorted(chosen_pages)
+        ]
 
     # Keep the visual placement logic in stamp_engine.py, but let the API tune
     # final size quickly when Make sends stamp_width as a broad target.
@@ -118,8 +171,15 @@ def patch_stamp_engine() -> None:
         allow_fallback=False,
         visual_pages=None,
     ):
-        placements = original_choose_placements(
+        selected_signature_anchors = select_transporter_signature_anchors(
             anchors,
+            word_boxes,
+            image_boxes,
+            page_sizes,
+        )
+        placement_anchors = selected_signature_anchors or anchors
+        placements = original_choose_placements(
+            placement_anchors,
             word_boxes,
             image_boxes,
             page_sizes,
@@ -230,6 +290,7 @@ def patch_stamp_engine() -> None:
 
     _stamp_engine.stamp_size_for_anchor = stamp_size_for_anchor
     _stamp_engine.fallback_candidates = fallback_candidates
+    _stamp_engine.select_transporter_signature_anchors = select_transporter_signature_anchors
     _stamp_engine.choose_placements = choose_placements
     _stamp_engine.stamp_pdf = stamp_pdf
 
@@ -447,3 +508,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
