@@ -16,7 +16,7 @@ from pathlib import Path
 import stamp_engine as _stamp_engine
 
 
-ENGINE_VERSION = "2026-07-14-repeated-carrier-block-v13"
+ENGINE_VERSION = "2026-07-14-all-carrier-pages-v14"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -26,6 +26,29 @@ FILE_TTL_SECONDS = int(os.environ.get("STAMP_FILE_TTL_SECONDS", str(2 * 60 * 60)
 
 def patch_stamp_engine() -> None:
     original_choose_placements = _stamp_engine.choose_placements
+
+    def looks_like_carrier_signature_block(box, page_w, page_h):
+        in_lower_page = page_h * 0.52 < box.top < page_h * 0.90
+        in_side_column = box.x0 < page_w * 0.42 or box.x1 > page_w * 0.58
+        return in_lower_page and in_side_column
+
+    def signature_block_text_bottom(anchor, word_boxes, page_w):
+        bottom = anchor.box.bottom
+        anchor_center = (anchor.box.x0 + anchor.box.x1) / 2
+        column_pad = max(45.0, page_w * 0.18)
+        for box in word_boxes:
+            same_side = (
+                box.x1 < page_w * 0.56
+                if anchor_center < page_w * 0.50
+                else box.x0 > page_w * 0.44
+            )
+            near_column = (
+                box.x1 >= anchor.box.x0 - column_pad
+                and box.x0 <= anchor.box.x1 + column_pad
+            )
+            if same_side and near_column and anchor.box.top - 30 <= box.top <= anchor.box.top + 55:
+                bottom = max(bottom, box.bottom)
+        return bottom
 
     def select_transporter_signature_anchors(anchors, word_boxes, image_boxes, page_sizes):
         signature_anchors = [
@@ -38,36 +61,12 @@ def patch_stamp_engine() -> None:
             )
         ]
         page_indexes = {anchor.page_index for anchor in signature_anchors}
-        if len(page_indexes) <= 1:
+        if not page_indexes:
             return None
 
         anchors_by_page = {}
-        reference_pages = set()
         for anchor in signature_anchors:
             anchors_by_page.setdefault(anchor.page_index, []).append(anchor)
-            if _stamp_engine.reference_stamp_box(
-                anchor,
-                image_boxes[anchor.page_index],
-            ) is not None:
-                reference_pages.add(anchor.page_index)
-
-        if reference_pages:
-            chosen_pages = reference_pages
-        else:
-            def page_rank(page_index):
-                page_w, page_h = page_sizes[page_index]
-                anchor = max(
-                    anchors_by_page[page_index],
-                    key=lambda item: _stamp_engine.anchor_rank(item, page_w, page_h),
-                )
-                free_below = page_h - _stamp_engine.signature_block_text_bottom(
-                    anchor,
-                    word_boxes[page_index],
-                    page_w,
-                )
-                return free_below >= 72.0, page_index, free_below
-
-            chosen_pages = {max(page_indexes, key=page_rank)}
 
         return [
             max(
@@ -77,8 +76,98 @@ def patch_stamp_engine() -> None:
                     *page_sizes[page_index],
                 ),
             )
-            for page_index in sorted(chosen_pages)
+            for page_index in sorted(page_indexes)
         ]
+
+    def choose_signature_block_candidate(
+        anchor,
+        word_boxes,
+        image_boxes,
+        page_w,
+        page_h,
+        stamp_w,
+        stamp_h,
+        page_image=None,
+    ):
+        ref = _stamp_engine.reference_stamp_box(anchor, image_boxes)
+        text_bottom = signature_block_text_bottom(anchor, word_boxes, page_w)
+        best_any = None
+        ratio = stamp_h / max(stamp_w, 1.0)
+        for scale in (1.0, 0.92, 0.84, 0.76, 0.68, 0.60, 0.52):
+            width = max(58.0, stamp_w * scale)
+            height = width * ratio
+            anchor_center = (anchor.box.x0 + anchor.box.x1) / 2
+            if anchor_center < page_w * 0.50:
+                center_x = max(anchor_center, width / 2 + 35)
+            else:
+                center_x = min(
+                    max(anchor_center, page_w * 0.64),
+                    page_w - width / 2 - 35,
+                )
+            x = center_x - width / 2
+            preferred_top = text_bottom + 3
+            if ref is not None:
+                ref_centered_top = ref.top + (ref.height - height) / 2
+                preferred_top = max(preferred_top, ref_centered_top, ref.top + 3)
+            aligned_x = min(max(anchor.box.x0, 28), page_w - width - 28)
+            candidates = [
+                (
+                    "below_signature_block_match_client",
+                    _stamp_engine.Box(x, preferred_top, x + width, preferred_top + height),
+                ),
+                (
+                    "below_signature_block_aligned",
+                    _stamp_engine.Box(aligned_x, preferred_top, aligned_x + width, preferred_top + height),
+                ),
+                (
+                    "signature_block_lower",
+                    _stamp_engine.Box(x, preferred_top + 18, x + width, preferred_top + 18 + height),
+                ),
+            ]
+            if ref is not None:
+                aligned_top = max(text_bottom + 3, ref.top + (ref.height - height) / 2)
+                candidates.append(
+                    (
+                        "signature_block_align_client_stamp",
+                        _stamp_engine.Box(
+                            aligned_x,
+                            aligned_top,
+                            aligned_x + width,
+                            aligned_top + height,
+                        ),
+                    )
+                )
+            candidates = [
+                (reason, _stamp_engine.clamp_rect(rect, page_w, page_h))
+                for reason, rect in candidates
+            ]
+            scored = _stamp_engine.score_candidates(
+                candidates,
+                word_boxes,
+                page_w,
+                page_h,
+                anchor,
+                page_image,
+            )
+            safe = [
+                item
+                for item in scored
+                if _stamp_engine.is_safe_rect(
+                    item[1],
+                    word_boxes,
+                    page_image,
+                    page_w,
+                    page_h,
+                )
+                and item[1].top >= text_bottom + 2
+            ]
+            if safe:
+                reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
+                return reason, rect
+            attempt_best = max(scored, key=lambda item: item[2])
+            if best_any is None or attempt_best[2] > best_any[2]:
+                best_any = attempt_best
+        return best_any[0], best_any[1]
 
     # Keep the visual placement logic in stamp_engine.py, but let the API tune
     # final size quickly when Make sends stamp_width as a broad target.
@@ -290,6 +379,9 @@ def patch_stamp_engine() -> None:
 
     _stamp_engine.stamp_size_for_anchor = stamp_size_for_anchor
     _stamp_engine.fallback_candidates = fallback_candidates
+    _stamp_engine.looks_like_carrier_signature_block = looks_like_carrier_signature_block
+    _stamp_engine.signature_block_text_bottom = signature_block_text_bottom
+    _stamp_engine.choose_signature_block_candidate = choose_signature_block_candidate
     _stamp_engine.select_transporter_signature_anchors = select_transporter_signature_anchors
     _stamp_engine.choose_placements = choose_placements
     _stamp_engine.stamp_pdf = stamp_pdf
