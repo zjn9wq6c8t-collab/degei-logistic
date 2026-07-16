@@ -256,7 +256,9 @@ def looks_like_carrier_footer(box: Box, page_w: float, page_h: float) -> bool:
 
 
 def looks_like_carrier_signature_block(box: Box, page_w: float, page_h: float) -> bool:
-    return page_h * 0.38 < box.top < page_h * 0.88 and box.x0 > page_w * 0.46
+    in_lower_page = page_h * 0.52 < box.top < page_h * 0.90
+    in_side_column = box.x0 < page_w * 0.42 or box.x1 > page_w * 0.58
+    return in_lower_page and in_side_column
 
 
 def looks_like_supplier_signature_heading(box: Box, page_w: float, page_h: float) -> bool:
@@ -322,18 +324,64 @@ def reference_stamp_box(anchor: Anchor, image_boxes: list[Box]) -> Box | None:
         ]
         if candidates:
             return max(candidates, key=lambda b: b.area)
-    candidates = [
-        box
-        for box in image_boxes
-        if 45 <= box.width <= 150
-        and 45 <= box.height <= 150
-        and 0.55 <= box.width / max(box.height, 1.0) <= 1.55
-        and box.x1 < anchor.box.x0 - 18
-        and abs(((box.top + box.bottom) / 2) - ((anchor.box.top + anchor.box.bottom) / 2)) < 170
-    ]
+    candidates = []
+    for box in image_boxes:
+        ratio = box.width / max(box.height, 1.0)
+        if not (
+            40 <= box.width <= 190
+            and 40 <= box.height <= 190
+            and 0.40 <= ratio <= 2.20
+        ):
+            continue
+
+        # Client stamps are normally in the opposite signature column. Support
+        # both layouts: client on the left / carrier on the right and vice versa.
+        opposite_column = box.x1 < anchor.box.x0 - 8 or box.x0 > anchor.box.x1 + 8
+        vertical_distance = abs(
+            ((box.top + box.bottom) / 2)
+            - (anchor.box.bottom + 35)
+        )
+        if opposite_column and vertical_distance < 170:
+            candidates.append(box)
     if not candidates:
         return None
-    return max(candidates, key=lambda b: b.area)
+
+    def reference_rank(box: Box) -> tuple[float, float, float]:
+        if box.x1 < anchor.box.x0:
+            horizontal_gap = anchor.box.x0 - box.x1
+        else:
+            horizontal_gap = box.x0 - anchor.box.x1
+        vertical_distance = abs(
+            ((box.top + box.bottom) / 2)
+            - (anchor.box.bottom + 35)
+        )
+        return (-vertical_distance, -horizontal_gap, box.area)
+
+    return max(candidates, key=reference_rank)
+
+
+def is_paired_signature_anchor(
+    anchor: Anchor,
+    image_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+) -> bool:
+    """Detect a carrier signature column paired with an existing client stamp."""
+    if anchor.phrase not in TRANSPORTER_NAME_TARGETS:
+        return False
+    if not (page_h * 0.10 < anchor.box.top < page_h * 0.92):
+        return False
+    in_side_column = anchor.box.x0 > page_w * 0.52 or anchor.box.x1 < page_w * 0.48
+    if not in_side_column:
+        return False
+    ref = reference_stamp_box(anchor, image_boxes)
+    if ref is None:
+        return False
+    if ref.x1 < anchor.box.x0:
+        gap = anchor.box.x0 - ref.x1
+    else:
+        gap = ref.x0 - anchor.box.x1
+    return gap <= page_w * 0.35
 
 
 def stamp_size_for_anchor(
@@ -347,16 +395,19 @@ def stamp_size_for_anchor(
     # Make sends a pixel-like target width. Convert it to a professional PDF size
     # based on the signature zone so it matches client stamps instead of dominating them.
     requested_w = max(70.0, requested_w)
-    ref = reference_stamp_box(anchor, image_boxes or []) if is_signature_block_anchor(anchor, page_w, page_h) else None
+    ref = None
+    if anchor.phrase in TRANSPORTER_NAME_TARGETS or is_signature_block_anchor(anchor, page_w, page_h):
+        ref = reference_stamp_box(anchor, image_boxes or [])
     if ref is not None:
-        target_height = min(max(ref.height * 1.08, 70.0), 94.0, page_h * 0.13)
-        width = min(
-            max(target_height / max(ratio, 0.1), ref.width * 1.08, 108.0),
-            188.0,
-            page_w * 0.32,
-        )
-        max_height = 94.0
-        min_width = min(108.0, page_w * 0.24)
+        # The production artwork is wide while its circular seal occupies only
+        # part of that width. Match the visible seal to the client's seal, not
+        # the full square image bounding box.
+        target_height = min(max(ref.height * 0.42, 38.0), 54.0, page_h * 0.075)
+        lower_width = max(88.0, requested_w * 0.88)
+        upper_width = min(125.0, requested_w * 1.08, page_w * 0.22)
+        width = min(max(target_height / max(ratio, 0.1), lower_width), upper_width)
+        max_height = 56.0
+        min_width = min(lower_width, page_w * 0.20)
     elif anchor.phrase in SUPPLIER_SIGNATURE_TARGETS:
         width = min(requested_w, 118.0, page_w * 0.20)
         max_height = 58.0
@@ -439,21 +490,77 @@ def placement_candidates(anchor: Anchor, page_w: float, page_h: float, stamp_w: 
 
 
 def fallback_candidates(page_w: float, page_h: float, stamp_w: float, stamp_h: float) -> list[tuple[str, Box]]:
-    xs = [page_w - stamp_w - 60, page_w - stamp_w - 130, page_w * 0.52]
-    ys = [page_h - stamp_h - 90, page_h - stamp_h - 170, page_h * 0.56, page_h * 0.46]
+    right_margins = [55, 85, 120, 160, 210]
+    bottom_margins = [65, 95, 130, 170, 215, 265]
     out = []
-    for yi, y in enumerate(ys):
-        for xi, x in enumerate(xs):
-            out.append((f"fallback_{yi}_{xi}", Box(x, y, x + stamp_w, y + stamp_h)))
+    for yi, bottom_margin in enumerate(bottom_margins):
+        y = page_h - stamp_h - bottom_margin
+        for xi, right_margin in enumerate(right_margins):
+            x = page_w - stamp_w - right_margin
+            out.append((f"fallback_bottom_right_{yi}_{xi}", Box(x, y, x + stamp_w, y + stamp_h)))
     return out
 
 
 def signature_block_text_bottom(anchor: Anchor, word_boxes: list[Box], page_w: float) -> float:
     bottom = anchor.box.bottom
+    anchor_center = (anchor.box.x0 + anchor.box.x1) / 2
+    column_pad = max(45.0, page_w * 0.18)
     for box in word_boxes:
-        if box.x0 > page_w * 0.45 and anchor.box.top - 8 <= box.top <= anchor.box.top + 65:
+        same_side = (
+            box.x1 < page_w * 0.56
+            if anchor_center < page_w * 0.50
+            else box.x0 > page_w * 0.44
+        )
+        near_column = (
+            box.x1 >= anchor.box.x0 - column_pad
+            and box.x0 <= anchor.box.x1 + column_pad
+        )
+        # Include the company/contact lines immediately under the carrier name,
+        # but never unrelated text farther down the page.
+        in_signature_lines = (
+            anchor.box.top - 10
+            <= box.top
+            <= anchor.box.bottom + 34
+        )
+        if same_side and near_column and in_signature_lines:
             bottom = max(bottom, box.bottom)
     return bottom
+
+
+def select_transporter_signature_anchors(
+    anchors: list[Anchor],
+    word_boxes: list[list[Box]],
+    image_boxes: list[list[Box]],
+    page_sizes: list[tuple[float, float]],
+) -> list[Anchor] | None:
+    """Return one carrier signature anchor for every page that contains one."""
+    signature_anchors = []
+    for anchor in anchors:
+        if anchor.phrase not in TRANSPORTER_NAME_TARGETS:
+            continue
+        page_w, page_h = page_sizes[anchor.page_index]
+        if is_signature_block_anchor(anchor, page_w, page_h) or is_paired_signature_anchor(
+            anchor,
+            image_boxes[anchor.page_index],
+            page_w,
+            page_h,
+        ):
+            signature_anchors.append(anchor)
+    page_indexes = {anchor.page_index for anchor in signature_anchors}
+    if not page_indexes:
+        return None
+
+    anchors_by_page: dict[int, list[Anchor]] = {}
+    for anchor in signature_anchors:
+        anchors_by_page.setdefault(anchor.page_index, []).append(anchor)
+
+    return [
+        max(
+            anchors_by_page[page_index],
+            key=lambda item: anchor_rank(item, *page_sizes[page_index]),
+        )
+        for page_index in sorted(page_indexes)
+    ]
 
 
 def render_visual_pages(pdf_path: Path, page_indexes: set[int], dpi: int = 120) -> dict[int, Image.Image]:
@@ -530,25 +637,58 @@ def choose_signature_block_candidate(
     ref = reference_stamp_box(anchor, image_boxes)
     text_bottom = signature_block_text_bottom(anchor, word_boxes, page_w)
     best_any: tuple[str, Box, float, float] | None = None
-    for scale in (1.0, 0.92, 0.84, 0.76):
-        width = max(82.0, stamp_w * scale)
+    for scale in (1.0, 0.92, 0.84, 0.76, 0.68, 0.60, 0.52):
+        width = max(58.0, stamp_w * scale)
         height = width * (stamp_h / max(stamp_w, 1.0))
-        center_x = min(max((anchor.box.x0 + anchor.box.x1) / 2, page_w * 0.64), page_w - width / 2 - 35)
+        anchor_center = (anchor.box.x0 + anchor.box.x1) / 2
+        if anchor_center < page_w * 0.50:
+            center_x = max(anchor_center, width / 2 + 35)
+        else:
+            center_x = min(
+                max(anchor_center, page_w * 0.64),
+                page_w - width / 2 - 35,
+            )
         x = center_x - width / 2
-        preferred_top = text_bottom + 8
+        preferred_top = text_bottom + 3
         if ref is not None:
             ref_centered_top = ref.top + (ref.height - height) / 2
-            preferred_top = max(preferred_top, ref_centered_top, ref.top + 6)
-        right_x = min(max(anchor.box.x0, 28), page_w - width - 28)
-        candidates = [
-            ("below_signature_block_match_client", Box(x, preferred_top, x + width, preferred_top + height)),
-            ("below_signature_block_right", Box(right_x, preferred_top, right_x + width, preferred_top + height)),
-            ("signature_block_lower", Box(x, preferred_top + 18, x + width, preferred_top + 18 + height)),
-        ]
+            preferred_top = max(preferred_top, ref_centered_top)
+        aligned_x = min(max(anchor.box.x0, 28), page_w - width - 28)
+        candidates = []
         if ref is not None:
-            aligned_top = max(text_bottom + 8, ref.top + (ref.height - height) / 2)
-            candidates.append(
-                ("signature_block_align_client_stamp", Box(right_x, aligned_top, right_x + width, aligned_top + height))
+            aligned_top = max(text_bottom + 3, ref.top + (ref.height - height) / 2)
+            candidates.extend(
+                [
+                    (
+                        "signature_block_align_client_stamp",
+                        Box(aligned_x, aligned_top, aligned_x + width, aligned_top + height),
+                    ),
+                    (
+                        "below_signature_block_match_client",
+                        Box(x, aligned_top, x + width, aligned_top + height),
+                    ),
+                    (
+                        "signature_block_client_higher",
+                        Box(
+                            aligned_x,
+                            max(text_bottom + 3, aligned_top - 10),
+                            aligned_x + width,
+                            max(text_bottom + 3, aligned_top - 10) + height,
+                        ),
+                    ),
+                    (
+                        "signature_block_client_lower",
+                        Box(aligned_x, aligned_top + 10, aligned_x + width, aligned_top + 10 + height),
+                    ),
+                ]
+            )
+        else:
+            candidates.extend(
+                [
+                    ("below_signature_block_match_client", Box(x, preferred_top, x + width, preferred_top + height)),
+                    ("below_signature_block_aligned", Box(aligned_x, preferred_top, aligned_x + width, preferred_top + height)),
+                    ("signature_block_lower", Box(x, preferred_top + 18, x + width, preferred_top + 18 + height)),
+                ]
             )
         safe_candidates = [
             (reason, clamp_rect(rect, page_w, page_h))
@@ -632,7 +772,9 @@ def score_candidates(
 ) -> list[tuple[str, Box, float, float]]:
     reason_bonus = {
         "below_signature_block_match_client": 220.0,
-        "signature_block_align_client_stamp": 210.0,
+        "signature_block_align_client_stamp": 340.0,
+        "signature_block_client_higher": 230.0,
+        "signature_block_client_lower": 170.0,
         "below_signature_block_right": 170.0,
         "signature_block_lower": 80.0,
         "above_signature_label_center": 180.0,
@@ -693,6 +835,39 @@ def choose_footer_candidate(
     return best_any[0], best_any[1]
 
 
+def choose_fallback_page_candidate(
+    word_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+    stamp_w: float,
+    stamp_ratio: float,
+    page_image: Image.Image | None = None,
+) -> tuple[str, Box] | None:
+    attempts = [stamp_w, stamp_w * 0.90, stamp_w * 0.80, stamp_w * 0.70, stamp_w * 0.60]
+    best_any: tuple[str, Box, float, float] | None = None
+    for width in attempts:
+        width = max(52.0, width)
+        height = width * stamp_ratio
+        candidates = [
+            (reason, clamp_rect(rect, page_w, page_h))
+            for reason, rect in fallback_candidates(page_w, page_h, width, height)
+        ]
+        scored = score_candidates(candidates, word_boxes, page_w, page_h, None, page_image)
+        safe = [
+            item for item in scored
+            if is_safe_rect(item[1], word_boxes, page_image, page_w, page_h)
+        ]
+        if safe:
+            reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
+            return reason, rect
+        attempt_best = max(scored, key=lambda item: item[2])
+        if best_any is None or attempt_best[2] > best_any[2]:
+            best_any = attempt_best
+    if best_any is None:
+        return None
+    return best_any[0], best_any[1]
+
+
 def choose_placements(
     anchors: list[Anchor],
     word_boxes: list[list[Box]],
@@ -705,7 +880,13 @@ def choose_placements(
 ) -> list[Placement]:
     placements: list[Placement] = []
     page_count = len(page_sizes)
-    high_anchors = [a for a in anchors if a.score >= 95]
+    selected_signature_anchors = select_transporter_signature_anchors(
+        anchors,
+        word_boxes,
+        image_boxes,
+        page_sizes,
+    )
+    high_anchors = selected_signature_anchors or [a for a in anchors if a.score >= 95]
     if not high_anchors:
         high_anchors = sorted(anchors, key=lambda a: a.score, reverse=True)[:1]
 
@@ -728,7 +909,11 @@ def choose_placements(
             stamp_ratio,
             image_boxes[page_index],
         )
-        if is_signature_block_anchor(anchor, page_w, page_h):
+        is_selected_signature = bool(
+            selected_signature_anchors
+            and anchor in selected_signature_anchors
+        )
+        if is_signature_block_anchor(anchor, page_w, page_h) or is_selected_signature:
             best_reason, best_rect = choose_signature_block_candidate(
                 anchor,
                 word_boxes[page_index],
@@ -774,34 +959,35 @@ def choose_placements(
             )
         )
 
+    # Never return a partially confirmed document when several carrier
+    # signature pages were detected. Make will route an empty result to review.
+    if selected_signature_anchors and len(placements) != len(selected_signature_anchors):
+        return []
+
     if not placements and page_count and allow_fallback:
-        page_index = page_count - 1
-        page_w, page_h = page_sizes[page_index]
-        page_stamp_w = min(max(stamp_w, 78.0), 112.0, page_w * 0.19)
-        page_stamp_h = page_stamp_w * stamp_ratio
-        candidates = [
-            (reason, clamp_rect(rect, page_w, page_h))
-            for reason, rect in fallback_candidates(page_w, page_h, page_stamp_w, page_stamp_h)
-        ]
-        best_reason, best_rect = choose_best_candidate(
-            candidates,
-            word_boxes[page_index],
-            page_w,
-            page_h,
-            None,
-            (visual_pages or {}).get(page_index),
-        )
-        if not is_safe_rect(best_rect, word_boxes[page_index], (visual_pages or {}).get(page_index), page_w, page_h):
-            return placements
-        placements.append(
-            Placement(
-                page_index=page_index,
-                rect=best_rect,
-                score=score_rect(best_rect, word_boxes[page_index], page_w, page_h, None),
-                anchor_phrase="FALLBACK_LAST_PAGE",
-                reason=best_reason,
+        for page_index in range(page_count):
+            page_w, page_h = page_sizes[page_index]
+            page_stamp_w = min(max(stamp_w, 78.0), 112.0, page_w * 0.19)
+            best = choose_fallback_page_candidate(
+                word_boxes[page_index],
+                page_w,
+                page_h,
+                page_stamp_w,
+                stamp_ratio,
+                (visual_pages or {}).get(page_index),
             )
-        )
+            if best is None:
+                continue
+            best_reason, best_rect = best
+            placements.append(
+                Placement(
+                    page_index=page_index,
+                    rect=best_rect,
+                    score=score_rect(best_rect, word_boxes[page_index], page_w, page_h, None),
+                    anchor_phrase="FALLBACK_EACH_PAGE",
+                    reason=best_reason,
+                )
+            )
     return placements
 
 
@@ -818,7 +1004,7 @@ def stamp_pdf(
     anchors, word_boxes, image_boxes, page_sizes = find_anchors(input_pdf)
     visual_page_indexes = {anchor.page_index for anchor in anchors}
     if allow_fallback and page_sizes:
-        visual_page_indexes.add(len(page_sizes) - 1)
+        visual_page_indexes.update(range(len(page_sizes)))
     visual_pages = render_visual_pages(input_pdf, visual_page_indexes)
     placements = choose_placements(
         anchors,
@@ -898,3 +1084,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
