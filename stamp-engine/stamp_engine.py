@@ -156,19 +156,27 @@ def group_lines(words: list[dict]) -> list[dict]:
     return packed
 
 
-def phrase_box(line_words: list[dict], phrase: str) -> Box | None:
+def phrase_boxes(line_words: list[dict], phrase: str) -> list[Box]:
     norm_words = [norm(str(w.get("text", ""))) for w in line_words]
     phrase_words = phrase.split()
+    matches: list[Box] = []
     for start in range(0, len(norm_words) - len(phrase_words) + 1):
         if norm_words[start : start + len(phrase_words)] == phrase_words:
             matched = line_words[start : start + len(phrase_words)]
-            return Box(
-                min(float(w["x0"]) for w in matched),
-                min(float(w["top"]) for w in matched),
-                max(float(w["x1"]) for w in matched),
-                max(float(w["bottom"]) for w in matched),
+            matches.append(
+                Box(
+                    min(float(w["x0"]) for w in matched),
+                    min(float(w["top"]) for w in matched),
+                    max(float(w["x1"]) for w in matched),
+                    max(float(w["bottom"]) for w in matched),
+                )
             )
-    return None
+    return matches
+
+
+def phrase_box(line_words: list[dict], phrase: str) -> Box | None:
+    matches = phrase_boxes(line_words, phrase)
+    return matches[0] if matches else None
 
 
 def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[list[Box]], list[tuple[float, float]]]:
@@ -204,8 +212,12 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                 line_norm = line["norm"]
                 for phrase, base_score in TARGET_PHRASES:
                     if contains_phrase(line_norm, phrase):
+                        matched_boxes = phrase_boxes(line["words"], phrase)
+                        if not matched_boxes:
+                            matched_boxes = [line["box"]]
                         if phrase in SIGNATURE_LABEL_TARGETS and (
-                            len(line_norm) > 55 or line["box"].width > page.width * 0.55
+                            len(matched_boxes) == 1
+                            and (len(line_norm) > 55 or line["box"].width > page.width * 0.55)
                         ):
                             continue
                         # Generic words appear often in legal/payment paragraphs. They are valid
@@ -215,39 +227,39 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                                 continue
                             if line["box"].width > page.width * 0.42:
                                 continue
-                        anchor_box = phrase_box(line["words"], phrase) or line["box"]
-                        score = base_score
-                        if page_index == len(pdf.pages) - 1:
-                            score += 15
-                        if anchor_box.top > page.height * 0.45:
-                            score += 8
-                        if phrase in FOOTER_TARGETS and looks_like_carrier_footer(
-                            anchor_box,
-                            float(page.width),
-                            float(page.height),
-                        ):
-                            score += 65
-                        if phrase in TRANSPORTER_NAME_TARGETS and looks_like_carrier_signature_block(
-                            anchor_box,
-                            float(page.width),
-                            float(page.height),
-                        ):
-                            score += 95
-                        if phrase in SUPPLIER_SIGNATURE_TARGETS and looks_like_supplier_signature_heading(
-                            anchor_box,
-                            float(page.width),
-                            float(page.height),
-                        ):
-                            score += 180
-                        anchors.append(
-                            Anchor(
-                                page_index=page_index,
-                                box=anchor_box,
-                                score=score,
-                                phrase=phrase,
-                                line_text=line["text"],
+                        for anchor_box in matched_boxes:
+                            score = base_score
+                            if page_index == len(pdf.pages) - 1:
+                                score += 15
+                            if anchor_box.top > page.height * 0.45:
+                                score += 8
+                            if phrase in FOOTER_TARGETS and looks_like_carrier_footer(
+                                anchor_box,
+                                float(page.width),
+                                float(page.height),
+                            ):
+                                score += 65
+                            if phrase in TRANSPORTER_NAME_TARGETS and looks_like_carrier_signature_block(
+                                anchor_box,
+                                float(page.width),
+                                float(page.height),
+                            ):
+                                score += 95
+                            if phrase in SUPPLIER_SIGNATURE_TARGETS and looks_like_supplier_signature_heading(
+                                anchor_box,
+                                float(page.width),
+                                float(page.height),
+                            ):
+                                score += 180
+                            anchors.append(
+                                Anchor(
+                                    page_index=page_index,
+                                    box=anchor_box,
+                                    score=score,
+                                    phrase=phrase,
+                                    line_text=line["text"],
+                                )
                             )
-                        )
     return anchors, all_word_boxes, all_image_boxes, page_sizes
 
 
