@@ -16,7 +16,7 @@ from pathlib import Path
 import stamp_engine as _stamp_engine
 
 
-ENGINE_VERSION = "2026-07-16-paired-signature-v15"
+ENGINE_VERSION = "2026-07-22-explicit-signature-v17"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -28,7 +28,11 @@ def patch_stamp_engine() -> None:
     original_choose_placements = _stamp_engine.choose_placements
 
     def looks_like_carrier_signature_block(box, page_w, page_h):
-        in_lower_page = page_h * 0.52 < box.top < page_h * 0.90
+        # Some order templates place the carrier confirmation footer almost
+        # against the physical bottom edge. Keep these anchors eligible so a
+        # repeated footer is stamped on every matching page, not only on pages
+        # where the footer happens to sit a few points higher.
+        in_lower_page = page_h * 0.52 < box.top < page_h * 0.975
         in_side_column = box.x0 < page_w * 0.42 or box.x1 > page_w * 0.58
         return in_lower_page and in_side_column
 
@@ -299,6 +303,59 @@ def patch_stamp_engine() -> None:
         allow_fallback=False,
         visual_pages=None,
     ):
+        explicit_signature_anchors = _stamp_engine.select_explicit_signature_anchors(
+            anchors,
+            word_boxes,
+            page_sizes,
+        )
+        if explicit_signature_anchors:
+            explicit_placements = []
+            for anchor in explicit_signature_anchors:
+                page_index = anchor.page_index
+                page_w, page_h = page_sizes[page_index]
+                page_image = (visual_pages or {}).get(page_index)
+                page_stamp_w, page_stamp_h = stamp_size_for_anchor(
+                    anchor,
+                    page_w,
+                    page_h,
+                    stamp_w,
+                    stamp_ratio,
+                    image_boxes[page_index],
+                )
+                best_reason, best_rect = _stamp_engine.choose_explicit_signature_candidate(
+                    anchor,
+                    word_boxes[page_index],
+                    page_w,
+                    page_h,
+                    page_stamp_w,
+                    page_stamp_h,
+                    page_image,
+                )
+                if not _stamp_engine.is_safe_rect(
+                    best_rect,
+                    word_boxes[page_index],
+                    page_image,
+                    page_w,
+                    page_h,
+                ):
+                    return []
+                explicit_placements.append(
+                    _stamp_engine.Placement(
+                        page_index=page_index,
+                        rect=best_rect,
+                        score=_stamp_engine.score_rect(
+                            best_rect,
+                            word_boxes[page_index],
+                            page_w,
+                            page_h,
+                            anchor,
+                        ),
+                        anchor_phrase=anchor.phrase,
+                        reason=best_reason,
+                    )
+                )
+            return explicit_placements
+
         selected_signature_anchors = select_transporter_signature_anchors(
             anchors,
             word_boxes,
