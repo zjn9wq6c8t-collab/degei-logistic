@@ -256,7 +256,9 @@ def looks_like_carrier_footer(box: Box, page_w: float, page_h: float) -> bool:
 
 
 def looks_like_carrier_signature_block(box: Box, page_w: float, page_h: float) -> bool:
-    in_lower_page = page_h * 0.52 < box.top < page_h * 0.90
+    # Printed order footers can sit below 90% of the page height. They still
+    # represent a valid carrier signature block when they are in a side column.
+    in_lower_page = page_h * 0.52 < box.top < page_h * 0.975
     in_side_column = box.x0 < page_w * 0.42 or box.x1 > page_w * 0.58
     return in_lower_page and in_side_column
 
@@ -369,7 +371,7 @@ def is_paired_signature_anchor(
     """Detect a carrier signature column paired with an existing client stamp."""
     if anchor.phrase not in TRANSPORTER_NAME_TARGETS:
         return False
-    if not (page_h * 0.10 < anchor.box.top < page_h * 0.92):
+    if not (page_h * 0.10 < anchor.box.top < page_h * 0.975):
         return False
     in_side_column = anchor.box.x0 > page_w * 0.52 or anchor.box.x1 < page_w * 0.48
     if not in_side_column:
@@ -489,76 +491,7 @@ def placement_candidates(anchor: Anchor, page_w: float, page_h: float, stamp_w: 
     ]
 
 
-def fallback_candidates(page_w: float, page_h: float, stamp_w: float, stamp_h: float) -> list[tuple[str, Box]]:
-    right_margins = [55, 85, 120, 160, 210]
-    bottom_margins = [65, 95, 130, 170, 215, 265]
-    out = []
-    for yi, bottom_margin in enumerate(bottom_margins):
-        y = page_h - stamp_h - bottom_margin
-        for xi, right_margin in enumerate(right_margins):
-            x = page_w - stamp_w - right_margin
-            out.append((f"fallback_bottom_right_{yi}_{xi}", Box(x, y, x + stamp_w, y + stamp_h)))
-    return out
-
-
-def signature_block_text_bottom(anchor: Anchor, word_boxes: list[Box], page_w: float) -> float:
-    bottom = anchor.box.bottom
-    anchor_center = (anchor.box.x0 + anchor.box.x1) / 2
-    column_pad = max(45.0, page_w * 0.18)
-    for box in word_boxes:
-        same_side = (
-            box.x1 < page_w * 0.56
-            if anchor_center < page_w * 0.50
-            else box.x0 > page_w * 0.44
-        )
-        near_column = (
-            box.x1 >= anchor.box.x0 - column_pad
-            and box.x0 <= anchor.box.x1 + column_pad
-        )
-        # Include the company/contact lines immediately under the carrier name,
-        # but never unrelated text farther down the page.
-        in_signature_lines = (
-            anchor.box.top - 10
-            <= box.top
-            <= anchor.box.bottom + 34
-        )
-        if same_side and near_column and in_signature_lines:
-            bottom = max(bottom, box.bottom)
-    return bottom
-
-
-def select_transporter_signature_anchors(
-    anchors: list[Anchor],
-    word_boxes: list[list[Box]],
-    image_boxes: list[list[Box]],
-    page_sizes: list[tuple[float, float]],
-) -> list[Anchor] | None:
-    """Return one carrier signature anchor for every page that contains one."""
-    signature_anchors = []
-    for anchor in anchors:
-        if anchor.phrase not in TRANSPORTER_NAME_TARGETS:
-            continue
-        page_w, page_h = page_sizes[anchor.page_index]
-        if is_signature_block_anchor(anchor, page_w, page_h) or is_paired_signature_anchor(
-            anchor,
-            image_boxes[anchor.page_index],
-            page_w,
-            page_h,
-        ):
-            signature_anchors.append(anchor)
-    page_indexes = {anchor.page_index for anchor in signature_anchors}
-    if not page_indexes:
-        return None
-
-    anchors_by_page: dict[int, list[Anchor]] = {}
-    for anchor in signature_anchors:
-        anchors_by_page.setdefault(anchor.page_index, []).append(anchor)
-
-    return [
-        max(
-            anchors_by_page[page_index],
-            key=lambda item: anchor_rank(item, *page_sizes[page_index]),
-        )
+def fallback_candidates(page_…1815 tokens truncated…      )
         for page_index in sorted(page_indexes)
     ]
 
@@ -880,6 +813,46 @@ def choose_placements(
 ) -> list[Placement]:
     placements: list[Placement] = []
     page_count = len(page_sizes)
+    explicit_signature_anchors = select_explicit_signature_anchors(
+        anchors,
+        word_boxes,
+        page_sizes,
+    )
+    if explicit_signature_anchors:
+        for anchor in explicit_signature_anchors:
+            page_index = anchor.page_index
+            page_w, page_h = page_sizes[page_index]
+            page_image = (visual_pages or {}).get(page_index)
+            page_stamp_w, page_stamp_h = stamp_size_for_anchor(
+                anchor,
+                page_w,
+                page_h,
+                stamp_w,
+                stamp_ratio,
+                image_boxes[page_index],
+            )
+            best_reason, best_rect = choose_explicit_signature_candidate(
+                anchor,
+                word_boxes[page_index],
+                page_w,
+                page_h,
+                page_stamp_w,
+                page_stamp_h,
+                page_image,
+            )
+            if not is_safe_rect(best_rect, word_boxes[page_index], page_image, page_w, page_h):
+                return []
+            placements.append(
+                Placement(
+                    page_index=page_index,
+                    rect=best_rect,
+                    score=score_rect(best_rect, word_boxes[page_index], page_w, page_h, anchor),
+                    anchor_phrase=anchor.phrase,
+                    reason=best_reason,
+                )
+            )
+        return placements
+
     selected_signature_anchors = select_transporter_signature_anchors(
         anchors,
         word_boxes,
