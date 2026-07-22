@@ -491,7 +491,207 @@ def placement_candidates(anchor: Anchor, page_w: float, page_h: float, stamp_w: 
     ]
 
 
-def fallback_candidates(page_…1815 tokens truncated…      )
+def fallback_candidates(page_w: float, page_h: float, stamp_w: float, stamp_h: float) -> list[tuple[str, Box]]:
+    right_margins = [55, 85, 120, 160, 210]
+    bottom_margins = [65, 95, 130, 170, 215, 265]
+    out = []
+    for yi, bottom_margin in enumerate(bottom_margins):
+        y = page_h - stamp_h - bottom_margin
+        for xi, right_margin in enumerate(right_margins):
+            x = page_w - stamp_w - right_margin
+            out.append((f"fallback_bottom_right_{yi}_{xi}", Box(x, y, x + stamp_w, y + stamp_h)))
+    return out
+
+
+def signature_block_text_bottom(anchor: Anchor, word_boxes: list[Box], page_w: float) -> float:
+    bottom = anchor.box.bottom
+    anchor_center = (anchor.box.x0 + anchor.box.x1) / 2
+    column_pad = max(45.0, page_w * 0.18)
+    for box in word_boxes:
+        same_side = (
+            box.x1 < page_w * 0.56
+            if anchor_center < page_w * 0.50
+            else box.x0 > page_w * 0.44
+        )
+        near_column = (
+            box.x1 >= anchor.box.x0 - column_pad
+            and box.x0 <= anchor.box.x1 + column_pad
+        )
+        # Include the company/contact lines immediately under the carrier name,
+        # but never unrelated text farther down the page.
+        in_signature_lines = (
+            anchor.box.top - 10
+            <= box.top
+            <= anchor.box.bottom + 34
+        )
+        if same_side and near_column and in_signature_lines:
+            bottom = max(bottom, box.bottom)
+    return bottom
+
+
+def explicit_signature_population(
+    anchor: Anchor,
+    word_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+) -> int:
+    """Count printed fields below a signature label in the same page column."""
+    anchor_on_left = (anchor.box.x0 + anchor.box.x1) / 2 < page_w * 0.50
+    window_bottom = min(page_h - 12.0, anchor.box.bottom + page_h * 0.30)
+    count = 0
+    for box in word_boxes:
+        if box.bottom <= anchor.box.bottom + 2 or box.top >= window_bottom:
+            continue
+        same_column = box.x1 < page_w * 0.52 if anchor_on_left else box.x0 > page_w * 0.48
+        if same_column:
+            count += 1
+    return count
+
+
+def select_explicit_signature_anchors(
+    anchors: list[Anchor],
+    word_boxes: list[list[Box]],
+    page_sizes: list[tuple[float, float]],
+) -> list[Anchor] | None:
+    """Choose one explicit signature/stamp cell on every page that has one."""
+    candidates = [
+        anchor
+        for anchor in anchors
+        if anchor.phrase in SIGNATURE_LABEL_TARGETS
+        and anchor.box.top < page_sizes[anchor.page_index][1] * 0.96
+    ]
+    if not candidates:
+        return None
+
+    company_sides = []
+    for anchor in anchors:
+        if anchor.phrase not in TRANSPORTER_NAME_TARGETS:
+            continue
+        page_w, _page_h = page_sizes[anchor.page_index]
+        company_sides.append((anchor.box.x0 + anchor.box.x1) / 2 >= page_w * 0.50)
+    preferred_right = None
+    if company_sides:
+        preferred_right = sum(company_sides) * 2 >= len(company_sides)
+
+    by_page: dict[int, list[Anchor]] = {}
+    for anchor in candidates:
+        by_page.setdefault(anchor.page_index, []).append(anchor)
+
+    selected = []
+    for page_index in sorted(by_page):
+        page_w, page_h = page_sizes[page_index]
+
+        def candidate_rank(anchor: Anchor) -> tuple[int, int, int, float]:
+            population = explicit_signature_population(
+                anchor,
+                word_boxes[page_index],
+                page_w,
+                page_h,
+            )
+            is_right = (anchor.box.x0 + anchor.box.x1) / 2 >= page_w * 0.50
+            side_penalty = 0 if preferred_right is None or is_right == preferred_right else 1
+            return (population, side_penalty, -anchor.score, -anchor.box.x0)
+
+        selected.append(min(by_page[page_index], key=candidate_rank))
+    return selected
+
+
+def choose_explicit_signature_candidate(
+    anchor: Anchor,
+    word_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+    stamp_w: float,
+    stamp_h: float,
+    page_image: Image.Image | None = None,
+) -> tuple[str, Box]:
+    """Place the stamp inside the blank cell directly below its explicit label."""
+    ratio = stamp_h / max(stamp_w, 1.0)
+    best_any: tuple[str, Box, float, float] | None = None
+    on_left = (anchor.box.x0 + anchor.box.x1) / 2 < page_w * 0.50
+    column_left = 24.0 if on_left else page_w * 0.52
+    column_right = page_w * 0.48 if on_left else page_w - 24.0
+
+    for scale in (1.0, 0.92, 0.84, 0.76, 0.68, 0.60):
+        width = max(58.0, stamp_w * scale)
+        height = width * ratio
+        center_x = (column_left + column_right) / 2
+        x = min(max(center_x - width / 2, column_left + 8), column_right - width - 8)
+        start_top = anchor.box.bottom + 6
+        candidates = []
+        for offset in (0.0, 16.0, 34.0, 56.0, 82.0):
+            top = start_top + offset
+            if top + height > page_h - 20:
+                continue
+            candidates.append(
+                (
+                    f"inside_explicit_signature_cell_{int(offset)}",
+                    Box(x, top, x + width, top + height),
+                )
+            )
+        if not candidates:
+            continue
+        scored = score_candidates(
+            candidates,
+            word_boxes,
+            page_w,
+            page_h,
+            anchor,
+            page_image,
+        )
+        safe = [
+            item
+            for item in scored
+            if is_safe_rect(item[1], word_boxes, page_image, page_w, page_h)
+            and item[1].top >= anchor.box.bottom + 4
+        ]
+        if safe:
+            reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
+            return reason, rect
+        attempt_best = max(scored, key=lambda item: item[2])
+        if best_any is None or attempt_best[2] > best_any[2]:
+            best_any = attempt_best
+    if best_any is None:
+        return "explicit_signature_unavailable", clamp_rect(
+            Box(anchor.box.x0, anchor.box.bottom + 6, anchor.box.x0 + stamp_w, anchor.box.bottom + 6 + stamp_h),
+            page_w,
+            page_h,
+        )
+    return best_any[0], best_any[1]
+
+
+def select_transporter_signature_anchors(
+    anchors: list[Anchor],
+    word_boxes: list[list[Box]],
+    image_boxes: list[list[Box]],
+    page_sizes: list[tuple[float, float]],
+) -> list[Anchor] | None:
+    """Return one carrier signature anchor for every page that contains one."""
+    signature_anchors = []
+    for anchor in anchors:
+        if anchor.phrase not in TRANSPORTER_NAME_TARGETS:
+            continue
+        page_w, page_h = page_sizes[anchor.page_index]
+        if is_signature_block_anchor(anchor, page_w, page_h) or is_paired_signature_anchor(
+            anchor,
+            image_boxes[anchor.page_index],
+            page_w,
+            page_h,
+        ):
+            signature_anchors.append(anchor)
+    page_indexes = {anchor.page_index for anchor in signature_anchors}
+    if not page_indexes:
+        return None
+
+    anchors_by_page: dict[int, list[Anchor]] = {}
+    for anchor in signature_anchors:
+        anchors_by_page.setdefault(anchor.page_index, []).append(anchor)
+
+    return [
+        max(
+            anchors_by_page[page_index],
+            key=lambda item: anchor_rank(item, *page_sizes[page_index]),
+        )
         for page_index in sorted(page_indexes)
     ]
 
@@ -1057,4 +1257,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
