@@ -16,7 +16,7 @@ from pathlib import Path
 import stamp_engine as _stamp_engine
 
 
-ENGINE_VERSION = "2026-07-22-explicit-signature-columns-v18"
+ENGINE_VERSION = "2026-07-29-explicit-carrier-overlap-v19"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -331,12 +331,15 @@ def patch_stamp_engine() -> None:
                     page_stamp_h,
                     page_image,
                 )
-                if not _stamp_engine.is_safe_rect(
-                    best_rect,
-                    word_boxes[page_index],
-                    page_image,
-                    page_w,
-                    page_h,
+                if (
+                    anchor.phrase not in _stamp_engine.OVERLAP_OK_SIGNATURE_TARGETS
+                    and not _stamp_engine.is_safe_rect(
+                        best_rect,
+                        word_boxes[page_index],
+                        page_image,
+                        page_w,
+                        page_h,
+                    )
                 ):
                     return []
                 explicit_placements.append(
@@ -745,3 +748,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
