@@ -16,7 +16,7 @@ from pathlib import Path
 import stamp_engine as _stamp_engine
 
 
-ENGINE_VERSION = "2026-07-30-split-carrier-footer-v20"
+ENGINE_VERSION = "2026-07-30-filter-carrier-identity-header-v21"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -111,12 +111,44 @@ def patch_stamp_engine() -> None:
             and (anchor.box.x0 >= page_w * 0.48 or anchor.box.x1 <= page_w * 0.52)
         )
 
+    def is_carrier_identity_header(anchor, anchors, page_w, page_h):
+        """Reject carrier company-data rows that are not signature fields."""
+        if anchor.phrase not in _stamp_engine.TRANSPORTER_NAME_TARGETS:
+            return False
+
+        line_norm = _stamp_engine.norm(anchor.line_text)
+        if "TRANSPORTATOR" in line_norm and any(
+            marker in line_norm
+            for marker in ("NUME FIRMA", "DENUMIRE FIRMA", "DATE FIRMA", "DATE TRANSPORTATOR")
+        ):
+            return True
+
+        if anchor.box.top >= page_h * 0.62:
+            return False
+
+        for tax_anchor in anchors:
+            if (
+                tax_anchor.page_index != anchor.page_index
+                or tax_anchor.phrase != "RO36256981"
+            ):
+                continue
+            vertical_gap = tax_anchor.box.top - anchor.box.bottom
+            horizontally_related = (
+                tax_anchor.box.x1 >= anchor.box.x0 - page_w * 0.12
+                and tax_anchor.box.x0 <= anchor.box.x1 + page_w * 0.12
+            )
+            if 0 <= vertical_gap <= max(34.0, page_h * 0.055) and horizontally_related:
+                return True
+        return False
+
     def select_transporter_signature_anchors(anchors, word_boxes, image_boxes, page_sizes):
         signature_anchors = []
         for anchor in anchors:
             if anchor.phrase not in _stamp_engine.TRANSPORTER_NAME_TARGETS:
                 continue
             page_w, page_h = page_sizes[anchor.page_index]
+            if is_carrier_identity_header(anchor, anchors, page_w, page_h):
+                continue
             if _stamp_engine.is_signature_block_anchor(
                 anchor,
                 page_w,
@@ -726,6 +758,7 @@ def patch_stamp_engine() -> None:
     _stamp_engine.looks_like_carrier_signature_block = looks_like_carrier_signature_block
     _stamp_engine.signature_block_text_bottom = signature_block_text_bottom
     _stamp_engine.is_split_transporter_name_pair = is_split_transporter_name_pair
+    _stamp_engine.is_carrier_identity_header = is_carrier_identity_header
     _stamp_engine.choose_tight_labeled_candidate = choose_tight_labeled_candidate
     _stamp_engine.choose_signature_block_candidate = choose_signature_block_candidate
     _stamp_engine.select_transporter_signature_anchors = select_transporter_signature_anchors
