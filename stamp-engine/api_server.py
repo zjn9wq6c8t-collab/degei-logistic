@@ -16,7 +16,7 @@ from pathlib import Path
 import stamp_engine as _stamp_engine
 
 
-ENGINE_VERSION = "2026-07-29-explicit-carrier-overlap-v19"
+ENGINE_VERSION = "2026-07-30-split-carrier-footer-v20"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -59,6 +59,58 @@ def patch_stamp_engine() -> None:
                 bottom = max(bottom, box.bottom)
         return bottom
 
+    def is_split_transporter_name_pair(anchor, anchors, page_w, page_h):
+        """Recognize a carrier signature block split over nearby PDF lines."""
+        if anchor.phrase not in _stamp_engine.TRANSPORTER_NAME_TARGETS:
+            return False
+
+        anchor_center = (anchor.box.x0 + anchor.box.x1) / 2
+        anchor_on_right = anchor_center >= page_w * 0.50
+        line_norm = _stamp_engine.norm(anchor.line_text)
+        same_line_pair = (
+            "TRANSPORTATOR" in line_norm
+            and (
+                "DEGEI LOGISTIC" in line_norm
+                or "RO36256981" in line_norm
+            )
+        )
+
+        for label in anchors:
+            if label.page_index != anchor.page_index:
+                continue
+            if (
+                label.phrase not in _stamp_engine.GENERIC_TARGETS
+                and label.phrase not in _stamp_engine.CONFIRMATION_HEADING_TARGETS
+            ):
+                continue
+
+            label_center = (label.box.x0 + label.box.x1) / 2
+            same_side = (label_center >= page_w * 0.50) == anchor_on_right
+            vertical_gap = min(
+                abs(label.box.bottom - anchor.box.top),
+                abs(anchor.box.bottom - label.box.top),
+            )
+            horizontally_related = (
+                label.box.x1 >= anchor.box.x0 - page_w * 0.18
+                and label.box.x0 <= anchor.box.x1 + page_w * 0.18
+            )
+            block_top = min(label.box.top, anchor.box.top)
+            if (
+                same_side
+                and horizontally_related
+                and vertical_gap <= max(52.0, page_h * 0.085)
+                and block_top >= page_h * 0.38
+            ):
+                return True
+
+        # Avoid interpreting the "Transportator: Nume firma" header near the
+        # top of page one as a signature block.
+        return (
+            same_line_pair
+            and anchor.box.top >= page_h * 0.52
+            and (anchor.box.x0 >= page_w * 0.48 or anchor.box.x1 <= page_w * 0.52)
+        )
+
     def select_transporter_signature_anchors(anchors, word_boxes, image_boxes, page_sizes):
         signature_anchors = []
         for anchor in anchors:
@@ -72,6 +124,11 @@ def patch_stamp_engine() -> None:
             ) or _stamp_engine.is_paired_signature_anchor(
                 anchor,
                 image_boxes[anchor.page_index],
+                page_w,
+                page_h,
+            ) or is_split_transporter_name_pair(
+                anchor,
+                anchors,
                 page_w,
                 page_h,
             ):
@@ -94,6 +151,122 @@ def patch_stamp_engine() -> None:
             )
             for page_index in sorted(page_indexes)
         ]
+
+    def choose_tight_labeled_candidate(
+        anchor,
+        anchors,
+        word_boxes,
+        page_w,
+        page_h,
+        stamp_w,
+        stamp_h,
+    ):
+        """Place a stamp at a certain carrier label when blank space is tight."""
+        ratio = stamp_h / max(stamp_w, 1.0)
+        text_bottom = signature_block_text_bottom(anchor, word_boxes, page_w)
+        anchor_center = (anchor.box.x0 + anchor.box.x1) / 2
+        on_right = anchor_center >= page_w * 0.50
+
+        nearby_anchor_boxes = [
+            item.box
+            for item in anchors
+            if item.page_index == anchor.page_index
+            and (
+                item.phrase in _stamp_engine.GENERIC_TARGETS
+                or item.phrase in _stamp_engine.TRANSPORTER_NAME_TARGETS
+                or item.phrase in _stamp_engine.SIGNATURE_LABEL_TARGETS
+                or item.phrase in _stamp_engine.CONFIRMATION_HEADING_TARGETS
+            )
+            and ((item.box.x0 + item.box.x1) / 2 >= page_w * 0.50) == on_right
+            and item.box.top <= text_bottom + 12
+            and item.box.bottom >= anchor.box.top - 70
+        ]
+        block_top = min(
+            [anchor.box.top, *[box.top for box in nearby_anchor_boxes]]
+        )
+        allowed_boxes = [
+            box
+            for box in word_boxes
+            if ((box.x0 + box.x1) / 2 >= page_w * 0.50) == on_right
+            and box.top >= block_top - 10
+            and box.bottom <= text_bottom + 12
+        ]
+        unrelated_boxes = [box for box in word_boxes if box not in allowed_boxes]
+
+        widths = []
+        for width in (
+            stamp_w,
+            min(stamp_w, 108.0),
+            stamp_w * 0.92,
+            stamp_w * 0.84,
+            stamp_w * 0.76,
+            78.0,
+            70.0,
+        ):
+            width = min(max(width, 70.0), page_w * 0.22)
+            if all(abs(width - existing) > 0.5 for existing in widths):
+                widths.append(width)
+
+        candidates = []
+        for width in widths:
+            height = width * ratio
+            if on_right:
+                x_options = (
+                    min(max(anchor.box.x0, page_w * 0.54), page_w - width - 18),
+                    page_w - width - 22,
+                    min(max(anchor_center - width / 2, page_w * 0.52), page_w - width - 18),
+                )
+            else:
+                x_options = (
+                    max(18.0, min(anchor.box.x0, page_w * 0.48 - width)),
+                    22.0,
+                    max(18.0, anchor_center - width / 2),
+                )
+
+            ideal_top = text_bottom + 2.0
+            latest_top = page_h - height - 12.0
+            top_options = (
+                ideal_top,
+                latest_top,
+                max(block_top, text_bottom - height * 0.18),
+                max(block_top - 2.0, latest_top),
+            )
+            for x in x_options:
+                for top in top_options:
+                    rect = _stamp_engine.clamp_rect(
+                        _stamp_engine.Box(x, top, x + width, top + height),
+                        page_w,
+                        page_h,
+                        margin=12,
+                    )
+                    unrelated_overlap = _stamp_engine.overlap_ratio(
+                        rect,
+                        unrelated_boxes,
+                    )
+                    carrier_overlap = _stamp_engine.overlap_ratio(
+                        rect,
+                        allowed_boxes,
+                    )
+                    below_distance = abs(rect.top - ideal_top)
+                    shrink_penalty = max(0.0, stamp_w - width)
+                    cost = (
+                        unrelated_overlap * 120000.0
+                        + carrier_overlap * 600.0
+                        + below_distance * 1.6
+                        + shrink_penalty * 0.8
+                    )
+                    candidates.append((cost, unrelated_overlap, rect))
+
+        _cost, unrelated_overlap, rect = min(
+            candidates,
+            key=lambda item: (item[0], item[1], -item[2].x0),
+        )
+        reason = (
+            "carrier_label_immediately_below"
+            if rect.top >= text_bottom + 1.0
+            else "carrier_label_controlled_overlap"
+        )
+        return reason, rect
 
     def choose_signature_block_candidate(
         anchor,
@@ -252,8 +425,8 @@ def patch_stamp_engine() -> None:
         return width, width * ratio
 
     def fallback_candidates(page_w, page_h, stamp_w, stamp_h):
-        right_margins = [55, 85, 120, 160, 210]
-        bottom_margins = [65, 95, 130, 170, 215, 265]
+        right_margins = [28, 42, 60, 85, 120, 160, 210]
+        bottom_margins = [32, 48, 68, 92, 122, 160, 205, 255]
         out = []
         for yi, bottom_margin in enumerate(bottom_margins):
             y = page_h - stamp_h - bottom_margin
@@ -284,7 +457,14 @@ def patch_stamp_engine() -> None:
                 if _stamp_engine.is_safe_rect(item[1], word_boxes, page_image, page_w, page_h)
             ]
             if safe:
-                reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
+                reason, rect, _score, _overlap = max(
+                    safe,
+                    key=lambda item: (
+                        item[2]
+                        - (page_h - item[1].bottom) * 0.45
+                        - (page_w - item[1].x1) * 0.25
+                    ),
+                )
                 return reason, rect
             attempt_best = max(scored, key=lambda item: item[2])
             if best_any is None or attempt_best[2] > best_any[2]:
@@ -341,7 +521,15 @@ def patch_stamp_engine() -> None:
                         page_h,
                     )
                 ):
-                    return []
+                    best_reason, best_rect = choose_tight_labeled_candidate(
+                        anchor,
+                        anchors,
+                        word_boxes[page_index],
+                        page_w,
+                        page_h,
+                        page_stamp_w,
+                        page_stamp_h,
+                    )
                 explicit_placements.append(
                     _stamp_engine.Placement(
                         page_index=page_index,
@@ -396,7 +584,15 @@ def patch_stamp_engine() -> None:
                     page_w,
                     page_h,
                 ):
-                    return []
+                    best_reason, best_rect = choose_tight_labeled_candidate(
+                        anchor,
+                        anchors,
+                        word_boxes[page_index],
+                        page_w,
+                        page_h,
+                        page_stamp_w,
+                        page_stamp_h,
+                    )
                 signature_placements.append(
                     _stamp_engine.Placement(
                         page_index=page_index,
@@ -529,6 +725,8 @@ def patch_stamp_engine() -> None:
     _stamp_engine.fallback_candidates = fallback_candidates
     _stamp_engine.looks_like_carrier_signature_block = looks_like_carrier_signature_block
     _stamp_engine.signature_block_text_bottom = signature_block_text_bottom
+    _stamp_engine.is_split_transporter_name_pair = is_split_transporter_name_pair
+    _stamp_engine.choose_tight_labeled_candidate = choose_tight_labeled_candidate
     _stamp_engine.choose_signature_block_candidate = choose_signature_block_candidate
     _stamp_engine.select_transporter_signature_anchors = select_transporter_signature_anchors
     _stamp_engine.choose_placements = choose_placements
