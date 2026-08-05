@@ -69,6 +69,32 @@ OVERLAP_OK_SIGNATURE_TARGETS = {
     "STAMPILA SI SEMNATURA TRANSPORTATOR",
     "SEMNATURA SI STAMPILA TRANSPORTATOR",
 }
+NON_CARRIER_SIGNATURE_MARKERS = {
+    "INCARCATOR",
+    "DESTINATAR",
+    "DESTINARAR",
+    "EXPEDITOR",
+    "BENEFICIAR",
+    "CLIENT",
+    "PRIMITOR",
+    "CONSIGNOR",
+    "CONSIGNEE",
+    "SHIPPER",
+    "RECEIVER",
+    "MITTENTE",
+    "DESTINATARIO",
+}
+CARRIER_SIGNATURE_MARKERS = {
+    "TRANSPORTATOR",
+    "CARAUS",
+    "CARRIER",
+    "HAULIER",
+    "VETTORE",
+    "PRESTATOR",
+    "FURNIZOR",
+    "SUBCONTRACTANT",
+    "DEGEI",
+}
 CONFIRMATION_HEADING_TARGETS = {
     "CARRIER CONFIRMATION",
     "HAULIER CONFIRMATION",
@@ -134,6 +160,45 @@ def norm(text: str) -> str:
 
 def contains_phrase(line_norm: str, phrase: str) -> bool:
     return re.search(rf"(^| ){re.escape(phrase)}($| )", line_norm) is not None
+
+
+def looks_like_carrier_signature_label(
+    line_norm: str,
+    phrase: str,
+    box: Box,
+    page_h: float,
+) -> bool:
+    """Reject legal prose and signature fields that belong to another party."""
+    if phrase not in SIGNATURE_LABEL_TARGETS:
+        return True
+    if any(marker in line_norm for marker in NON_CARRIER_SIGNATURE_MARKERS):
+        return False
+    if phrase in OVERLAP_OK_SIGNATURE_TARGETS:
+        return True
+    if line_norm == phrase:
+        return True
+    phrase_tokens = phrase.split()
+    line_tokens = line_norm.split()
+    if (
+        phrase_tokens
+        and len(line_tokens) >= len(phrase_tokens) * 2
+        and len(line_tokens) % len(phrase_tokens) == 0
+        and all(
+            line_tokens[index : index + len(phrase_tokens)] == phrase_tokens
+            for index in range(0, len(line_tokens), len(phrase_tokens))
+        )
+    ):
+        # Two-column forms often repeat the same short signature heading on
+        # one visual line. Keep both cells eligible so the carrier-side one
+        # can be selected later.
+        return True
+    if any(marker in line_norm for marker in CARRIER_SIGNATURE_MARKERS):
+        return len(line_norm.split()) <= 12
+
+    # A short generic label can be valid in the signature half of a form. A
+    # longer or higher line is usually a contractual sentence mentioning that
+    # somebody must sign/stamp a CMR, not a place where we should stamp.
+    return len(line_norm.split()) <= 4 and box.top >= page_h * 0.45
 
 
 def group_lines(words: list[dict]) -> list[dict]:
@@ -232,6 +297,13 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                         if phrase in SIGNATURE_LABEL_TARGETS and (
                             len(matched_boxes) == 1
                             and (len(line_norm) > 55 or line["box"].width > page.width * 0.55)
+                        ):
+                            continue
+                        if phrase in SIGNATURE_LABEL_TARGETS and not looks_like_carrier_signature_label(
+                            line_norm,
+                            phrase,
+                            line["box"],
+                            float(page.height),
                         ):
                             continue
                         # Generic words appear often in legal/payment paragraphs. They are valid
@@ -585,6 +657,12 @@ def select_explicit_signature_anchors(
         for anchor in anchors
         if anchor.phrase in SIGNATURE_LABEL_TARGETS
         and anchor.box.top < page_sizes[anchor.page_index][1] * 0.96
+        and looks_like_carrier_signature_label(
+            norm(anchor.line_text),
+            anchor.phrase,
+            anchor.box,
+            page_sizes[anchor.page_index][1],
+        )
     ]
     if not candidates:
         return None
