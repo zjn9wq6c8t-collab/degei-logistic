@@ -387,4 +387,603 @@ def patch_stamp_engine() -> None:
                     ]
                 )
             candidates = [
-                ÛÞ}¶‰žËkºwµç]•}¥¹‘•át°(€€€€€€€€€€€€€€€€€€€Á…•}¥µ…”°(€€€€€€€€€€€€€€€€€€€Á…•}Ü°(€€€€€€€€€€€€€€€€€€€Á…•} °(€€€€€€€€€€€€€€€€¤è(€€€€€€€€€€€€€€€€€€€‰•ÍÑ}É•…Í½¸°‰•ÍÑ}É•Ð€ô¡½½Í•}Ñ¥¡Ñ}±…‰•±•‘}…¹‘¥‘…Ñ” (€€€€€€€€€€€€€€€€€€€€€€€…¹¡½È°(€€€€€€€€€€€€€€€€€€€€€€€…¹¡½ÉÌ°(€€€€€€€€€€€€€€€€€€€€€€€Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°(€€€€€€€€€€€€€€€€€€€€€€€Á…•}Ü°(€€€€€€€€€€€€€€€€€€€€€€€Á…•} °(€€€€€€€€€€€€€€€€€€€€€€€Á…•}ÍÑ…µÁ}Ü°(€€€€€€€€€€€€€€€€€€€€€€€Á…•}ÍÑ…µÁ} °(€€€€€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€Í¥¹…ÑÕÉ•}Á±…•µ•¹ÑÌ¹…ÁÁ•¹ (€€€€€€€€€€€€€€€€€€€}ÍÑ…µÁ}•¹¥¹”¹A±…•µ•¹Ð (€€€€€€€€€€€€€€€€€€€€€€€Á…•}¥¹‘•àõÁ…•}¥¹‘•à°(€€€€€€€€€€€€€€€€€€€€€€€É•Ðõ‰•ÍÑ}É•Ð°(€€€€€€€€€€€€€€€€€€€€€€€Í½É”õ}ÍÑ…µÁ}•¹¥¹”¹Í½É•}É•Ð (€€€€€€€€€€€€€€€€€€€€€€€€€€€‰•ÍÑ}É•Ð°(€€€€€€€€€€€€€€€€€€€€€€€€€€€Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°(€€€€€€€€€€€€€€€€€€€€€€€€€€€Á…•}Ü°(€€€€€€€€€€€€€€€€€€€€€€€€€€€Á…•} °(€€€€€€€€€€€€€€€€€€€€€€€€€€€…¹¡½È°(€€€€€€€€€€€€€€€€€€€€€€€€¤°(€€€€€€€€€€€€€€€€€€€€€€€…¹¡½É}Á¡É…Í”õ…¹¡½È¹Á¡É…Í”°(€€€€€€€€€€€€€€€€€€€€€€€É•…Í½¸õ‰•ÍÑ}É•…Í½¸°(€€€€€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€É•ÑÕÉ¸Í¥¹…ÑÕÉ•}Á±…•µ•¹ÑÌ((€€€€€€€Á…•}½Õ¹Ð€ô±•¸¡Á…•}Í¥é•Ì¤(€€€€€€€¥˜Á…•}½Õ¹Ð…¹…±±½Ý}™…±±‰…¬è(€€€€€€€€€€€€Œ9¼Ù•É¥™¥•…ÉÉ¥•ÈÍ¥¹¥¹œ‰±½¬•á¥ÍÑÌ¸¼¹½Ð±•ÐÝ•…¬(€€€€€€€€€€€€Œ¥‘•¹Ñ¥Ñä½¡•…‘•È…¹¡½ÉÌ¡½½Í”½¹”…É‰¥ÑÉ…ÉäÁ…”ìÑ¡”Í…™”(€€€€€€€€€€€€ŒÁÉ½‘ÕÑ¥½¸™…±±‰…¬¥Ì½¹”‰½ÑÑ½´µÉ¥¡ÐÍÑ…µÀ½¸•Ù•ÉäÁ…”¸(€€€€€€€€€€€Á±…•µ•¹ÑÌ€ômt(€€€€€€€€€€€™½ÈÁ…•}¥¹‘•à¥¸É…¹”¡Á…•}½Õ¹Ð¤è(€€€€€€€€€€€€€€€Á…•}Ü°Á…•} €ôÁ…•}Í¥é•ÍmÁ…•}¥¹‘•át(€€€€€€€€€€€€€€€Á…•}ÍÑ…µÁ}Ü€ôµ¥¸¡µ…à¡ÍÑ…µÁ}Ü°€Üà¸À¤°€ÄÄÈ¸À°Á…•}Ü€¨€À¸Ää¤(€€€€€€€€€€€€€€€‰•ÍÐ€ô¡½½Í•}™…±±‰…­}Á…•}…¹‘¥‘…Ñ” (€€€€€€€€€€€€€€€€€€€Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°(€€€€€€€€€€€€€€€€€€€Á…•}Ü°(€€€€€€€€€€€€€€€€€€€Á…•} °(€€€€€€€€€€€€€€€€€€€Á…•}ÍÑ…µÁ}Ü°(€€€€€€€€€€€€€€€€€€€ÍÑ…µÁ}É…Ñ¥¼°(€€€€€€€€€€€€€€€€€€€€¡Ù¥ÍÕ…±}Á…•Ì½Èíô¤¹•Ð¡Á…•}¥¹‘•à¤°(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€¥˜‰•ÍÐ¥Ì9½¹”è(€€€€€€€€€€€€€€€€€€€½¹Ñ¥¹Õ”(€€€€€€€€€€€€€€€‰•ÍÑ}É•…Í½¸°‰•ÍÑ}É•Ð€ô‰•ÍÐ(€€€€€€€€€€€€€€€Á±…•µ•¹ÑÌ¹…ÁÁ•¹ (€€€€€€€€€€€€€€€€€€€}ÍÑ…µÁ}•¹¥¹”¹A±…•µ•¹Ð (€€€€€€€€€€€€€€€€€€€€€€€Á…•}¥¹‘•àõÁ…•}¥¹‘•à°(€€€€€€€€€€€€€€€€€€€€€€€É•Ðõ‰•ÍÑ}É•Ð°(€€€€€€€€€€€€€€€€€€€€€€€Í½É”õ}ÍÑ…µÁ}•¹¥¹”¹Í½É•}É•Ð (€€€€€€€€€€€€€€€€€€€€€€€€€€€‰•ÍÑ}É•Ð°(€€€€€€€€€€€€€€€€€€€€€€€€€€€Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°(€€€€€€€€€€€€€€€€€€€€€€€€€€€Á…•}Ü°(€€€€€€€€€€€€€€€€€€€€€€€€€€€Á…•} °(€€€€€€€€€€€€€€€€€€€€€€€€€€€9½¹”°(€€€€€€€€€€€€€€€€€€€€€€€€¤°(€€€€€€€€€€€€€€€€€€€€€€€…¹¡½É}Á¡É…Í”ô‰11	-}!}Aˆ°(€€€€€€€€€€€€€€€€€€€€€€€É•…Í½¸õ‰•ÍÑ}É•…Í½¸°(€€€€€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€É•ÑÕÉ¸Á±…•µ•¹ÑÌ((€€€€€€€É•ÑÕÉ¸½É¥¥¹…±}¡½½Í•}Á±…•µ•¹ÑÌ (€€€€€€€€€€€…¹¡½ÉÌ°(€€€€€€€€€€€Ý½É‘}‰½á•Ì°(€€€€€€€€€€€¥µ…•}‰½á•Ì°(€€€€€€€€€€€Á…•}Í¥é•Ì°(€€€€€€€€€€€ÍÑ…µÁ}Ü°(€€€€€€€€€€€ÍÑ…µÁ}É…Ñ¥¼°(€€€€€€€€€€€…±±½Ý}™…±±‰…¬õ…±Í”°(€€€€€€€€€€€Ù¥ÍÕ…±}Á…•ÌõÙ¥ÍÕ…±}Á…•Ì°(€€€€€€€€¤((€€€‘•˜ÍÑ…µÁ}Á‘˜¡¥¹ÁÕÑ}Á‘˜°ÍÑ…µÁ}¥µ…”°½ÕÑÁÕÑ}Á‘˜°ÍÑ…µÁ}Ý¥‘Ñ ôÄÜÔ¸À°…±±½Ý}™…±±‰…¬õ…±Í”¤è(€€€€€€€Ý¥Ñ }ÍÑ…µÁ}•¹¥¹”¹%µ…”¹½Á•¸¡ÍÑ…µÁ}¥µ…”¤…Ì¥µœè(€€€€€€€€€€€É…Ñ¥¼€ô¥µœ¹¡•¥¡Ð€¼µ…à¡¥µœ¹Ý¥‘Ñ °€Ä¤((€€€€€€€…¹¡½ÉÌ°Ý½É‘}‰½á•Ì°¥µ…•}‰½á•Ì°Á…•}Í¥é•Ì€ô}ÍÑ…µÁ}•¹¥¹”¹™¥¹‘}…¹¡½ÉÌ¡¥¹ÁÕÑ}Á‘˜¤(€€€€€€€Ù¥ÍÕ…±}Á…•}¥¹‘•á•Ì€ôí…¹¡½È¹Á…•}¥¹‘•à™½È…¹¡½È¥¸…¹¡½ÉÍô(€€€€€€€¥˜…±±½Ý}™…±±‰…¬…¹Á…•}Í¥é•Ìè(€€€€€€€€€€€Ù¥ÍÕ…±}Á…•}¥¹‘•á•Ì¹ÕÁ‘…Ñ”¡É…¹”¡±•¸¡Á…•}Í¥é•Ì¤¤¤(€€€€€€€Ù¥ÍÕ…±}Á…•Ì€ô}ÍÑ…µÁ}•¹¥¹”¹É•¹‘•É}Ù¥ÍÕ…±}Á…•Ì¡¥¹ÁÕÑ}Á‘˜°Ù¥ÍÕ…±}Á…•}¥¹‘•á•Ì¤(€€€€€€€Á±…•µ•¹ÑÌ€ô¡½½Í•}Á±…•µ•¹ÑÌ (€€€€€€€€€€€…¹¡½ÉÌ°(€€€€€€€€€€€Ý½É‘}‰½á•Ì°(€€€€€€€€€€€¥µ…•}‰½á•Ì°(€€€€€€€€€€€Á…•}Í¥é•Ì°(€€€€€€€€€€€ÍÑ…µÁ}Ý¥‘Ñ °(€€€€€€€€€€€É…Ñ¥¼°(€€€€€€€€€€€…±±½Ý}™…±±‰…¬õ…±±½Ý}™…±±‰…¬°(€€€€€€€€€€€Ù¥ÍÕ…±}Á…•ÌõÙ¥ÍÕ…±}Á…•Ì°(€€€€€€€€¤((€€€€€€€É•…‘•È€ô}ÍÑ…µÁ}•¹¥¹”¹A‘™I•…‘•È¡ÍÑÈ¡¥¹ÁÕÑ}Á‘˜¤¤(€€€€€€€ÝÉ¥Ñ•È€ô}ÍÑ…µÁ}•¹¥¹”¹A‘™]É¥Ñ•È ¤(€€€€€€€ÍÑ…µÁ}É•…‘•È€ô}ÍÑ…µÁ}•¹¥¹”¹%µ…•I•…‘•È¡ÍÑÈ¡ÍÑ…µÁ}¥µ…”¤¤((€€€€€€€Á±…•µ•¹Ñ}‰å}Á…”€ôíÀ¹Á…•}¥¹‘•àèÀ™½ÈÀ¥¸Á±…•µ•¹ÑÍô(€€€€€€€™½ÈÁ…•}¥¹‘•à°Á…”¥¸•¹Õµ•É…Ñ”¡É•…‘•È¹Á…•Ì¤è(€€€€€€€€€€€¥˜Á…•}¥¹‘•à¹½Ð¥¸Á±…•µ•¹Ñ}‰å}Á…”è(€€€€€€€€€€€€€€€ÝÉ¥Ñ•È¹…‘‘}Á…”¡Á…”¤(€€€€€€€€€€€€€€€½¹Ñ¥¹Õ”((€€€€€€€€€€€Á…•}Ü€ô™±½…Ð¡Á…”¹µ•‘¥…‰½à¹Ý¥‘Ñ ¤(€€€€€€€€€€€Á…•} €ô™±½…Ð¡Á…”¹µ•‘¥…‰½à¹¡•¥¡Ð¤(€€€€€€€€€€€À€ôÁ±…•µ•¹Ñ}‰å}Á…•mÁ…•}¥¹‘•át(€€€€€€€€€€€Á…­•Ð€ô}ÍÑ…µÁ}•¹¥¹”¹¥¼¹	åÑ•Í%< ¤(€€€€€€€€€€€Œ€ô}ÍÑ…µÁ}•¹¥¹”¹…¹Ù…Ì¹…¹Ù…Ì¡Á…­•Ð°Á…•Í¥é”ô¡Á…•}Ü°Á…•} ¤¤(€€€€€€€€€€€à€ôÀ¹É•Ð¹àÀ(€€€€€€€€€€€ä€ôÁ…•} €´À¹É•Ð¹‰½ÑÑ½´(€€€€€€€€€€€Œ¹‘É…Ý%µ…”¡ÍÑ…µÁ}É•…‘•È°à°ä°Ý¥‘Ñ õÀ¹É•Ð¹Ý¥‘Ñ °¡•¥¡ÐõÀ¹É•Ð¹¡•¥¡Ð°µ…Í¬ô‰…ÕÑ¼ˆ¤(€€€€€€€€€€€Œ¹Í…Ù” ¤(€€€€€€€€€€€Á…­•Ð¹Í••¬ À¤(€€€€€€€€€€€½Ù•É±…ä€ô}ÍÑ…µÁ}•¹¥¹”¹A‘™I•…‘•È¡Á…­•Ð¤¹Á…•ÍlÁt(€€€€€€€€€€€Á…”¹µ•É•}Á…”¡½Ù•É±…ä¤(€€€€€€€€€€€ÝÉ¥Ñ•È¹…‘‘}Á…”¡Á…”¤((€€€€€€€½ÕÑÁÕÑ}Á‘˜¹Á…É•¹Ð¹µ­‘¥È¡Á…É•¹ÑÌõQÉÕ”°•á¥ÍÑ}½¬õQÉÕ”¤(€€€€€€€Ý¥Ñ ½ÕÑÁÕÑ}Á‘˜¹½Á•¸ ‰Ýˆˆ¤…Ì˜è(€€€€€€€€€€€ÝÉ¥Ñ•È¹ÝÉ¥Ñ”¡˜¤((€€€€€€€É•ÑÕÉ¸ì(€€€€€€€€€€€€‰¥¹ÁÕÐˆèÍÑÈ¡¥¹ÁÕÑ}Á‘˜¤°(€€€€€€€€€€€€‰½ÕÑÁÕÐˆèÍÑÈ¡½ÕÑÁÕÑ}Á‘˜¤°(€€€€€€€€€€€€‰Á±…•µ•¹ÑÌˆèl(€€€€€€€€€€€€€€€ì(€€€€€€€€€€€€€€€€€€€€‰Á…”ˆèÀ¹Á…•}¥¹‘•à€¬€Ä°(€€€€€€€€€€€€€€€€€€€€‰É•Ñ}Ñ½Á}±•™Ðˆèì(€€€€€€€€€€€€€€€€€€€€€€€€‰àÀˆèÉ½Õ¹¡À¹É•Ð¹àÀ°€È¤°(€€€€€€€€€€€€€€€€€€€€€€€€‰Ñ½ÀˆèÉ½Õ¹¡À¹É•Ð¹Ñ½À°€È¤°(€€€€€€€€€€€€€€€€€€€€€€€€‰àÄˆèÉ½Õ¹¡À¹É•Ð¹àÄ°€È¤°(€€€€€€€€€€€€€€€€€€€€€€€€‰‰½ÑÑ½´ˆèÉ½Õ¹¡À¹É•Ð¹‰½ÑÑ½´°€È¤°(€€€€€€€€€€€€€€€€€€€ô°(€€€€€€€€€€€€€€€€€€€€‰Í½É”ˆèÉ½Õ¹¡À¹Í½É”°€È¤°(€€€€€€€€€€€€€€€€€€€€‰…¹¡½ÈˆèÀ¹…¹¡½É}Á¡É…Í”°(€€€€€€€€€€€€€€€€€€€€‰É•…Í½¸ˆèÀ¹É•…Í½¸°(€€€€€€€€€€€€€€€ô(€€€€€€€€€€€€€€€™½ÈÀ¥¸Á±…•µ•¹ÑÌ(€€€€€€€€€€€t°(€€€€€€€€€€€€‰…¹¡½É}½Õ¹Ðˆè±•¸¡…¹¡½ÉÌ¤°(€€€€€€€€€€€€‰ÍÑ…µÁ•ˆè‰½½°¡Á±…•µ•¹ÑÌ¤°(€€€€€€€€€€€€‰¹••‘Í}É•Ù¥•Üˆè¹½Ð‰½½°¡Á±…•µ•¹ÑÌ¤°(€€€€€€€ô((€€€}ÍÑ…µÁ}•¹¥¹”¹ÍÑ…µÁ}Í¥é•}™½É}…¹¡½È€ôÍÑ…µÁ}Í¥é•}™½É}…¹¡½È(€€€}ÍÑ…µÁ}•¹¥¹”¹™…±±‰…­}…¹‘¥‘…Ñ•Ì€ô™…±±‰…­}…¹‘¥‘…Ñ•Ì(€€€}ÍÑ…µÁ}•¹¥¹”¹±½½­Í}±¥­•}…ÉÉ¥•É}Í¥¹…ÑÕÉ•}‰±½¬€ô±½½­Í}±¥­•}…ÉÉ¥•É}Í¥¹…ÑÕÉ•}‰±½¬(€€€}ÍÑ…µÁ}•¹¥¹”¹Í¥¹…ÑÕÉ•}‰±½­}Ñ•áÑ}‰½ÑÑ½´€ôÍ¥¹…ÑÕÉ•}‰±½­}Ñ•áÑ}‰½ÑÑ½´(€€€}ÍÑ…µÁ}•¹¥¹”¹¥Í}ÍÁ±¥Ñ}ÑÉ…¹ÍÁ½ÉÑ•É}¹…µ•}Á…¥È€ô¥Í}ÍÁ±¥Ñ}ÑÉ…¹ÍÁ½ÉÑ•É}¹…µ•}Á…¥È(€€€}ÍÑ…µÁ}•¹¥¹”¹¥Í}…ÉÉ¥•É}¥‘•¹Ñ¥Ñå}¡•…‘•È€ô¥Í}…ÉÉ¥•É}¥‘•¹Ñ¥Ñå}¡•…‘•È(€€€}ÍÑ…µÁ}•¹¥¹”¹¡½½Í•}Ñ¥¡Ñ}±…‰•±•‘}…¹‘¥‘…Ñ”€ô¡½½Í•}Ñ¥¡Ñ}±…‰•±•‘}…¹‘¥‘…Ñ”(€€€}ÍÑ…µÁ}•¹¥¹”¹¡½½Í•}Í¥¹…ÑÕÉ•}‰±½­}…¹‘¥‘…Ñ”€ô¡½½Í•}Í¥¹…ÑÕÉ•}‰±½­}…¹‘¥‘…Ñ”(€€€}ÍÑ…µÁ}•¹¥¹”¹Í•±•Ñ}ÑÉ…¹ÍÁ½ÉÑ•É}Í¥¹…ÑÕÉ•}…¹¡½ÉÌ€ôÍ•±•Ñ}ÑÉ…¹ÍÁ½ÉÑ•É}Í¥¹…ÑÕÉ•}…¹¡½ÉÌ(€€€}ÍÑ…µÁ}•¹¥¹”¹¡½½Í•}Á±…•µ•¹ÑÌ€ô¡½½Í•}Á±…•µ•¹ÑÌ(€€€}ÍÑ…µÁ}•¹¥¹”¹ÍÑ…µÁ}Á‘˜€ôÍÑ…µÁ}Á‘˜(()Á…Ñ¡}ÍÑ…µÁ}•¹¥¹” ¤)ÍÑ…µÁ}Á‘˜€ô}ÍÑ…µÁ}•¹¥¹”¹ÍÑ…µÁ}Á‘˜(()‘•˜©Í½¹}‰åÑ•Ì¡Á…å±½…è‘¥Ð¤€´ø‰åÑ•Ìè(€€€É•ÑÕÉ¸©Í½¸¹‘ÕµÁÌ¡Á…å±½…°•¹ÍÕÉ•}…Í¥¤õ…±Í”°Í•Á…É…Ñ½ÉÌô ˆ°ˆ°€ˆèˆ¤¤¹•¹½‘” ‰ÕÑ˜´àˆ¤(()‘•˜±•…¹}™¥±•¹…µ”¡¹…µ”èÍÑÈ°™…±±‰…¬èÍÑÈ€ô€‰½µ…¹‘…}ÍÑ…µÁ¥±…Ñ„¹Á‘˜ˆ¤€´øÍÑÈè(€€€¹…µ”€ôA…Ñ ¡¹…µ”½È™…±±‰…¬¤¹¹…µ”¹ÍÑÉ¥À ¤(€€€¥˜¹½Ð¹…µ”¹±½Ý•È ¤¹•¹‘ÍÝ¥Ñ  ˆ¹Á‘˜ˆ¤è(€€€€€€€¹…µ”€ô˜‰íA…Ñ ¡¹…µ”¤¹ÍÑ•´½È€½µ…¹‘…}ÍÑ…µÁ¥±…Ñ„ô¹Á‘˜ˆ(€€€Í…™”€ô€ˆˆ¹©½¥¸¡ ™½È ¥¸¹…µ”¥˜ ¹¥Í…±¹Õ´ ¤½È ¥¸€ˆ¹|´€ˆ¤(€€€É•ÑÕÉ¸Í…™”½È™…±±‰…¬(()‘•˜±•…¹ÕÁ}½±‘}™¥±•Ì ¤€´ø9½¹”è(€€€=UQAUQ}%H¹µ­‘¥È¡Á…É•¹ÑÌõQÉÕ”°•á¥ÍÑ}½¬õQÉÕ”¤(€€€ÕÑ½™˜€ôÑ¥µ”¹Ñ¥µ” ¤€´%1}QQ1}M=9L(€€€™½ÈÁ…Ñ ¥¸=UQAUQ}%H¹±½ˆ ˆ¨¹Á‘˜ˆ¤è(€€€€€€€ÑÉäè(€€€€€€€€€€€¥˜Á…Ñ ¹ÍÑ…Ð ¤¹ÍÑ}µÑ¥µ”€ðÕÑ½™˜è(€€€€€€€€€€€€€€€Á…Ñ ¹Õ¹±¥¹¬ ¤(€€€€€€€•á•ÁÐ=MÉÉ½Èè(€€€€€€€€€€€Á…ÍÌ(()‘•˜…ÍÍ•ÉÑ}‘½Ý¹±½…‘}ÕÉ°¡ÕÉ°èÍÑÈ¤€´ø9½¹”è(€€€Á…ÉÍ•€ôÕÉ±±¥ˆ¹Á…ÉÍ”¹ÕÉ±Á…ÉÍ”¡ÕÉ°¤(€€€¥˜Á…ÉÍ•¹Í¡•µ”¹½Ð¥¸ì‰¡ÑÑÀˆ°€‰¡ÑÑÁÌ‰ô½È¹½ÐÁ…ÉÍ•¹¹•Ñ±½Œè(€€€€€€€É…¥Í”Y…±Õ•ÉÉ½È ‰UI0¥¹Ù…±¥¸½±½Í•ÍÑ”‘½…È±¥¹¬¡ÑÑÀ½¡ÑÑÁÌ¸ˆ¤(()‘•˜‘½Ý¹±½…‘}™¥±”¡ÕÉ°èÍÑÈ°‘•ÍÑ¥¹…Ñ¥½¸èA…Ñ ¤€´ø9½¹”è(€€€…ÍÍ•ÉÑ}‘½Ý¹±½…‘}ÕÉ°¡ÕÉ°¤(€€€É•ÅÕ•ÍÐ€ôÕÉ±±¥ˆ¹É•ÅÕ•ÍÐ¹I•ÅÕ•ÍÐ¡ÕÉ°°¡•…‘•ÉÌõì‰UÍ•Èµ•¹Ðˆè€‰$µMÑ…µÀµ¹¥¹”¼Ä¸À‰ô¤(€€€Ñ½Ñ…°€ô€À(€€€ÑÉäè(€€€€€€€Ý¥Ñ ÕÉ±±¥ˆ¹É•ÅÕ•ÍÐ¹ÕÉ±½Á•¸¡É•ÅÕ•ÍÐ°Ñ¥µ•½ÕÐôØÀ¤…ÌÉ•ÍÁ½¹Í”è(€€€€€€€€€€€‘•ÍÑ¥¹…Ñ¥½¸¹Á…É•¹Ð¹µ­‘¥È¡Á…É•¹ÑÌõQÉÕ”°•á¥ÍÑ}½¬õQÉÕ”¤(€€€€€€€€€€€Ý¥Ñ ‘•ÍÑ¥¹…Ñ¥½¸¹½Á•¸ ‰Ýˆˆ¤…Ì˜è(€€€€€€€€€€€€€€€Ý¡¥±”QÉÕ”è(€€€€€€€€€€€€€€€€€€€¡Õ¹¬€ôÉ•ÍÁ½¹Í”¹É•… ÄÀÈÐ€¨€ÄÀÈÐ¤(€€€€€€€€€€€€€€€€€€€¥˜¹½Ð¡Õ¹¬è(€€€€€€€€€€€€€€€€€€€€€€€‰É•…¬(€€€€€€€€€€€€€€€€€€€Ñ½Ñ…°€¬ô±•¸¡¡Õ¹¬¤(€€€€€€€€€€€€€€€€€€€¥˜Ñ½Ñ…°€ø5a}=]91=}	eQLè(€€€€€€€€€€€€€€€€€€€€€€€É…¥Í”Y…±Õ•ÉÉ½È ‰¥Í¥•ÈÁÉ•„µ…É”Á•¹ÑÉÔÍÑ…µÁ¥±…É”…ÕÑ½µ…Ñ„¸ˆ¤(€€€€€€€€€€€€€€€€€€€˜¹ÝÉ¥Ñ”¡¡Õ¹¬¤(€€€•á•ÁÐÕÉ±±¥ˆ¹•ÉÉ½È¹UI1ÉÉ½È…Ì•áŒè(€€€€€€€É…¥Í”Y…±Õ•ÉÉ½È¡˜‰9ÔÁ½Ð‘•Í…É„™¥Í¥•ÉÕ°èí•áôˆ¤™É½´•áŒ(()±…ÍÌMÑ…µÁ!…¹‘±•È¡	…Í•!QQAI•ÅÕ•ÍÑ!…¹‘±•È¤è(€€€Í•ÉÙ•É}Ù•ÉÍ¥½¸€ô€‰%MÑ…µÁ¹¥¹”¼Ä¸Àˆ((€€€‘•˜±½}µ•ÍÍ…”¡Í•±˜°™½Éµ…ÐèÍÑÈ°€©…ÉÌè½‰©•Ð¤€´ø9½¹”è(€€€€€€€É•ÑÕÉ¸((€€€‘•˜ÝÉ¥Ñ•}©Í½¸¡Í•±˜°ÍÑ…ÑÕÌè¥¹Ð°Á…å±½…è‘¥Ð¤€´ø9½¹”è(€€€€€€€‘…Ñ„€ô©Í½¹}‰åÑ•Ì¡Á…å±½…¤(€€€€€€€Í•±˜¹Í•¹‘}É•ÍÁ½¹Í”¡ÍÑ…ÑÕÌ¤(€€€€€€€Í•±˜¹Í•¹‘}¡•…‘•È ‰½¹Ñ•¹ÐµQåÁ”ˆ°€‰…ÁÁ±¥…Ñ¥½¸½©Í½¸ì¡…ÉÍ•ÐõÕÑ˜´àˆ¤(€€€€€€€Í•±˜¹Í•¹‘}¡•…‘•È ‰½¹Ñ•¹Ðµ1•¹Ñ ˆ°ÍÑÈ¡±•¸¡‘…Ñ„¤¤¤(€€€€€€€Í•±˜¹•¹‘}¡•…‘•ÉÌ ¤(€€€€€€€Í•±˜¹Ý™¥±”¹ÝÉ¥Ñ”¡‘…Ñ„¤((€€€‘•˜…ÕÑ¡½É¥é•¡Í•±˜¤€´ø‰½½°è(€€€€€€€¥˜¹½ÐA%}-dè(€€€€€€€€€€€É•ÑÕÉ¸QÉÕ”(€€€€€€€É•ÑÕÉ¸Í•±˜¹¡•…‘•ÉÌ¹•Ð ‰`µA$µ-•äˆ¤€ôôA%}-d((€€€‘•˜É•…‘}©Í½¹}‰½‘ä¡Í•±˜¤€´ø‘¥Ðè(€€€€€€€ÑÉäè(€€€€€€€€€€€±•¹Ñ €ô¥¹Ð¡Í•±˜¹¡•…‘•ÉÌ¹•Ð ‰½¹Ñ•¹Ðµ1•¹Ñ ˆ°€ˆÀˆ¤¤(€€€€€€€•á•ÁÐY…±Õ•ÉÉ½È…Ì•áŒè(€€€€€€€€€€€É…¥Í”Y…±Õ•ÉÉ½È ‰½¹Ñ•¹Ðµ1•¹Ñ ¥¹Ù…±¥¸ˆ¤™É½´•áŒ(€€€€€€€¥˜±•¹Ñ €ðô€À½È±•¹Ñ €ø€ÈÔØ€¨€ÄÀÈÐè(€€€€€€€€€€€É…¥Í”Y…±Õ•ÉÉ½È ‰	½‘ä¥¹Ù…±¥Í…ÔÁÉ•„µ…É”¸ˆ¤(€€€€€€€É…Ü€ôÍ•±˜¹É™¥±”¹É•…¡±•¹Ñ ¤(€€€€€€€ÑÉäè(€€€€€€€€€€€Á…å±½…€ô©Í½¸¹±½…‘Ì¡É…Ü¹‘•½‘” ‰ÕÑ˜´àˆ¤¤(€€€€€€€•á•ÁÐ©Í½¸¹)M=9•½‘•ÉÉ½È…Ì•áŒè(€€€€€€€€€€€É…¥Í”Y…±Õ•ÉÉ½È ‰)M=8¥¹Ù…±¥¸ˆ¤™É½´•áŒ(€€€€€€€¥˜¹½Ð¥Í¥¹ÍÑ…¹”¡Á…å±½…°‘¥Ð¤è(€€€€€€€€€€€É…¥Í”Y…±Õ•ÉÉ½È ‰)M=8µÕ°ÑÉ•‰Õ¥”Í„™¥”½‰¥•Ð¸ˆ¤(€€€€€€€É•ÑÕÉ¸Á…å±½…((€€€‘•˜ÁÕ‰±¥}‰…Í•}ÕÉ°¡Í•±˜¤€´øÍÑÈè(€€€€€€€½¹™¥ÕÉ•€ô½Ì¹•¹Ù¥É½¸¹•Ð ‰AU	1%}	M}UI0ˆ°€ˆˆ¤¹ÍÑÉ¥À ¤¹ÉÍÑÉ¥À ˆ¼ˆ¤(€€€€€€€¥˜½¹™¥ÕÉ•è(€€€€€€€€€€€É•ÑÕÉ¸½¹™¥ÕÉ•(€€€€€€€ÁÉ½Ñ¼€ôÍ•±˜¹¡•…‘•ÉÌ¹•Ð ‰`µ½ÉÝ…É‘•µAÉ½Ñ¼ˆ°€‰¡ÑÑÀˆ¤¹ÍÁ±¥Ð ˆ°ˆ¥lÁt¹ÍÑÉ¥À ¤½È€‰¡ÑÑÀˆ(€€€€€€€¡½ÍÐ€ôÍ•±˜¹¡•…‘•ÉÌ¹•Ð ‰!½ÍÐˆ°€ˆˆ¤¹ÍÑÉ¥À ¤(€€€€€€€É•ÑÕÉ¸˜‰íÁÉ½Ñ½ôè¼½í¡½ÍÑôˆ¹ÉÍÑÉ¥À ˆ¼ˆ¤((€€€‘•˜‘½}P¡Í•±˜¤€´ø9½¹”è(€€€€€€€Á…ÉÍ•€ôÕÉ±±¥ˆ¹Á…ÉÍ”¹ÕÉ±Á…ÉÍ”¡Í•±˜¹Á…Ñ ¤(€€€€€€€¥˜Á…ÉÍ•¹Á…Ñ €ôô€ˆ½¡•…±Ñ ˆè(€€€€€€€€€€€Í•±˜¹ÝÉ¥Ñ•}©Í½¸ (€€€€€€€€€€€€€€€!QQAMÑ…ÑÕÌ¹=,°(€€€€€€€€€€€€€€€ì‰½¬ˆèQÉÕ”°€‰Í•ÉÙ¥”ˆè€‰‘••¤µÍÑ…µÀµ•¹¥¹”ˆ°€‰Ù•ÉÍ¥½¸ˆè9%9}YIM%=9ô°(€€€€€€€€€€€€¤(€€€€€€€€€€€É•ÑÕÉ¸((€€€€€€€¥˜Á…ÉÍ•¹Á…Ñ ¹ÍÑ…ÉÑÍÝ¥Ñ  ˆ½™¥±•Ì¼ˆ¤è(€€€€€€€€€€€±•…¹ÕÁ}½±‘}™¥±•Ì ¤(€€€€€€€€€€€¹…µ”€ôA…Ñ ¡ÕÉ±±¥ˆ¹Á…ÉÍ”¹Õ¹ÅÕ½Ñ”¡Á…ÉÍ•¹Á…Ñ ¹É•µ½Ù•ÁÉ•™¥à ˆ½™¥±•Ì¼ˆ¤¤¤¹¹…µ”(€€€€€€€€€€€Á…Ñ €ô=UQAUQ}%H€¼¹…µ”(€€€€€€€€€€€¥˜¹½Ð¹…µ”¹•¹‘ÍÝ¥Ñ  ˆ¹Á‘˜ˆ¤½È¹½ÐÁ…Ñ ¹•á¥ÍÑÌ ¤è(€€€€€€€€€€€€€€€Í•±˜¹ÝÉ¥Ñ•}©Í½¸¡!QQAMÑ…ÑÕÌ¹9=Q}=U9°ì‰½¬ˆè…±Í”°€‰•ÉÉ½Èˆè€‰¥Í¥•ÉÕ°¹Ô•á¥ÍÑ„Í…Ô„•áÁ¥É…Ð¸‰ô¤(€€€€€€€€€€€€€€€É•ÑÕÉ¸(€€€€€€€€€€€‘…Ñ„€ôÁ…Ñ ¹É•…‘}‰åÑ•Ì ¤(€€€€€€€€€€€Í•±˜¹Í•¹‘}É•ÍÁ½¹Í”¡!QQAMÑ…ÑÕÌ¹=,¤(€€€€€€€€€€€Í•±˜¹Í•¹‘}¡•…‘•È ‰½¹Ñ•¹ÐµQåÁ”ˆ°€‰…ÁÁ±¥…Ñ¥½¸½Á‘˜ˆ¤(€€€€€€€€€€€Í•±˜¹Í•¹‘}¡•…‘•È ‰½¹Ñ•¹Ðµ¥ÍÁ½Í¥Ñ¥½¸ˆ°˜…ÑÑ…¡µ•¹Ðì™¥±•¹…µ”ô‰í¹…µ•ôˆœ¤(€€€€€€€€€€€Í•±˜¹Í•¹‘}¡•…‘•È ‰½¹Ñ•¹Ðµ1•¹Ñ ˆ°ÍÑÈ¡±•¸¡‘…Ñ„¤¤¤(€€€€€€€€€€€Í•±˜¹•¹‘}¡•…‘•ÉÌ ¤(€€€€€€€€€€€Í•±˜¹Ý™¥±”¹ÝÉ¥Ñ”¡‘…Ñ„¤(€€€€€€€€€€€É•ÑÕÉ¸((€€€€€€€Í•±˜¹ÝÉ¥Ñ•}©Í½¸¡!QQAMÑ…ÑÕÌ¹9=Q}=U9°ì‰½¬ˆè…±Í”°€‰•ÉÉ½Èˆè€‰IÕÑ„¥¹•á¥ÍÑ•¹Ñ„¸‰ô¤((€€€‘•˜‘½}A=MP¡Í•±˜¤€´ø9½¹”è(€€€€€€€¥˜ÕÉ±±¥ˆ¹Á…ÉÍ”¹ÕÉ±Á…ÉÍ”¡Í•±˜¹Á…Ñ ¤¹Á…Ñ €„ô€ˆ½ÍÑ…µÀˆè(€€€€€€€€€€€Í•±˜¹ÝÉ¥Ñ•}©Í½¸¡!QQAMÑ…ÑÕÌ¹9=Q}=U9°ì‰½¬ˆè…±Í”°€‰•ÉÉ½Èˆè€‰IÕÑ„¥¹•á¥ÍÑ•¹Ñ„¸‰ô¤(€€€€€€€€€€€É•ÑÕÉ¸(€€€€€€€¥˜¹½ÐÍ•±˜¹…ÕÑ¡½É¥é• ¤è(€€€€€€€€€€€Í•±˜¹ÝÉ¥Ñ•}©Í½¸¡!QQAMÑ…ÑÕÌ¹U9UQ!=I%i°ì‰½¬ˆè…±Í”°€‰•ÉÉ½Èˆè€‰¡•¥”A$±¥ÁÍ„Í…ÔÉ•Í¥Ñ„¸‰ô¤(€€€€€€€€€€€É•ÑÕÉ¸((€€€€€€€±•…¹ÕÁ}½±‘}™¥±•Ì ¤(€€€€€€€Ý½É­}‘¥È€ôA…Ñ ¡Ñ•µÁ™¥±”¹µ­‘Ñ•µÀ¡ÁÉ•™¥àô‰‘••¥}ÍÑ…µÁ|ˆ¤¤(€€€€€€€ÑÉäè(€€€€€€€€€€€Á…å±½…€ôÍ•±˜¹É•…‘}©Í½¹}‰½‘ä ¤(€€€€€€€€€€€Á‘™}ÕÉ°€ôÍÑÈ¡Á…å±½…¹•Ð ‰Á‘™}ÕÉ°ˆ°€ˆˆ¤¤¹ÍÑÉ¥À ¤(€€€€€€€€€€€ÍÑ…µÁ}ÕÉ°€ôÍÑÈ¡Á…å±½…¹•Ð ‰ÍÑ…µÁ}ÕÉ°ˆ°€ˆˆ¤¤¹ÍÑÉ¥À ¤(€€€€€€€€€€€¥˜¹½ÐÁ‘™}ÕÉ°½È¹½ÐÍÑ…µÁ}ÕÉ°è(€€€€€€€€€€€€€€€É…¥Í”Y…±Õ•ÉÉ½È ‰Á‘™}ÕÉ°Í¤ÍÑ…µÁ}ÕÉ°ÍÕ¹Ð½‰±¥…Ñ½É¥¤¸ˆ¤((€€€€€€€€€€€ÍÑ…µÁ}Ý¥‘Ñ €ô™±½…Ð¡Á…å±½…¹•Ð ‰ÍÑ…µÁ}Ý¥‘Ñ ˆ°€ÄÜÔ¸À¤¤(€€€€€€€€€€€€Œ…±±‰…¬¥Ì¹½Ü„É•ÅÕ¥É•Í…™•Ñä‰•¡…Ù¥½Èè¥˜¹¼±•…È…ÉÉ¥•È(€€€€€€€€€€€€Œ½¹™¥Éµ…Ñ¥½¸é½¹”¥Ì™½Õ¹°ÍÑ…µÀ•Ù•ÉäÁ…”¥¸Ñ¡”Í…™•ÍÐ(€€€€€€€€€€€€Œ‰½ÑÑ½´µÉ¥¡Ð™É•”…É•„¥¹ÍÑ•…½˜É•ÑÕÉ¹¥¹œ¹••‘Í}É•Ù¥•Ü¸(€€€€€€€€€€€…±±½Ý}™…±±‰…¬€ôQÉÕ”(€€€€€€€€€€€™¥±•¹…µ”€ô±•…¹}™¥±•¹…µ”¡ÍÑÈ¡Á…å±½…¹•Ð ‰™¥±•¹…µ”ˆ°€‰½µ…¹‘…}ÍÑ…µÁ¥±…Ñ„¹Á‘˜ˆ¤¤¤((€€€€€€€€€€€¥¹ÁÕÑ}Á‘˜€ôÝ½É­}‘¥È€¼€‰¥¹ÁÕÐ¹Á‘˜ˆ(€€€€€€€€€€€ÍÑ…µÁ}¥µ…”€ôÝ½É­}‘¥È€¼€‰ÍÑ…µÀ¹Á¹œˆ(€€€€€€€€€€€½ÕÑÁÕÑ}Á‘˜€ôÝ½É­}‘¥È€¼™¥±•¹…µ”(€€€€€€€€€€€‘½Ý¹±½…‘}™¥±”¡Á‘™}ÕÉ°°¥¹ÁÕÑ}Á‘˜¤(€€€€€€€€€€€‘½Ý¹±½…‘}™¥±”¡ÍÑ…µÁ}ÕÉ°°ÍÑ…µÁ}¥µ…”¤((€€€€€€€€€€€É•ÍÕ±Ð€ôÍÑ…µÁ}Á‘˜ (€€€€€€€€€€€€€€€¥¹ÁÕÑ}Á‘˜õ¥¹ÁÕÑ}Á‘˜°(€€€€€€€€€€€€€€€ÍÑ…µÁ}¥µ…”õÍÑ…µÁ}¥µ…”°(€€€€€€€€€€€€€€€½ÕÑÁÕÑ}Á‘˜õ½ÕÑÁÕÑ}Á‘˜°(€€€€€€€€€€€€€€€ÍÑ…µÁ}Ý¥‘Ñ õÍÑ…µÁ}Ý¥‘Ñ °(€€€€€€€€€€€€€€€…±±½Ý}™…±±‰…¬õ…±±½Ý}™…±±‰…¬°(€€€€€€€€€€€€¤((€€€€€€€€€€€¥˜É•ÍÕ±Ñl‰¹••‘Í}É•Ù¥•Ü‰tè(€€€€€€€€€€€€€€€Í•±˜¹ÝÉ¥Ñ•}©Í½¸ (€€€€€€€€€€€€€€€€€€€!QQAMÑ…ÑÕÌ¹U9AI=MM	1}9Q%Qd°(€€€€€€€€€€€€€€€€€€€ì(€€€€€€€€€€€€€€€€€€€€€€€€‰½¬ˆè…±Í”°(€€€€€€€€€€€€€€€€€€€€€€€€‰Ù•ÉÍ¥½¸ˆè9%9}YIM%=8°(€€€€€€€€€€€€€€€€€€€€€€€€‰¹••‘Í}É•Ù¥•ÜˆèQÉÕ”°(€€€€€€€€€€€€€€€€€€€€€€€€‰•ÉÉ½Èˆè€‰9Ô…´…Í¥Ð¼é½¹„±…É„‘”Í•µ¹…ÑÕÉ„½ÍÑ…µÁ¥±„ÑÉ…¹ÍÁ½ÉÑ…Ñ½È¸9ÔÑÉ¥µ¥ÐAÍÑ…µÁ¥±…Ð±„¡¥¤¸ˆ°(€€€€€€€€€€€€€€€€€€€€€€€€‰…¹¡½É}½Õ¹ÐˆèÉ•ÍÕ±Ñl‰…¹¡½É}½Õ¹Ð‰t°(€€€€€€€€€€€€€€€€€€€ô°(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€É•ÑÕÉ¸((€€€€€€€€€€€Ñ½­•¸€ôÍ•É•ÑÌ¹Ñ½­•¹}ÕÉ±Í…™” Äà¤(€€€€€€€€€€€ÁÕ‰±¥}¹…µ”€ô˜‰íA…Ñ ¡™¥±•¹…µ”¤¹ÍÑ•µôµíÑ½­•¹ô¹Á‘˜ˆ(€€€€€€€€€€€ÁÕ‰±¥}Á…Ñ €ô=UQAUQ}%H€¼ÁÕ‰±¥}¹…µ”(€€€€€€€€€€€Í¡ÕÑ¥°¹½Áå™¥±”¡½ÕÑÁÕÑ}Á‘˜°ÁÕ‰±¥}Á…Ñ ¤(€€€€€€€€€€€™¥±•}ÕÉ°€ô˜‰íÍ•±˜¹ÁÕ‰±¥}‰…Í•}ÕÉ° ¥ô½™¥±•Ì½íÕÉ±±¥ˆ¹Á…ÉÍ”¹ÅÕ½Ñ”¡ÁÕ‰±¥}¹…µ”¥ôˆ((€€€€€€€€€€€Í•±˜¹ÝÉ¥Ñ•}©Í½¸ (€€€€€€€€€€€€€€€!QQAMÑ…ÑÕÌ¹=,°(€€€€€€€€€€€€€€€ì(€€€€€€€€€€€€€€€€€€€€‰½¬ˆèQÉÕ”°(€€€€€€€€€€€€€€€€€€€€‰Ù•ÉÍ¥½¸ˆè9%9}YIM%=8°(€€€€€€€€€€€€€€€€€€€€‰™¥±•}ÕÉ°ˆè™¥±•}ÕÉ°°(€€€€€€€€€€€€€€€€€€€€‰™¥±•¹…µ”ˆè™¥±•¹…µ”°(€€€€€€€€€€€€€€€€€€€€‰Á±…•µ•¹ÑÌˆèÉ•ÍÕ±Ñl‰Á±…•µ•¹ÑÌ‰t°(€€€€€€€€€€€€€€€€€€€€‰…¹¡½É}½Õ¹ÐˆèÉ•ÍÕ±Ñl‰…¹¡½É}½Õ¹Ð‰t°(€€€€€€€€€€€€€€€€€€€€‰¹••‘Í}É•Ù¥•Üˆè…±Í”°(€€€€€€€€€€€€€€€ô°(€€€€€€€€€€€€¤(€€€€€€€•á•ÁÐY…±Õ•ÉÉ½È…Ì•áŒè(€€€€€€€€€€€Í•±˜¹ÝÉ¥Ñ•}©Í½¸¡!QQAMÑ…ÑÕÌ¹	}IEUMP°ì‰½¬ˆè…±Í”°€‰Ù•ÉÍ¥½¸ˆè9%9}YIM%=8°€‰•ÉÉ½ÈˆèÍÑÈ¡•áŒ¥ô¤(€€€€€€€•á•ÁÐá•ÁÑ¥½¸…Ì•áŒè(€€€€€€€€€€€Í•±˜¹ÝÉ¥Ñ•}©Í½¸ (€€€€€€€€€€€€€€€!QQAMÑ…ÑÕÌ¹%9QI91}MIYI}II=H°(€€€€€€€€€€€€€€€ì‰½¬ˆè…±Í”°€‰Ù•ÉÍ¥½¸ˆè9%9}YIM%=8°€‰•ÉÉ½Èˆè˜‰É½…É”ÍÑ…µÁ¥±…É”èí•áô‰ô°(€€€€€€€€€€€€¤(€€€€€€€™¥¹…±±äè(€€€€€€€€€€€Í¡ÕÑ¥°¹ÉµÑÉ•”¡Ý½É­}‘¥È°¥¹½É•}•ÉÉ½ÉÌõQÉÕ”¤(()‘•˜µ…¥¸ ¤€´ø9½¹”è(€€€Á½ÉÐ€ô¥¹Ð¡½Ì¹•¹Ù¥É½¸¹•Ð ‰A=IPˆ°€ˆàÀàÀˆ¤¤(€€€=UQAUQ}%H¹µ­‘¥È¡Á…É•¹ÑÌõQÉÕ”°•á¥ÍÑ}½¬õQÉÕ”¤(€€€Í•ÉÙ•È€ôQ¡É•…‘¥¹!QQAM•ÉÙ•È  ˆÀ¸À¸À¸Àˆ°Á½ÉÐ¤°MÑ…µÁ!…¹‘±•È¤(€€€ÁÉ¥¹Ð¡˜‰$MÑ…µÀ¹¥¹”í9%9}YIM%=9ô±¥ÍÑ•¹¥¹œ½¸Á½ÉÐíÁ½ÉÑôˆ°™±ÕÍ õQÉÕ”¤(€€€Í•ÉÙ•È¹Í•ÉÙ•}™½É•Ù•È ¤(()¥˜}}¹…µ•}|€ôô€‰}}µ…¥¹}|ˆè(€€€µ…¥¸ ¤(
+                (reason, _stamp_engine.clamp_rect(rect, page_w, page_h))
+                for reason, rect in candidates
+            ]
+            scored = _stamp_engine.score_candidates(
+                candidates,
+                word_boxes,
+                page_w,
+                page_h,
+                anchor,
+                page_image,
+            )
+            safe = [
+                item
+                for item in scored
+                if _stamp_engine.is_safe_rect(
+                    item[1],
+                    word_boxes,
+                    page_image,
+                    page_w,
+                    page_h,
+                )
+                and item[1].top >= text_bottom + 2
+            ]
+            if safe:
+                reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
+                return reason, rect
+            attempt_best = max(scored, key=lambda item: item[2])
+            if best_any is None or attempt_best[2] > best_any[2]:
+                best_any = attempt_best
+        return best_any[0], best_any[1]
+
+    # Keep the visual placement logic in stamp_engine.py, but let the API tune
+    # final size quickly when Make sends stamp_width as a broad target.
+    def stamp_size_for_anchor(anchor, page_w, page_h, requested_w, ratio, image_boxes=None):
+        requested_w = max(70.0, requested_w)
+        ref = None
+        if (
+            anchor.phrase in _stamp_engine.TRANSPORTER_NAME_TARGETS
+            or _stamp_engine.is_signature_block_anchor(anchor, page_w, page_h)
+        ):
+            ref = _stamp_engine.reference_stamp_box(anchor, image_boxes or [])
+        if ref is not None:
+            target_height = min(max(ref.height * 0.42, 38.0), 54.0, page_h * 0.075)
+            lower_width = max(88.0, requested_w * 0.88)
+            upper_width = min(125.0, requested_w * 1.08, page_w * 0.22)
+            width = min(max(target_height / max(ratio, 0.1), lower_width), upper_width)
+            max_height = 56.0
+            min_width = min(lower_width, page_w * 0.20)
+        elif anchor.phrase in _stamp_engine.SUPPLIER_SIGNATURE_TARGETS:
+            width = min(requested_w, 118.0, page_w * 0.20)
+            max_height = 58.0
+            min_width = 82.0
+        elif _stamp_engine.is_footer_anchor(anchor, page_w, page_h):
+            width = min(requested_w, 96.0, page_w * 0.16)
+            max_height = 46.0
+            min_width = 56.0
+        elif anchor.phrase in _stamp_engine.FOOTER_TARGETS:
+            width = min(requested_w, 96.0, page_w * 0.16)
+            max_height = 46.0
+            min_width = 56.0
+        else:
+            width = min(requested_w, 112.0, page_w * 0.19)
+            max_height = 54.0
+            min_width = 70.0
+        if ratio > 0:
+            width = min(width, max_height / ratio)
+        width = max(min_width, width)
+        return width, width * ratio
+
+    def fallback_candidates(page_w, page_h, stamp_w, stamp_h):
+        right_margins = [28, 42, 60, 85, 120, 160, 210]
+        bottom_margins = [32, 48, 68, 92, 122, 160, 205, 255]
+        out = []
+        for yi, bottom_margin in enumerate(bottom_margins):
+            y = page_h - stamp_h - bottom_margin
+            for xi, right_margin in enumerate(right_margins):
+                x = page_w - stamp_w - right_margin
+                out.append(
+                    (
+                        f"fallback_bottom_right_{yi}_{xi}",
+                        _stamp_engine.Box(x, y, x + stamp_w, y + stamp_h),
+                    )
+                )
+        return out
+
+    def choose_fallback_page_candidate(word_boxes, page_w, page_h, stamp_w, stamp_ratio, page_image=None):
+        attempts = [stamp_w, stamp_w * 0.90, stamp_w * 0.80, stamp_w * 0.70, stamp_w * 0.60]
+        best_any = None
+        for width in attempts:
+            width = max(52.0, width)
+            height = width * stamp_ratio
+            candidates = [
+                (reason, _stamp_engine.clamp_rect(rect, page_w, page_h))
+                for reason, rect in fallback_candidates(page_w, page_h, width, height)
+            ]
+            scored = _stamp_engine.score_candidates(candidates, word_boxes, page_w, page_h, None, page_image)
+            safe = [
+                item
+                for item in scored
+                if _stamp_engine.is_safe_rect(item[1], word_boxes, page_image, page_w, page_h)
+            ]
+            if safe:
+                reason, rect, _score, _overlap = max(
+                    safe,
+                    key=lambda item: (
+                        item[2]
+                        - (page_h - item[1].bottom) * 0.45
+                        - (page_w - item[1].x1) * 0.25
+                    ),
+                )
+                return reason, rect
+            attempt_best = max(scored, key=lambda item: item[2])
+            if best_any is None or attempt_best[2] > best_any[2]:
+                best_any = attempt_best
+        if best_any is None:
+            return None
+        return best_any[0], best_any[1]
+
+    def choose_placements(
+        anchors,
+        word_boxes,
+        image_boxes,
+        page_sizes,
+        stamp_w,
+        stamp_ratio,
+        allow_fallback=False,
+        visual_pages=None,
+    ):
+        explicit_signature_anchors = _stamp_engine.select_explicit_signature_anchors(
+            anchors,
+            word_boxes,
+            page_sizes,
+        )
+        if explicit_signature_anchors:
+            explicit_placements = []
+            for anchor in explicit_signature_anchors:
+                page_index = anchor.page_index
+                page_w, page_h = page_sizes[page_index]
+                page_image = (visual_pages or {}).get(page_index)
+                page_stamp_w, page_stamp_h = stamp_size_for_anchor(
+                    anchor,
+                    page_w,
+                    page_h,
+                    stamp_w,
+                    stamp_ratio,
+                    image_boxes[page_index],
+                )
+                best_reason, best_rect = _stamp_engine.choose_explicit_signature_candidate(
+                    anchor,
+                    word_boxes[page_index],
+                    page_w,
+                    page_h,
+                    page_stamp_w,
+                    page_stamp_h,
+                    page_image,
+                )
+                if (
+                    anchor.phrase not in _stamp_engine.OVERLAP_OK_SIGNATURE_TARGETS
+                    and not _stamp_engine.is_safe_rect(
+                        best_rect,
+                        word_boxes[page_index],
+                        page_image,
+                        page_w,
+                        page_h,
+                    )
+                ):
+                    best_reason, best_rect = choose_tight_labeled_candidate(
+                        anchor,
+                        anchors,
+                        word_boxes[page_index],
+                        page_w,
+                        page_h,
+                        page_stamp_w,
+                        page_stamp_h,
+                    )
+                explicit_placements.append(
+                    _stamp_engine.Placement(
+                        page_index=page_index,
+                        rect=best_rect,
+                        score=_stamp_engine.score_rect(
+                            best_rect,
+                            word_boxes[page_index],
+                            page_w,
+                            page_h,
+                            anchor,
+                        ),
+                        anchor_phrase=anchor.phrase,
+                        reason=best_reason,
+                    )
+                )
+            return explicit_placements
+
+        selected_signature_anchors = select_transporter_signature_anchors(
+            anchors,
+            word_boxes,
+            image_boxes,
+            page_sizes,
+        )
+        if selected_signature_anchors:
+            signature_placements = []
+            for anchor in selected_signature_anchors:
+                page_index = anchor.page_index
+                page_w, page_h = page_sizes[page_index]
+                page_image = (visual_pages or {}).get(page_index)
+                page_stamp_w, page_stamp_h = stamp_size_for_anchor(
+                    anchor,
+                    page_w,
+                    page_h,
+                    stamp_w,
+                    stamp_ratio,
+                    image_boxes[page_index],
+                )
+                best_reason, best_rect = choose_signature_block_candidate(
+                    anchor,
+                    word_boxes[page_index],
+                    image_boxes[page_index],
+                    page_w,
+                    page_h,
+                    page_stamp_w,
+                    page_stamp_h,
+                    page_image,
+                )
+                if not _stamp_engine.is_safe_rect(
+                    best_rect,
+                    word_boxes[page_index],
+                    page_image,
+                    page_w,
+                    page_h,
+                ):
+                    best_reason, best_rect = choose_tight_labeled_candidate(
+                        anchor,
+                        anchors,
+                        word_boxes[page_index],
+                        page_w,
+                        page_h,
+                        page_stamp_w,
+                        page_stamp_h,
+                    )
+                signature_placements.append(
+                    _stamp_engine.Placement(
+                        page_index=page_index,
+                        rect=best_rect,
+                        score=_stamp_engine.score_rect(
+                            best_rect,
+                            word_boxes[page_index],
+                            page_w,
+                            page_h,
+                            anchor,
+                        ),
+                        anchor_phrase=anchor.phrase,
+                        reason=best_reason,
+                    )
+                )
+            return signature_placements
+
+        page_count = len(page_sizes)
+        if page_count and allow_fallback:
+            # No verified carrier signing block exists. Do not let weak
+            # identity/header anchors choose one arbitrary page; the safe
+            # production fallback is one bottom-right stamp on every page.
+            placements = []
+            for page_index in range(page_count):
+                page_w, page_h = page_sizes[page_index]
+                page_stamp_w = min(max(stamp_w, 78.0), 112.0, page_w * 0.19)
+                best = choose_fallback_page_candidate(
+                    word_boxes[page_index],
+                    page_w,
+                    page_h,
+                    page_stamp_w,
+                    stamp_ratio,
+                    (visual_pages or {}).get(page_index),
+                )
+                if best is None:
+                    continue
+                best_reason, best_rect = best
+                placements.append(
+                    _stamp_engine.Placement(
+                        page_index=page_index,
+                        rect=best_rect,
+                        score=_stamp_engine.score_rect(
+                            best_rect,
+                            word_boxes[page_index],
+                            page_w,
+                            page_h,
+                            None,
+                        ),
+                        anchor_phrase="FALLBACK_EACH_PAGE",
+                        reason=best_reason,
+                    )
+                )
+            return placements
+
+        return original_choose_placements(
+            anchors,
+            word_boxes,
+            image_boxes,
+            page_sizes,
+            stamp_w,
+            stamp_ratio,
+            allow_fallback=False,
+            visual_pages=visual_pages,
+        )
+
+    def stamp_pdf(input_pdf, stamp_image, output_pdf, stamp_width=175.0, allow_fallback=False):
+        with _stamp_engine.Image.open(stamp_image) as img:
+            ratio = img.height / max(img.width, 1)
+
+        anchors, word_boxes, image_boxes, page_sizes = _stamp_engine.find_anchors(input_pdf)
+        visual_page_indexes = {anchor.page_index for anchor in anchors}
+        if allow_fallback and page_sizes:
+            visual_page_indexes.update(range(len(page_sizes)))
+        visual_pages = _stamp_engine.render_visual_pages(input_pdf, visual_page_indexes)
+        placements = choose_placements(
+            anchors,
+            word_boxes,
+            image_boxes,
+            page_sizes,
+            stamp_width,
+            ratio,
+            allow_fallback=allow_fallback,
+            visual_pages=visual_pages,
+        )
+
+        reader = _stamp_engine.PdfReader(str(input_pdf))
+        writer = _stamp_engine.PdfWriter()
+        stamp_reader = _stamp_engine.ImageReader(str(stamp_image))
+
+        placement_by_page = {p.page_index: p for p in placements}
+        for page_index, page in enumerate(reader.pages):
+            if page_index not in placement_by_page:
+                writer.add_page(page)
+                continue
+
+            page_w = float(page.mediabox.width)
+            page_h = float(page.mediabox.height)
+            p = placement_by_page[page_index]
+            packet = _stamp_engine.io.BytesIO()
+            c = _stamp_engine.canvas.Canvas(packet, pagesize=(page_w, page_h))
+            x = p.rect.x0
+            y = page_h - p.rect.bottom
+            c.drawImage(stamp_reader, x, y, width=p.rect.width, height=p.rect.height, mask="auto")
+            c.save()
+            packet.seek(0)
+            overlay = _stamp_engine.PdfReader(packet).pages[0]
+            page.merge_page(overlay)
+            writer.add_page(page)
+
+        output_pdf.parent.mkdir(parents=True, exist_ok=True)
+        with output_pdf.open("wb") as f:
+            writer.write(f)
+
+        return {
+            "input": str(input_pdf),
+            "output": str(output_pdf),
+            "placements": [
+                {
+                    "page": p.page_index + 1,
+                    "rect_top_left": {
+                        "x0": round(p.rect.x0, 2),
+                        "top": round(p.rect.top, 2),
+                        "x1": round(p.rect.x1, 2),
+                        "bottom": round(p.rect.bottom, 2),
+                    },
+                    "score": round(p.score, 2),
+                    "anchor": p.anchor_phrase,
+                    "reason": p.reason,
+                }
+                for p in placements
+            ],
+            "anchor_count": len(anchors),
+            "stamped": bool(placements),
+            "needs_review": not bool(placements),
+        }
+
+    _stamp_engine.stamp_size_for_anchor = stamp_size_for_anchor
+    _stamp_engine.fallback_candidates = fallback_candidates
+    _stamp_engine.looks_like_carrier_signature_block = looks_like_carrier_signature_block
+    _stamp_engine.signature_block_text_bottom = signature_block_text_bottom
+    _stamp_engine.is_split_transporter_name_pair = is_split_transporter_name_pair
+    _stamp_engine.is_carrier_identity_header = is_carrier_identity_header
+    _stamp_engine.choose_tight_labeled_candidate = choose_tight_labeled_candidate
+    _stamp_engine.choose_signature_block_candidate = choose_signature_block_candidate
+    _stamp_engine.select_transporter_signature_anchors = select_transporter_signature_anchors
+    _stamp_engine.choose_placements = choose_placements
+    _stamp_engine.stamp_pdf = stamp_pdf
+
+
+patch_stamp_engine()
+stamp_pdf = _stamp_engine.stamp_pdf
+
+
+def json_bytes(payload: dict) -> bytes:
+    return json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+
+
+def clean_filename(name: str, fallback: str = "comanda_stampilata.pdf") -> str:
+    name = Path(name or fallback).name.strip()
+    if not name.lower().endswith(".pdf"):
+        name = f"{Path(name).stem or 'comanda_stampilata'}.pdf"
+    safe = "".join(ch for ch in name if ch.isalnum() or ch in "._- ")
+    return safe or fallback
+
+
+def cleanup_old_files() -> None:
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    cutoff = time.time() - FILE_TTL_SECONDS
+    for path in OUTPUT_DIR.glob("*.pdf"):
+        try:
+            if path.stat().st_mtime < cutoff:
+                path.unlink()
+        except OSError:
+            pass
+
+
+def assert_download_url(url: str) -> None:
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise ValueError("URL invalid. Foloseste doar link http/https.")
+
+
+def download_file(url: str, destination: Path) -> None:
+    assert_download_url(url)
+    request = urllib.request.Request(url, headers={"User-Agent": "DEGEI-Stamp-Engine/1.0"})
+    total = 0
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            with destination.open("wb") as f:
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    total += len(chunk)
+                    if total > MAX_DOWNLOAD_BYTES:
+                        raise ValueError("Fisier prea mare pentru stampilare automata.")
+                    f.write(chunk)
+    except urllib.error.URLError as exc:
+        raise ValueError(f"Nu pot descarca fisierul: {exc}") from exc
+
+
+class StampHandler(BaseHTTPRequestHandler):
+    server_version = "DEGEIStampEngine/1.0"
+
+    def log_message(self, format: str, *args: object) -> None:
+        return
+
+    def write_json(self, status: int, payload: dict) -> None:
+        data = json_bytes(payload)
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def authorized(self) -> bool:
+        if not API_KEY:
+            return True
+        return self.headers.get("X-API-Key") == API_KEY
+
+    def read_json_body(self) -> dict:
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+        except ValueError as exc:
+            raise ValueError("Content-Length invalid.") from exc
+        if length <= 0 or length > 256 * 1024:
+            raise ValueError("Body invalid sau prea mare.")
+        raw = self.rfile.read(length)
+        try:
+            payload = json.loads(raw.decode("utf-8"))
+        except json.JSONDecodeError as exc:
+            raise ValueError("JSON invalid.") from exc
+        if not isinstance(payload, dict):
+            raise ValueError("JSON-ul trebuie sa fie obiect.")
+        return payload
+
+    def public_base_url(self) -> str:
+        configured = os.environ.get("PUBLIC_BASE_URL", "").strip().rstrip("/")
+        if configured:
+            return configured
+        proto = self.headers.get("X-Forwarded-Proto", "http").split(",")[0].strip() or "http"
+        host = self.headers.get("Host", "").strip()
+        return f"{proto}://{host}".rstrip("/")
+
+    def do_GET(self) -> None:
+        parsed = urllib.parse.urlparse(self.path)
+        if parsed.path == "/health":
+            self.write_json(
+                HTTPStatus.OK,
+                {"ok": True, "service": "degei-stamp-engine", "version": ENGINE_VERSION},
+            )
+            return
+
+        if parsed.path.startswith("/files/"):
+            cleanup_old_files()
+            name = Path(urllib.parse.unquote(parsed.path.removeprefix("/files/"))).name
+            path = OUTPUT_DIR / name
+            if not name.endswith(".pdf") or not path.exists():
+                self.write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Fisierul nu exista sau a expirat."})
+                return
+            data = path.read_bytes()
+            self.send_response(HTTPStatus.OK)
+            self.send_header("Content-Type", "application/pdf")
+            self.send_header("Content-Disposition", f'attachment; filename="{name}"')
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
+
+        self.write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Ruta inexistenta."})
+
+    def do_POST(self) -> None:
+        if urllib.parse.urlparse(self.path).path != "/stamp":
+            self.write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Ruta inexistenta."})
+            return
+        if not self.authorized():
+            self.write_json(HTTPStatus.UNAUTHORIZED, {"ok": False, "error": "Cheie API lipsa sau gresita."})
+            return
+
+        cleanup_old_files()
+        work_dir = Path(tempfile.mkdtemp(prefix="degei_stamp_"))
+        try:
+            payload = self.read_json_body()
+            pdf_url = str(payload.get("pdf_url", "")).strip()
+            stamp_url = str(payload.get("stamp_url", "")).strip()
+            if not pdf_url or not stamp_url:
+                raise ValueError("pdf_url si stamp_url sunt obligatorii.")
+
+            stamp_width = float(payload.get("stamp_width", 175.0))
+            # Fallback is now a required safety behavior: if no clear carrier
+            # confirmation zone is found, stamp every page in the safest
+            # bottom-right free area instead of returning needs_review.
+            allow_fallback = True
+            filename = clean_filename(str(payload.get("filename", "comanda_stampilata.pdf")))
+
+            input_pdf = work_dir / "input.pdf"
+            stamp_image = work_dir / "stamp.png"
+            output_pdf = work_dir / filename
+            download_file(pdf_url, input_pdf)
+            download_file(stamp_url, stamp_image)
+
+            result = stamp_pdf(
+                input_pdf=input_pdf,
+                stamp_image=stamp_image,
+                output_pdf=output_pdf,
+                stamp_width=stamp_width,
+                allow_fallback=allow_fallback,
+            )
+
+            if result["needs_review"]:
+                self.write_json(
+                    HTTPStatus.UNPROCESSABLE_ENTITY,
+                    {
+                        "ok": False,
+                        "version": ENGINE_VERSION,
+                        "needs_review": True,
+                        "error": "Nu am gasit o zona clara de semnatura/stampila transportator. Nu trimit PDF stampilat la ghici.",
+                        "anchor_count": result["anchor_count"],
+                    },
+                )
+                return
+
+            token = secrets.token_urlsafe(18)
+            public_name = f"{Path(filename).stem}-{token}.pdf"
+            public_path = OUTPUT_DIR / public_name
+            shutil.copyfile(output_pdf, public_path)
+            file_url = f"{self.public_base_url()}/files/{urllib.parse.quote(public_name)}"
+
+            self.write_json(
+                HTTPStatus.OK,
+                {
+                    "ok": True,
+                    "version": ENGINE_VERSION,
+                    "file_url": file_url,
+                    "filename": filename,
+                    "placements": result["placements"],
+                    "anchor_count": result["anchor_count"],
+                    "needs_review": False,
+                },
+            )
+        except ValueError as exc:
+            self.write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "version": ENGINE_VERSION, "error": str(exc)})
+        except Exception as exc:
+            self.write_json(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                {"ok": False, "version": ENGINE_VERSION, "error": f"Eroare stampilare: {exc}"},
+            )
+        finally:
+            shutil.rmtree(work_dir, ignore_errors=True)
+
+
+def main() -> None:
+    port = int(os.environ.get("PORT", "8080"))
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    server = ThreadingHTTPServer(("0.0.0.0", port), StampHandler)
+    print(f"DEGEI Stamp Engine {ENGINE_VERSION} listening on port {port}", flush=True)
+    server.serve_forever()
+
+
+if __name__ == "__main__":
+    main()

@@ -418,4 +418,994 @@ def reference_stamp_box(anchor: Anchor, image_boxes: list[Box]) -> Box | None:
             box
             for box in image_boxes
             if 45 <= box.width <= 170
-            and 45 <= box.height <= 190ï®9¶‰žËkºwµçpÁ…•}¥µ…”°Á…•}Ü°Á…•} ¤(€€€¥˜¥¹¬€ø€À¸ÀÀàè(€€€€€€€Í½É”€´ô¥¹¬€¨€ÄàÀÀÀ¸À(€€€É•ÑÕÉ¸Í½É”(()‘•˜¡½½Í•}‰•ÍÑ}…¹‘¥‘…Ñ” (€€€…¹‘¥‘…Ñ•Ìè±¥ÍÑmÑÕÁ±•mÍÑÈ°	½áut°(€€€Ý½É‘}‰½á•Ìè±¥ÍÑm	½át°(€€€Á…•}Üè™±½…Ð°(€€€Á…•} è™±½…Ð°(€€€…¹¡½Èè¹¡½Èð9½¹”°(€€€Á…•}¥µ…”è%µ…”¹%µ…”ð9½¹”€ô9½¹”°(¤€´øÑÕÁ±•mÍÑÈ°	½átè(€€€Í½É•€ôÍ½É•}…¹‘¥‘…Ñ•Ì¡…¹‘¥‘…Ñ•Ì°Ý½É‘}‰½á•Ì°Á…•}Ü°Á…•} °…¹¡½È°Á…•}¥µ…”¤(€€€Í…™”€ôl(€€€€€€€¥Ñ•´™½È¥Ñ•´¥¸Í½É•(€€€€€€€¥˜¥Í}Í…™•}É•Ð¡¥Ñ•µlÅt°Ý½É‘}‰½á•Ì°Á…•}¥µ…”°Á…•}Ü°Á…•} ¤(€€€t(€€€Á½½°€ôÍ…™”½ÈÍ½É•(€€€‰•ÍÑ}É•…Í½¸°‰•ÍÑ}É•Ð°}Í½É”°}Ñ•áÑ}½Ù•É±…À€ôµ…à¡Á½½°°­•äõ±…µ‰‘„¥Ñ•´è¥Ñ•µlÉt¤(€€€É•ÑÕÉ¸‰•ÍÑ}É•…Í½¸°‰•ÍÑ}É•Ð(()‘•˜Í½É•}…¹‘¥‘…Ñ•Ì (€€€…¹‘¥‘…Ñ•Ìè±¥ÍÑmÑÕÁ±•mÍÑÈ°	½áut°(€€€Ý½É‘}‰½á•Ìè±¥ÍÑm	½át°(€€€Á…•}Üè™±½…Ð°(€€€Á…•} è™±½…Ð°(€€€…¹¡½Èè¹¡½Èð9½¹”°(€€€Á…•}¥µ…”è%µ…”¹%µ…”ð9½¹”€ô9½¹”°(¤€´ø±¥ÍÑmÑÕÁ±•mÍÑÈ°	½à°™±½…Ð°™±½…Ñutè(€€€É•…Í½¹}‰½¹ÕÌ€ôì(€€€€€€€€‰‰•±½Ý}Í¥¹…ÑÕÉ•}‰±½­}µ…Ñ¡}±¥•¹Ðˆè€ÈÈÀ¸À°(€€€€€€€€‰Í¥¹…ÑÕÉ•}‰±½­}…±¥¹}±¥•¹Ñ}ÍÑ…µÀˆè€ÌÐÀ¸À°(€€€€€€€€‰Í¥¹…ÑÕÉ•}‰±½­}±¥•¹Ñ}¡¥¡•Èˆè€ÈÌÀ¸À°(€€€€€€€€‰Í¥¹…ÑÕÉ•}‰±½­}±¥•¹Ñ}±½Ý•Èˆè€ÄÜÀ¸À°(€€€€€€€€‰‰•±½Ý}Í¥¹…ÑÕÉ•}‰±½­}É¥¡Ðˆè€ÄÜÀ¸À°(€€€€€€€€‰Í¥¹…ÑÕÉ•}‰±½­}±½Ý•Èˆè€àÀ¸À°(€€€€€€€€‰…‰½Ù•}Í¥¹…ÑÕÉ•}±…‰•±}•¹Ñ•Èˆè€ÄàÀ¸À°(€€€€€€€€‰…‰½Ù•}Í¥¹…ÑÕÉ•}±…‰•±}±•™Ðˆè€ÄÐÀ¸À°(€€€€€€€€‰…‰½Ù•}Í¥¹…ÑÕÉ•}±…‰•±}É¥¡Ðˆè€ÄÈÀ¸À°(€€€€€€€€‰¡¥¡•É}Í¥¹…ÑÕÉ•}±…‰•±}•¹Ñ•Èˆè€àÀ¸À°(€€€€€€€€‰Õ¹‘•É}½¹™¥Éµ…Ñ¥½¹}¡•…‘¥¹œˆè€ÄÔÀ¸À°(€€€€€€€€‰É¥¡Ñ}½™}½¹™¥Éµ…Ñ¥½¹}¡•…‘¥¹œˆè€ÄÈÀ¸À°(€€€€€€€€‰…‰½Ù•}™½½Ñ•É}¹…µ”ˆè€ÄàÀ¸À°(€€€€€€€€‰É¥¡Ñ}½™}™½½Ñ•É}¹…µ”ˆè€ÄÀÀ¸À°(€€€€€€€€‰…‰½Ù•}™½½Ñ•É}É¥¡Ðˆè€àÀ¸À°(€€€ô(€€€É•ÑÕÉ¸l(€€€€€€€€ (€€€€€€€€€€€É•…Í½¸°(€€€€€€€€€€€É•Ð°(€€€€€€€€€€€Í½É•}É•Ñ}Ý¥Ñ¡}Ù¥ÍÕ…°¡É•Ð°Ý½É‘}‰½á•Ì°Á…•}Ü°Á…•} °…¹¡½È°Á…•}¥µ…”¤€¬É•…Í½¹}‰½¹ÕÌ¹•Ð¡É•…Í½¸°€À¸À¤°(€€€€€€€€€€€½Ù•É±…Á}É…Ñ¥¼¡É•Ð°Ý½É‘}‰½á•Ì¤°(€€€€€€€€¤(€€€€€€€™½ÈÉ•…Í½¸°É•Ð¥¸…¹‘¥‘…Ñ•Ì(€€€t(()‘•˜¡½½Í•}™½½Ñ•É}…¹‘¥‘…Ñ” (€€€…¹¡½Èè¹¡½È°(€€€Ý½É‘}‰½á•Ìè±¥ÍÑm	½át°(€€€Á…•}Üè™±½…Ð°(€€€Á…•} è™±½…Ð°(€€€ÍÑ…µÁ}Üè™±½…Ð°(€€€ÍÑ…µÁ}É…Ñ¥¼è™±½…Ð°(€€€Á…•}¥µ…”è%µ…”¹%µ…”ð9½¹”€ô9½¹”°(¤€´øÑÕÁ±•mÍÑÈ°	½átè(€€€…ÑÑ•µÁÑÌ€ômÍÑ…µÁ}Ü°ÍÑ…µÁ}Ü€¨€À¸àØ°ÍÑ…µÁ}Ü€¨€À¸ÜÈ°ÍÑ…µÁ}Ü€¨€À¸Ôát(€€€‰•ÍÑ}…¹äèÑÕÁ±•mÍÑÈ°	½à°™±½…Ð°™±½…Ñtð9½¹”€ô9½¹”(€€€™½ÈÝ¥‘Ñ ¥¸…ÑÑ•µÁÑÌè(€€€€€€€Ý¥‘Ñ €ôµ…à ÔÈ¸À°Ý¥‘Ñ ¤(€€€€€€€¡•¥¡Ð€ôÝ¥‘Ñ €¨ÍÑ…µÁ}É…Ñ¥¼(€€€€€€€…¹‘¥‘…Ñ•Ì€ôl(€€€€€€€€€€€€¡É•…Í½¸°±…µÁ}É•Ð¡É•Ð°Á…•}Ü°Á…•} ¤¤(€€€€€€€€€€€™½ÈÉ•…Í½¸°É•Ð¥¸Á±…•µ•¹Ñ}…¹‘¥‘…Ñ•Ì¡…¹¡½È°Á…•}Ü°Á…•} °Ý¥‘Ñ °¡•¥¡Ð¤(€€€€€€€t(€€€€€€€Í½É•€ôÍ½É•}…¹‘¥‘…Ñ•Ì¡…¹‘¥‘…Ñ•Ì°Ý½É‘}‰½á•Ì°Á…•}Ü°Á…•} °…¹¡½È°Á…•}¥µ…”¤(€€€€€€€Í…™”€ôl(€€€€€€€€€€€¥Ñ•´™½È¥Ñ•´¥¸Í½É•(€€€€€€€€€€€¥˜¥Í}Í…™•}É•Ð¡¥Ñ•µlÅt°Ý½É‘}‰½á•Ì°Á…•}¥µ…”°Á…•}Ü°Á…•} ¤(€€€€€€€t(€€€€€€€¥˜Í…™”è(€€€€€€€€€€€ÁÉ•™•ÉÉ•€ôm¥Ñ•´™½È¥Ñ•´¥¸Í…™”¥˜¥Ñ•µlÁt€ôô€‰…‰½Ù•}™½½Ñ•É}¹…µ”‰t(€€€€€€€€€€€¥˜ÁÉ•™•ÉÉ•è(€€€€€€€€€€€€€€€É•…Í½¸°É•Ð°}Í½É”°}½Ù•É±…À€ôµ…à¡ÁÉ•™•ÉÉ•°­•äõ±…µ‰‘„¥Ñ•´è¥Ñ•µlÉt¤(€€€€€€€€€€€€€€€É•ÑÕÉ¸É•…Í½¸°É•Ð(€€€€€€€€€€€É•…Í½¸°É•Ð°}Í½É”°}½Ù•É±…À€ôµ…à¡Í…™”°­•äõ±…µ‰‘„¥Ñ•´è¥Ñ•µlÉt¤(€€€€€€€€€€€É•ÑÕÉ¸É•…Í½¸°É•Ð(€€€€€€€…ÑÑ•µÁÑ}‰•ÍÐ€ôµ…à¡Í½É•°­•äõ±…µ‰‘„¥Ñ•´è¥Ñ•µlÉt¤(€€€€€€€¥˜‰•ÍÑ}…¹ä¥Ì9½¹”½È…ÑÑ•µÁÑ}‰•ÍÑlÉt€ø‰•ÍÑ}…¹ålÉtè(€€€€€€€€€€€‰•ÍÑ}…¹ä€ô…ÑÑ•µÁÑ}‰•ÍÐ(€€€…ÍÍ•ÉÐ‰•ÍÑ}…¹ä¥Ì¹½Ð9½¹”(€€€É•ÑÕÉ¸‰•ÍÑ}…¹ålÁt°‰•ÍÑ}…¹ålÅt(()‘•˜¡½½Í•}™…±±‰…­}Á…•}…¹‘¥‘…Ñ” (€€€Ý½É‘}‰½á•Ìè±¥ÍÑm	½át°(€€€Á…•}Üè™±½…Ð°(€€€Á…•} è™±½…Ð°(€€€ÍÑ…µÁ}Üè™±½…Ð°(€€€ÍÑ…µÁ}É…Ñ¥¼è™±½…Ð°(€€€Á…•}¥µ…”è%µ…”¹%µ…”ð9½¹”€ô9½¹”°(¤€´øÑÕÁ±•mÍÑÈ°	½átð9½¹”è(€€€…ÑÑ•µÁÑÌ€ômÍÑ…µÁ}Ü°ÍÑ…µÁ}Ü€¨€À¸äÀ°ÍÑ…µÁ}Ü€¨€À¸àÀ°ÍÑ…µÁ}Ü€¨€À¸ÜÀ°ÍÑ…µÁ}Ü€¨€À¸ØÁt(€€€‰•ÍÑ}…¹äèÑÕÁ±•mÍÑÈ°	½à°™±½…Ð°™±½…Ñtð9½¹”€ô9½¹”(€€€™½ÈÝ¥‘Ñ ¥¸…ÑÑ•µÁÑÌè(€€€€€€€Ý¥‘Ñ €ôµ…à ÔÈ¸À°Ý¥‘Ñ ¤(€€€€€€€¡•¥¡Ð€ôÝ¥‘Ñ €¨ÍÑ…µÁ}É…Ñ¥¼(€€€€€€€…¹‘¥‘…Ñ•Ì€ôl(€€€€€€€€€€€€¡É•…Í½¸°±…µÁ}É•Ð¡É•Ð°Á…•}Ü°Á…•} ¤¤(€€€€€€€€€€€™½ÈÉ•…Í½¸°É•Ð¥¸™…±±‰…­}…¹‘¥‘…Ñ•Ì¡Á…•}Ü°Á…•} °Ý¥‘Ñ °¡•¥¡Ð¤(€€€€€€€t(€€€€€€€Í½É•€ôÍ½É•}…¹‘¥‘…Ñ•Ì¡…¹‘¥‘…Ñ•Ì°Ý½É‘}‰½á•Ì°Á…•}Ü°Á…•} °9½¹”°Á…•}¥µ…”¤(€€€€€€€Í…™”€ôl(€€€€€€€€€€€¥Ñ•´™½È¥Ñ•´¥¸Í½É•(€€€€€€€€€€€¥˜¥Í}Í…™•}É•Ð¡¥Ñ•µlÅt°Ý½É‘}‰½á•Ì°Á…•}¥µ…”°Á…•}Ü°Á…•} ¤(€€€€€€€t(€€€€€€€¥˜Í…™”è(€€€€€€€€€€€É•…Í½¸°É•Ð°}Í½É”°}½Ù•É±…À€ôµ…à¡Í…™”°­•äõ±…µ‰‘„¥Ñ•´è¥Ñ•µlÉt¤(€€€€€€€€€€€É•ÑÕÉ¸É•…Í½¸°É•Ð(€€€€€€€…ÑÑ•µÁÑ}‰•ÍÐ€ôµ…à¡Í½É•°­•äõ±…µ‰‘„¥Ñ•´è¥Ñ•µlÉt¤(€€€€€€€¥˜‰•ÍÑ}…¹ä¥Ì9½¹”½È…ÑÑ•µÁÑ}‰•ÍÑlÉt€ø‰•ÍÑ}…¹ålÉtè(€€€€€€€€€€€‰•ÍÑ}…¹ä€ô…ÑÑ•µÁÑ}‰•ÍÐ(€€€¥˜‰•ÍÑ}…¹ä¥Ì9½¹”è(€€€€€€€É•ÑÕÉ¸9½¹”(€€€É•ÑÕÉ¸‰•ÍÑ}…¹ålÁt°‰•ÍÑ}…¹ålÅt(()‘•˜¡½½Í•}Á±…•µ•¹ÑÌ (€€€…¹¡½ÉÌè±¥ÍÑm¹¡½Ét°(€€€Ý½É‘}‰½á•Ìè±¥ÍÑm±¥ÍÑm	½áut°(€€€¥µ…•}‰½á•Ìè±¥ÍÑm±¥ÍÑm	½áut°(€€€Á…•}Í¥é•Ìè±¥ÍÑmÑÕÁ±•m™±½…Ð°™±½…Ñut°(€€€ÍÑ…µÁ}Üè™±½…Ð°(€€€ÍÑ…µÁ}É…Ñ¥¼è™±½…Ð°(€€€…±±½Ý}™…±±‰…¬è‰½½°€ô…±Í”°(€€€Ù¥ÍÕ…±}Á…•Ìè‘¥Ñm¥¹Ð°%µ…”¹%µ…•tð9½¹”€ô9½¹”°(¤€´ø±¥ÍÑmA±…•µ•¹Ñtè(€€€Á±…•µ•¹ÑÌè±¥ÍÑmA±…•µ•¹Ñt€ômt(€€€Á…•}½Õ¹Ð€ô±•¸¡Á…•}Í¥é•Ì¤(€€€•áÁ±¥¥Ñ}Í¥¹…ÑÕÉ•}…¹¡½ÉÌ€ôÍ•±•Ñ}•áÁ±¥¥Ñ}Í¥¹…ÑÕÉ•}…¹¡½ÉÌ (€€€€€€€…¹¡½ÉÌ°(€€€€€€€Ý½É‘}‰½á•Ì°(€€€€€€€Á…•}Í¥é•Ì°(€€€€¤(€€€¥˜•áÁ±¥¥Ñ}Í¥¹…ÑÕÉ•}…¹¡½ÉÌè(€€€€€€€™½È…¹¡½È¥¸•áÁ±¥¥Ñ}Í¥¹…ÑÕÉ•}…¹¡½ÉÌè(€€€€€€€€€€€Á…•}¥¹‘•à€ô…¹¡½È¹Á…•}¥¹‘•à(€€€€€€€€€€€Á…•}Ü°Á…•} €ôÁ…•}Í¥é•ÍmÁ…•}¥¹‘•át(€€€€€€€€€€€Á…•}¥µ…”€ô€¡Ù¥ÍÕ…±}Á…•Ì½Èíô¤¹•Ð¡Á…•}¥¹‘•à¤(€€€€€€€€€€€Á…•}ÍÑ…µÁ}Ü°Á…•}ÍÑ…µÁ} €ôÍÑ…µÁ}Í¥é•}™½É}…¹¡½È (€€€€€€€€€€€€€€€…¹¡½È°(€€€€€€€€€€€€€€€Á…•}Ü°(€€€€€€€€€€€€€€€Á…•} °(€€€€€€€€€€€€€€€ÍÑ…µÁ}Ü°(€€€€€€€€€€€€€€€ÍÑ…µÁ}É…Ñ¥¼°(€€€€€€€€€€€€€€€¥µ…•}‰½á•ÍmÁ…•}¥¹‘•át°(€€€€€€€€€€€€¤(€€€€€€€€€€€‰•ÍÑ}É•…Í½¸°‰•ÍÑ}É•Ð€ô¡½½Í•}•áÁ±¥¥Ñ}Í¥¹…ÑÕÉ•}…¹‘¥‘…Ñ” (€€€€€€€€€€€€€€€…¹¡½È°(€€€€€€€€€€€€€€€Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°(€€€€€€€€€€€€€€€Á…•}Ü°(€€€€€€€€€€€€€€€Á…•} °(€€€€€€€€€€€€€€€Á…•}ÍÑ…µÁ}Ü°(€€€€€€€€€€€€€€€Á…•}ÍÑ…µÁ} °(€€€€€€€€€€€€€€€Á…•}¥µ…”°(€€€€€€€€€€€€¤(€€€€€€€€€€€¥˜€ (€€€€€€€€€€€€€€€…¹¡½È¹Á¡É…Í”¹½Ð¥¸=YI1A}=-}M%9QUI}QIQL(€€€€€€€€€€€€€€€…¹¹½Ð¥Í}Í…™•}É•Ð¡‰•ÍÑ}É•Ð°Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°Á…•}¥µ…”°Á…•}Ü°Á…•} ¤(€€€€€€€€€€€€¤è(€€€€€€€€€€€€€€€É•ÑÕÉ¸mt(€€€€€€€€€€€Á±…•µ•¹ÑÌ¹…ÁÁ•¹ (€€€€€€€€€€€€€€€A±…•µ•¹Ð (€€€€€€€€€€€€€€€€€€€Á…•}¥¹‘•àõÁ…•}¥¹‘•à°(€€€€€€€€€€€€€€€€€€€É•Ðõ‰•ÍÑ}É•Ð°(€€€€€€€€€€€€€€€€€€€Í½É”õÍ½É•}É•Ð¡‰•ÍÑ}É•Ð°Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°Á…•}Ü°Á…•} °…¹¡½È¤°(€€€€€€€€€€€€€€€€€€€…¹¡½É}Á¡É…Í”õ…¹¡½È¹Á¡É…Í”°(€€€€€€€€€€€€€€€€€€€É•…Í½¸õ‰•ÍÑ}É•…Í½¸°(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€¤(€€€€€€€É•ÑÕÉ¸Á±…•µ•¹ÑÌ((€€€Í•±•Ñ•‘}Í¥¹…ÑÕÉ•}…¹¡½ÉÌ€ôÍ•±•Ñ}ÑÉ…¹ÍÁ½ÉÑ•É}Í¥¹…ÑÕÉ•}…¹¡½ÉÌ (€€€€€€€…¹¡½ÉÌ°(€€€€€€€Ý½É‘}‰½á•Ì°(€€€€€€€¥µ…•}‰½á•Ì°(€€€€€€€Á…•}Í¥é•Ì°(€€€€¤((€€€€Œ½µÁ…¹ä¹…µ”°Ñ…à%°½È•¹•É¥ŒÑÉ…¹ÍÁ½ÉÐÝ½É•±Í•Ý¡•É”¥¸Ñ¡”(€€€€Œ‘½Õµ•¹Ð¥Ì¹½Ð„É•±¥…‰±”Í¥¹¥¹œ±½…Ñ¥½¸¸]¡•¸™…±±‰…¬¥Ì•¹…‰±•°(€€€€Œ½¹±ä…¸•áÁ±¥¥ÐÍ¥¹…ÑÕÉ”±…‰•°½È„Ù•É¥™¥•…ÉÉ¥•ÈÍ¥¹…ÑÕÉ”‰±½¬(€€€€Œµ…äÍ•±•Ð¥¹‘¥Ù¥‘Õ…°Á…•Ì¸=Ñ¡•ÉÝ¥Í”ÍÑ…µÀ•Ù•ÉäÁ…”¥¸Ñ¡”Í…™•ÍÐ(€€€€Œ‰½ÑÑ½´µÉ¥¡Ð…É•„¥¹ÍÑ•…½˜Õ•ÍÍ¥¹œ™É½´„Ý•…¬…¹¡½È¸(€€€¥˜¹½ÐÍ•±•Ñ•‘}Í¥¹…ÑÕÉ•}…¹¡½ÉÌ…¹Á…•}½Õ¹Ð…¹…±±½Ý}™…±±‰…¬è(€€€€€€€™½ÈÁ…•}¥¹‘•à¥¸É…¹”¡Á…•}½Õ¹Ð¤è(€€€€€€€€€€€Á…•}Ü°Á…•} €ôÁ…•}Í¥é•ÍmÁ…•}¥¹‘•át(€€€€€€€€€€€Á…•}ÍÑ…µÁ}Ü€ôµ¥¸¡µ…à¡ÍÑ…µÁ}Ü°€Üà¸À¤°€ÄÄÈ¸À°Á…•}Ü€¨€À¸Ää¤(€€€€€€€€€€€‰•ÍÐ€ô¡½½Í•}™…±±‰…­}Á…•}…¹‘¥‘…Ñ” (€€€€€€€€€€€€€€€Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°(€€€€€€€€€€€€€€€Á…•}Ü°(€€€€€€€€€€€€€€€Á…•} °(€€€€€€€€€€€€€€€Á…•}ÍÑ…µÁ}Ü°(€€€€€€€€€€€€€€€ÍÑ…µÁ}É…Ñ¥¼°(€€€€€€€€€€€€€€€€¡Ù¥ÍÕ…±}Á…•Ì½Èíô¤¹•Ð¡Á…•}¥¹‘•à¤°(€€€€€€€€€€€€¤(€€€€€€€€€€€¥˜‰•ÍÐ¥Ì9½¹”è(€€€€€€€€€€€€€€€½¹Ñ¥¹Õ”(€€€€€€€€€€€‰•ÍÑ}É•…Í½¸°‰•ÍÑ}É•Ð€ô‰•ÍÐ(€€€€€€€€€€€Á±…•µ•¹ÑÌ¹…ÁÁ•¹ (€€€€€€€€€€€€€€€A±…•µ•¹Ð (€€€€€€€€€€€€€€€€€€€Á…•}¥¹‘•àõÁ…•}¥¹‘•à°(€€€€€€€€€€€€€€€€€€€É•Ðõ‰•ÍÑ}É•Ð°(€€€€€€€€€€€€€€€€€€€Í½É”õÍ½É•}É•Ð¡‰•ÍÑ}É•Ð°Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°Á…•}Ü°Á…•} °9½¹”¤°(€€€€€€€€€€€€€€€€€€€…¹¡½É}Á¡É…Í”ô‰11	-}!}Aˆ°(€€€€€€€€€€€€€€€€€€€É•…Í½¸õ‰•ÍÑ}É•…Í½¸°(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€¤(€€€€€€€É•ÑÕÉ¸Á±…•µ•¹ÑÌ((€€€¡¥¡}…¹¡½ÉÌ€ôÍ•±•Ñ•‘}Í¥¹…ÑÕÉ•}…¹¡½ÉÌ½Èm„™½È„¥¸…¹¡½ÉÌ¥˜„¹Í½É”€øô€äÕt(€€€¥˜¹½Ð¡¥¡}…¹¡½ÉÌè(€€€€€€€¡¥¡}…¹¡½ÉÌ€ôÍ½ÉÑ•¡…¹¡½ÉÌ°­•äõ±…µ‰‘„„è„¹Í½É”°É•Ù•ÉÍ”õQÉÕ”¥lèÅt((€€€‰å}Á…”è‘¥Ñm¥¹Ð°¹¡½Ét€ôíô(€€€™½È…¹¡½È¥¸Í½ÉÑ• (€€€€€€€¡¥¡}…¹¡½ÉÌ°(€€€€€€€­•äõ±…µ‰‘„„è…¹¡½É}É…¹¬¡„°€©Á…•}Í¥é•Ím„¹Á…•}¥¹‘•át¤°(€€€€€€€É•Ù•ÉÍ”õQÉÕ”°(€€€€¤è(€€€€€€€‰å}Á…”¹Í•Ñ‘•™…Õ±Ð¡…¹¡½È¹Á…•}¥¹‘•à°…¹¡½È¤((€€€™½ÈÁ…•}¥¹‘•à°…¹¡½È¥¸Í½ÉÑ•¡‰å}Á…”¹¥Ñ•µÌ ¤°­•äõ±…µ‰‘„­Øè­ÙlÁt¤è(€€€€€€€Á…•}Ü°Á…•} €ôÁ…•}Í¥é•ÍmÁ…•}¥¹‘•át(€€€€€€€Á…•}¥µ…”€ô€¡Ù¥ÍÕ…±}Á…•Ì½Èíô¤¹•Ð¡Á…•}¥¹‘•à¤(€€€€€€€Á…•}ÍÑ…µÁ}Ü°Á…•}ÍÑ…µÁ} €ôÍÑ…µÁ}Í¥é•}™½É}…¹¡½È (€€€€€€€€€€€…¹¡½È°(€€€€€€€€€€€Á…•}Ü°(€€€€€€€€€€€Á…•} °(€€€€€€€€€€€ÍÑ…µÁ}Ü°(€€€€€€€€€€€ÍÑ…µÁ}É…Ñ¥¼°(€€€€€€€€€€€¥µ…•}‰½á•ÍmÁ…•}¥¹‘•át°(€€€€€€€€¤(€€€€€€€¥Í}Í•±•Ñ•‘}Í¥¹…ÑÕÉ”€ô‰½½° (€€€€€€€€€€€Í•±•Ñ•‘}Í¥¹…ÑÕÉ•}…¹¡½ÉÌ(€€€€€€€€€€€…¹…¹¡½È¥¸Í•±•Ñ•‘}Í¥¹…ÑÕÉ•}…¹¡½ÉÌ(€€€€€€€€¤(€€€€€€€¥˜¥Í}Í¥¹…ÑÕÉ•}‰±½­}…¹¡½È¡…¹¡½È°Á…•}Ü°Á…•} ¤½È¥Í}Í•±•Ñ•‘}Í¥¹…ÑÕÉ”è(€€€€€€€€€€€‰•ÍÑ}É•…Í½¸°‰•ÍÑ}É•Ð€ô¡½½Í•}Í¥¹…ÑÕÉ•}‰±½­}…¹‘¥‘…Ñ” (€€€€€€€€€€€€€€€…¹¡½È°(€€€€€€€€€€€€€€€Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°(€€€€€€€€€€€€€€€¥µ…•}‰½á•ÍmÁ…•}¥¹‘•át°(€€€€€€€€€€€€€€€Á…•}Ü°(€€€€€€€€€€€€€€€Á…•} °(€€€€€€€€€€€€€€€Á…•}ÍÑ…µÁ}Ü°(€€€€€€€€€€€€€€€Á…•}ÍÑ…µÁ} °(€€€€€€€€€€€€€€€Á…•}¥µ…”°(€€€€€€€€€€€€¤(€€€€€€€•±¥˜¥Í}™½½Ñ•É}…¹¡½È¡…¹¡½È°Á…•}Ü°Á…•} ¤è(€€€€€€€€€€€‰•ÍÑ}É•…Í½¸°‰•ÍÑ}É•Ð€ô¡½½Í•}™½½Ñ•É}…¹‘¥‘…Ñ” (€€€€€€€€€€€€€€€…¹¡½È°(€€€€€€€€€€€€€€€Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°(€€€€€€€€€€€€€€€Á…•}Ü°(€€€€€€€€€€€€€€€Á…•} °(€€€€€€€€€€€€€€€Á…•}ÍÑ…µÁ}Ü°(€€€€€€€€€€€€€€€ÍÑ…µÁ}É…Ñ¥¼°(€€€€€€€€€€€€€€€Á…•}¥µ…”°(€€€€€€€€€€€€¤(€€€€€€€•±Í”è(€€€€€€€€€€€…¹‘¥‘…Ñ•Ì€ôl(€€€€€€€€€€€€€€€€¡É•…Í½¸°±…µÁ}É•Ð¡É•Ð°Á…•}Ü°Á…•} ¤¤(€€€€€€€€€€€€€€€™½ÈÉ•…Í½¸°É•Ð¥¸Á±…•µ•¹Ñ}…¹‘¥‘…Ñ•Ì¡…¹¡½È°Á…•}Ü°Á…•} °Á…•}ÍÑ…µÁ}Ü°Á…•}ÍÑ…µÁ} ¤(€€€€€€€€€€€t(€€€€€€€€€€€‰•ÍÑ}É•…Í½¸°‰•ÍÑ}É•Ð€ô¡½½Í•}‰•ÍÑ}…¹‘¥‘…Ñ” (€€€€€€€€€€€€€€€…¹‘¥‘…Ñ•Ì°(€€€€€€€€€€€€€€€Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°(€€€€€€€€€€€€€€€Á…•}Ü°(€€€€€€€€€€€€€€€Á…•} °(€€€€€€€€€€€€€€€…¹¡½È°(€€€€€€€€€€€€€€€Á…•}¥µ…”°(€€€€€€€€€€€€¤(€€€€€€€¥˜¹½Ð¥Í}Í…™•}É•Ð¡‰•ÍÑ}É•Ð°Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°Á…•}¥µ…”°Á…•}Ü°Á…•} ¤è(€€€€€€€€€€€½¹Ñ¥¹Õ”(€€€€€€€Á±…•µ•¹ÑÌ¹…ÁÁ•¹ (€€€€€€€€€€€A±…•µ•¹Ð (€€€€€€€€€€€€€€€Á…•}¥¹‘•àõÁ…•}¥¹‘•à°(€€€€€€€€€€€€€€€É•Ðõ‰•ÍÑ}É•Ð°(€€€€€€€€€€€€€€€Í½É”õÍ½É•}É•Ð¡‰•ÍÑ}É•Ð°Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°Á…•}Ü°Á…•} °…¹¡½È¤°(€€€€€€€€€€€€€€€…¹¡½É}Á¡É…Í”õ…¹¡½È¹Á¡É…Í”°(€€€€€€€€€€€€€€€É•…Í½¸õ‰•ÍÑ}É•…Í½¸°(€€€€€€€€€€€€¤(€€€€€€€€¤((€€€€Œ9•Ù•ÈÉ•ÑÕÉ¸„Á…ÉÑ¥…±±ä½¹™¥Éµ•‘½Õµ•¹ÐÝ¡•¸Í•Ù•É…°…ÉÉ¥•È(€€€€ŒÍ¥¹…ÑÕÉ”Á…•ÌÝ•É”‘•Ñ•Ñ•¸5…­”Ý¥±°É½ÕÑ”…¸•µÁÑäÉ•ÍÕ±ÐÑ¼É•Ù¥•Ü¸(€€€¥˜Í•±•Ñ•‘}Í¥¹…ÑÕÉ•}…¹¡½ÉÌ…¹±•¸¡Á±…•µ•¹ÑÌ¤€„ô±•¸¡Í•±•Ñ•‘}Í¥¹…ÑÕÉ•}…¹¡½ÉÌ¤è(€€€€€€€É•ÑÕÉ¸mt((€€€¥˜¹½ÐÁ±…•µ•¹ÑÌ…¹Á…•}½Õ¹Ð…¹…±±½Ý}™…±±‰…¬è(€€€€€€€™½ÈÁ…•}¥¹‘•à¥¸É…¹”¡Á…•}½Õ¹Ð¤è(€€€€€€€€€€€Á…•}Ü°Á…•} €ôÁ…•}Í¥é•ÍmÁ…•}¥¹‘•át(€€€€€€€€€€€Á…•}ÍÑ…µÁ}Ü€ôµ¥¸¡µ…à¡ÍÑ…µÁ}Ü°€Üà¸À¤°€ÄÄÈ¸À°Á…•}Ü€¨€À¸Ää¤(€€€€€€€€€€€‰•ÍÐ€ô¡½½Í•}™…±±‰…­}Á…•}…¹‘¥‘…Ñ” (€€€€€€€€€€€€€€€Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°(€€€€€€€€€€€€€€€Á…•}Ü°(€€€€€€€€€€€€€€€Á…•} °(€€€€€€€€€€€€€€€Á…•}ÍÑ…µÁ}Ü°(€€€€€€€€€€€€€€€ÍÑ…µÁ}É…Ñ¥¼°(€€€€€€€€€€€€€€€€¡Ù¥ÍÕ…±}Á…•Ì½Èíô¤¹•Ð¡Á…•}¥¹‘•à¤°(€€€€€€€€€€€€¤(€€€€€€€€€€€¥˜‰•ÍÐ¥Ì9½¹”è(€€€€€€€€€€€€€€€½¹Ñ¥¹Õ”(€€€€€€€€€€€‰•ÍÑ}É•…Í½¸°‰•ÍÑ}É•Ð€ô‰•ÍÐ(€€€€€€€€€€€Á±…•µ•¹ÑÌ¹…ÁÁ•¹ (€€€€€€€€€€€€€€€A±…•µ•¹Ð (€€€€€€€€€€€€€€€€€€€Á…•}¥¹‘•àõÁ…•}¥¹‘•à°(€€€€€€€€€€€€€€€€€€€É•Ðõ‰•ÍÑ}É•Ð°(€€€€€€€€€€€€€€€€€€€Í½É”õÍ½É•}É•Ð¡‰•ÍÑ}É•Ð°Ý½É‘}‰½á•ÍmÁ…•}¥¹‘•át°Á…•}Ü°Á…•} °9½¹”¤°(€€€€€€€€€€€€€€€€€€€…¹¡½É}Á¡É…Í”ô‰11	-}!}Aˆ°(€€€€€€€€€€€€€€€€€€€É•…Í½¸õ‰•ÍÑ}É•…Í½¸°(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€¤(€€€É•ÑÕÉ¸Á±…•µ•¹ÑÌ(()‘•˜ÍÑ…µÁ}Á‘˜ (€€€¥¹ÁÕÑ}Á‘˜èA…Ñ °(€€€ÍÑ…µÁ}¥µ…”èA…Ñ °(€€€½ÕÑÁÕÑ}Á‘˜èA…Ñ °(€€€ÍÑ…µÁ}Ý¥‘Ñ è™±½…Ð€ô€ÄÜÔ¸À°(€€€…±±½Ý}™…±±‰…¬è‰½½°€ô…±Í”°(¤€´ø‘¥Ðè(€€€Ý¥Ñ %µ…”¹½Á•¸¡ÍÑ…µÁ}¥µ…”¤…Ì¥µœè(€€€€€€€É…Ñ¥¼€ô¥µœ¹¡•¥¡Ð€¼µ…à¡¥µœ¹Ý¥‘Ñ °€Ä¤((€€€…¹¡½ÉÌ°Ý½É‘}‰½á•Ì°¥µ…•}‰½á•Ì°Á…•}Í¥é•Ì€ô™¥¹‘}…¹¡½ÉÌ¡¥¹ÁÕÑ}Á‘˜¤(€€€Ù¥ÍÕ…±}Á…•}¥¹‘•á•Ì€ôí…¹¡½È¹Á…•}¥¹‘•à™½È…¹¡½È¥¸…¹¡½ÉÍô(€€€¥˜…±±½Ý}™…±±‰…¬…¹Á…•}Í¥é•Ìè(€€€€€€€Ù¥ÍÕ…±}Á…•}¥¹‘•á•Ì¹ÕÁ‘…Ñ”¡É…¹”¡±•¸¡Á…•}Í¥é•Ì¤¤¤(€€€Ù¥ÍÕ…±}Á…•Ì€ôÉ•¹‘•É}Ù¥ÍÕ…±}Á…•Ì¡¥¹ÁÕÑ}Á‘˜°Ù¥ÍÕ…±}Á…•}¥¹‘•á•Ì¤(€€€Á±…•µ•¹ÑÌ€ô¡½½Í•}Á±…•µ•¹ÑÌ (€€€€€€€…¹¡½ÉÌ°(€€€€€€€Ý½É‘}‰½á•Ì°(€€€€€€€¥µ…•}‰½á•Ì°(€€€€€€€Á…•}Í¥é•Ì°(€€€€€€€ÍÑ…µÁ}Ý¥‘Ñ °(€€€€€€€É…Ñ¥¼°(€€€€€€€…±±½Ý}™…±±‰…¬õ…±±½Ý}™…±±‰…¬°(€€€€€€€Ù¥ÍÕ…±}Á…•ÌõÙ¥ÍÕ…±}Á…•Ì°(€€€€¤((€€€É•…‘•È€ôA‘™I•…‘•È¡ÍÑÈ¡¥¹ÁÕÑ}Á‘˜¤¤(€€€ÝÉ¥Ñ•È€ôA‘™]É¥Ñ•È ¤(€€€ÍÑ…µÁ}É•…‘•È€ô%µ…•I•…‘•È¡ÍÑÈ¡ÍÑ…µÁ}¥µ…”¤¤((€€€Á±…•µ•¹Ñ}‰å}Á…”€ôíÀ¹Á…•}¥¹‘•àèÀ™½ÈÀ¥¸Á±…•µ•¹ÑÍô(€€€™½ÈÁ…•}¥¹‘•à°Á…”¥¸•¹Õµ•É…Ñ”¡É•…‘•È¹Á…•Ì¤è(€€€€€€€¥˜Á…•}¥¹‘•à¹½Ð¥¸Á±…•µ•¹Ñ}‰å}Á…”è(€€€€€€€€€€€ÝÉ¥Ñ•È¹…‘‘}Á…”¡Á…”¤(€€€€€€€€€€€½¹Ñ¥¹Õ”((€€€€€€€Á…•}Ü€ô™±½…Ð¡Á…”¹µ•‘¥…‰½à¹Ý¥‘Ñ ¤(€€€€€€€Á…•} €ô™±½…Ð¡Á…”¹µ•‘¥…‰½à¹¡•¥¡Ð¤(€€€€€€€À€ôÁ±…•µ•¹Ñ}‰å}Á…•mÁ…•}¥¹‘•át(€€€€€€€Á…­•Ð€ô¥¼¹	åÑ•Í%< ¤(€€€€€€€Œ€ô…¹Ù…Ì¹…¹Ù…Ì¡Á…­•Ð°Á…•Í¥é”ô¡Á…•}Ü°Á…•} ¤¤(€€€€€€€à€ôÀ¹É•Ð¹àÀ(€€€€€€€ä€ôÁ…•} €´À¹É•Ð¹‰½ÑÑ½´(€€€€€€€Œ¹‘É…Ý%µ…”¡ÍÑ…µÁ}É•…‘•È°à°ä°Ý¥‘Ñ õÀ¹É•Ð¹Ý¥‘Ñ °¡•¥¡ÐõÀ¹É•Ð¹¡•¥¡Ð°µ…Í¬ô‰…ÕÑ¼ˆ¤(€€€€€€€Œ¹Í…Ù” ¤(€€€€€€€Á…­•Ð¹Í••¬ À¤(€€€€€€€½Ù•É±…ä€ôA‘™I•…‘•È¡Á…­•Ð¤¹Á…•ÍlÁt(€€€€€€€Á…”¹µ•É•}Á…”¡½Ù•É±…ä¤(€€€€€€€ÝÉ¥Ñ•È¹…‘‘}Á…”¡Á…”¤((€€€½ÕÑÁÕÑ}Á‘˜¹Á…É•¹Ð¹µ­‘¥È¡Á…É•¹ÑÌõQÉÕ”°•á¥ÍÑ}½¬õQÉÕ”¤(€€€Ý¥Ñ ½ÕÑÁÕÑ}Á‘˜¹½Á•¸ ‰Ýˆˆ¤…Ì˜è(€€€€€€€ÝÉ¥Ñ•È¹ÝÉ¥Ñ”¡˜¤((€€€É•ÑÕÉ¸ì(€€€€€€€€‰¥¹ÁÕÐˆèÍÑÈ¡¥¹ÁÕÑ}Á‘˜¤°(€€€€€€€€‰½ÕÑÁÕÐˆèÍÑÈ¡½ÕÑÁÕÑ}Á‘˜¤°(€€€€€€€€‰Á±…•µ•¹ÑÌˆèl(€€€€€€€€€€€ì(€€€€€€€€€€€€€€€€‰Á…”ˆèÀ¹Á…•}¥¹‘•à€¬€Ä°(€€€€€€€€€€€€€€€€‰É•Ñ}Ñ½Á}±•™Ðˆèì(€€€€€€€€€€€€€€€€€€€€‰àÀˆèÉ½Õ¹¡À¹É•Ð¹àÀ°€È¤°(€€€€€€€€€€€€€€€€€€€€‰Ñ½ÀˆèÉ½Õ¹¡À¹É•Ð¹Ñ½À°€È¤°(€€€€€€€€€€€€€€€€€€€€‰àÄˆèÉ½Õ¹¡À¹É•Ð¹àÄ°€È¤°(€€€€€€€€€€€€€€€€€€€€‰‰½ÑÑ½´ˆèÉ½Õ¹¡À¹É•Ð¹‰½ÑÑ½´°€È¤°(€€€€€€€€€€€€€€€ô°(€€€€€€€€€€€€€€€€‰Í½É”ˆèÉ½Õ¹¡À¹Í½É”°€È¤°(€€€€€€€€€€€€€€€€‰…¹¡½ÈˆèÀ¹…¹¡½É}Á¡É…Í”°(€€€€€€€€€€€€€€€€‰É•…Í½¸ˆèÀ¹É•…Í½¸°(€€€€€€€€€€€ô(€€€€€€€€€€€™½ÈÀ¥¸Á±…•µ•¹ÑÌ(€€€€€€€t°(€€€€€€€€‰…¹¡½É}½Õ¹Ðˆè±•¸¡…¹¡½ÉÌ¤°(€€€€€€€€‰ÍÑ…µÁ•ˆè‰½½°¡Á±…•µ•¹ÑÌ¤°(€€€€€€€€‰¹••‘Í}É•Ù¥•Üˆè¹½Ð‰½½°¡Á±…•µ•¹ÑÌ¤°(€€€ô(()‘•˜µ…¥¸ ¤€´ø9½¹”è(€€€Á…ÉÍ•È€ô…ÉÁ…ÉÍ”¹ÉÕµ•¹ÑA…ÉÍ•È¡‘•ÍÉ¥ÁÑ¥½¸ô‰$‘•Ñ•Éµ¥¹¥ÍÑ¥ŒAÍÑ…µÀ•¹¥¹”ˆ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µ¥¹ÁÕÐˆ°É•ÅÕ¥É•õQÉÕ”°ÑåÁ”õA…Ñ ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µÍÑ…µÀˆ°É•ÅÕ¥É•õQÉÕ”°ÑåÁ”õA…Ñ ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µ½ÕÑÁÕÐˆ°É•ÅÕ¥É•õQÉÕ”°ÑåÁ”õA…Ñ ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µÍÑ…µÀµÝ¥‘Ñ ˆ°ÑåÁ”õ™±½…Ð°‘•™…Õ±ÐôÄÜÔ¸À¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µ…±±½Üµ™…±±‰…¬ˆ°…Ñ¥½¸ô‰ÍÑ½É•}ÑÉÕ”ˆ¤(€€€…ÉÌ€ôÁ…ÉÍ•È¹Á…ÉÍ•}…ÉÌ ¤((€€€É•ÍÕ±Ð€ôÍÑ…µÁ}Á‘˜¡…ÉÌ¹¥¹ÁÕÐ°…ÉÌ¹ÍÑ…µÀ°…ÉÌ¹½ÕÑÁÕÐ°…ÉÌ¹ÍÑ…µÁ}Ý¥‘Ñ °…ÉÌ¹…±±½Ý}™…±±‰…¬¤(€€€ÁÉ¥¹Ð¡©Í½¸¹‘ÕµÁÌ¡É•ÍÕ±Ð°•¹ÍÕÉ•}…Í¥¤õ…±Í”°¥¹‘•¹ÐôÈ¤¤(()¥˜}}¹…µ•}|€ôô€‰}}µ…¥¹}|ˆè(€€€µ…¥¸ ¤(
+            and 45 <= box.height <= 190
+            and box.x1 < anchor.box.x0 - 35
+            and abs(((box.top + box.bottom) / 2) - (anchor.box.bottom + 55)) < 180
+        ]
+        if candidates:
+            return max(candidates, key=lambda b: b.area)
+    candidates = []
+    for box in image_boxes:
+        ratio = box.width / max(box.height, 1.0)
+        if not (
+            40 <= box.width <= 190
+            and 40 <= box.height <= 190
+            and 0.40 <= ratio <= 2.20
+        ):
+            continue
+
+        # Client stamps are normally in the opposite signature column. Support
+        # both layouts: client on the left / carrier on the right and vice versa.
+        opposite_column = box.x1 < anchor.box.x0 - 8 or box.x0 > anchor.box.x1 + 8
+        vertical_distance = abs(
+            ((box.top + box.bottom) / 2)
+            - (anchor.box.bottom + 35)
+        )
+        if opposite_column and vertical_distance < 170:
+            candidates.append(box)
+    if not candidates:
+        return None
+
+    def reference_rank(box: Box) -> tuple[float, float, float]:
+        if box.x1 < anchor.box.x0:
+            horizontal_gap = anchor.box.x0 - box.x1
+        else:
+            horizontal_gap = box.x0 - anchor.box.x1
+        vertical_distance = abs(
+            ((box.top + box.bottom) / 2)
+            - (anchor.box.bottom + 35)
+        )
+        return (-vertical_distance, -horizontal_gap, box.area)
+
+    return max(candidates, key=reference_rank)
+
+
+def is_paired_signature_anchor(
+    anchor: Anchor,
+    image_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+) -> bool:
+    """Detect a carrier signature column paired with an existing client stamp."""
+    if anchor.phrase not in TRANSPORTER_NAME_TARGETS:
+        return False
+    if not (page_h * 0.10 < anchor.box.top < page_h * 0.975):
+        return False
+    in_side_column = anchor.box.x0 > page_w * 0.52 or anchor.box.x1 < page_w * 0.48
+    if not in_side_column:
+        return False
+    ref = reference_stamp_box(anchor, image_boxes)
+    if ref is None:
+        return False
+    if ref.x1 < anchor.box.x0:
+        gap = anchor.box.x0 - ref.x1
+    else:
+        gap = ref.x0 - anchor.box.x1
+    return gap <= page_w * 0.35
+
+
+def stamp_size_for_anchor(
+    anchor: Anchor,
+    page_w: float,
+    page_h: float,
+    requested_w: float,
+    ratio: float,
+    image_boxes: list[Box] | None = None,
+) -> tuple[float, float]:
+    # Make sends a pixel-like target width. Convert it to a professional PDF size
+    # based on the signature zone so it matches client stamps instead of dominating them.
+    requested_w = max(70.0, requested_w)
+    ref = None
+    if anchor.phrase in TRANSPORTER_NAME_TARGETS or is_signature_block_anchor(anchor, page_w, page_h):
+        ref = reference_stamp_box(anchor, image_boxes or [])
+    if ref is not None:
+        # The production artwork is wide while its circular seal occupies only
+        # part of that width. Match the visible seal to the client's seal, not
+        # the full square image bounding box.
+        target_height = min(max(ref.height * 0.42, 38.0), 54.0, page_h * 0.075)
+        lower_width = max(88.0, requested_w * 0.88)
+        upper_width = min(125.0, requested_w * 1.08, page_w * 0.22)
+        width = min(max(target_height / max(ratio, 0.1), lower_width), upper_width)
+        max_height = 56.0
+        min_width = min(lower_width, page_w * 0.20)
+    elif anchor.phrase in SUPPLIER_SIGNATURE_TARGETS:
+        width = min(requested_w, 118.0, page_w * 0.20)
+        max_height = 58.0
+        min_width = 82.0
+    elif is_footer_anchor(anchor, page_w, page_h):
+        width = min(requested_w, 96.0, page_w * 0.16)
+        max_height = 46.0
+        min_width = 56.0
+    elif anchor.phrase in FOOTER_TARGETS:
+        width = min(requested_w, 96.0, page_w * 0.16)
+        max_height = 46.0
+        min_width = 56.0
+    else:
+        width = min(requested_w, 112.0, page_w * 0.19)
+        max_height = 54.0
+        min_width = 70.0
+    if ratio > 0:
+        width = min(width, max_height / ratio)
+    width = max(min_width, width)
+    return width, width * ratio
+
+
+def placement_candidates(anchor: Anchor, page_w: float, page_h: float, stamp_w: float, stamp_h: float) -> list[tuple[str, Box]]:
+    a = anchor.box
+    gap = 12
+    if anchor.phrase in SUPPLIER_SIGNATURE_TARGETS and looks_like_supplier_signature_heading(anchor.box, page_w, page_h):
+        center_x = min(max((a.x0 + a.x1) / 2, page_w * 0.72), page_w - stamp_w / 2 - 30)
+        x = center_x - stamp_w / 2
+        below_top = a.bottom + 28
+        return [
+            ("under_supplier_signature_heading", Box(x, below_top, x + stamp_w, below_top + stamp_h)),
+            ("under_supplier_signature_right", Box(page_w - stamp_w - 55, below_top, page_w - 55, below_top + stamp_h)),
+            ("supplier_signature_lower", Box(x, below_top + 34, x + stamp_w, below_top + 34 + stamp_h)),
+            ("supplier_signature_low_right", Box(page_w - stamp_w - 55, page_h - stamp_h - 112, page_w - 55, page_h - 112)),
+        ]
+    if is_footer_anchor(anchor, page_w, page_h):
+        center_x = (a.x0 + a.x1) / 2
+        preferred_x = center_x - (stamp_w / 2)
+        preferred_top = a.top - stamp_h - 22
+        right_column_x = page_w - stamp_w - 80
+        right_of_name_x = a.x1 + 8
+        right_of_name_top = a.top - stamp_h - 18
+        return [
+            ("above_footer_name", Box(preferred_x, preferred_top, preferred_x + stamp_w, preferred_top + stamp_h)),
+            ("right_of_footer_name", Box(right_of_name_x, right_of_name_top, right_of_name_x + stamp_w, right_of_name_top + stamp_h)),
+            ("above_footer_right", Box(right_column_x, preferred_top, right_column_x + stamp_w, preferred_top + stamp_h)),
+            ("footer_column_center", Box(page_w * 0.64, preferred_top, page_w * 0.64 + stamp_w, preferred_top + stamp_h)),
+            ("footer_slightly_higher", Box(preferred_x, preferred_top - 18, preferred_x + stamp_w, preferred_top - 18 + stamp_h)),
+        ]
+    if anchor.phrase in SIGNATURE_LABEL_TARGETS:
+        centered_x = (a.x0 + a.x1) / 2 - (stamp_w / 2)
+        preferred_top = a.top - stamp_h - 8
+        right_x = min(a.x1 + gap, page_w - stamp_w - 28)
+        left_x = min(max(a.x0, 28), page_w - stamp_w - 28)
+        return [
+            ("above_signature_label_center", Box(centered_x, preferred_top, centered_x + stamp_w, preferred_top + stamp_h)),
+            ("above_signature_label_left", Box(left_x, preferred_top, left_x + stamp_w, preferred_top + stamp_h)),
+            ("above_signature_label_right", Box(right_x, preferred_top, right_x + stamp_w, preferred_top + stamp_h)),
+            ("right_of_signature_label", Box(right_x, a.top - stamp_h / 2, right_x + stamp_w, a.top - stamp_h / 2 + stamp_h)),
+            ("higher_signature_label_center", Box(centered_x, preferred_top - 18, centered_x + stamp_w, preferred_top - 18 + stamp_h)),
+        ]
+    if anchor.phrase in CONFIRMATION_HEADING_TARGETS:
+        left_x = min(max(a.x0, 28), page_w - stamp_w - 28)
+        right_x = min(max(a.x1 + gap, 28), page_w - stamp_w - 28)
+        below_top = a.bottom + 8
+        return [
+            ("under_confirmation_heading", Box(left_x, below_top, left_x + stamp_w, below_top + stamp_h)),
+            ("right_of_confirmation_heading", Box(right_x, max(a.top - 8, 0), right_x + stamp_w, max(a.top - 8, 0) + stamp_h)),
+            ("above_confirmation_heading", Box(left_x, a.top - stamp_h - 8, left_x + stamp_w, a.top - 8)),
+            ("right_lower", Box(page_w - stamp_w - 55, max(a.bottom + 10, page_h * 0.58), page_w - 55, max(a.bottom + 10, page_h * 0.58) + stamp_h)),
+        ]
+    return [
+        ("right_of_anchor", Box(a.x1 + gap, max(a.top - 18, 0), a.x1 + gap + stamp_w, max(a.top - 18, 0) + stamp_h)),
+        ("below_anchor", Box(min(max(a.x0, 20), page_w - stamp_w - 20), a.bottom + gap, min(max(a.x0, 20), page_w - stamp_w - 20) + stamp_w, a.bottom + gap + stamp_h)),
+        ("above_anchor", Box(min(max(a.x0, 20), page_w - stamp_w - 20), a.top - stamp_h - gap, min(max(a.x0, 20), page_w - stamp_w - 20) + stamp_w, a.top - gap)),
+        ("right_lower", Box(page_w - stamp_w - 55, max(a.bottom + 10, page_h * 0.58), page_w - 55, max(a.bottom + 10, page_h * 0.58) + stamp_h)),
+        ("middle_right", Box(page_w - stamp_w - 65, page_h * 0.52, page_w - 65, page_h * 0.52 + stamp_h)),
+        ("bottom_right_safe", Box(page_w - stamp_w - 60, page_h - stamp_h - 90, page_w - 60, page_h - 90)),
+    ]
+
+
+def fallback_candidates(page_w: float, page_h: float, stamp_w: float, stamp_h: float) -> list[tuple[str, Box]]:
+    right_margins = [55, 85, 120, 160, 210]
+    bottom_margins = [65, 95, 130, 170, 215, 265]
+    out = []
+    for yi, bottom_margin in enumerate(bottom_margins):
+        y = page_h - stamp_h - bottom_margin
+        for xi, right_margin in enumerate(right_margins):
+            x = page_w - stamp_w - right_margin
+            out.append((f"fallback_bottom_right_{yi}_{xi}", Box(x, y, x + stamp_w, y + stamp_h)))
+    return out
+
+
+def signature_block_text_bottom(anchor: Anchor, word_boxes: list[Box], page_w: float) -> float:
+    bottom = anchor.box.bottom
+    anchor_center = (anchor.box.x0 + anchor.box.x1) / 2
+    column_pad = max(45.0, page_w * 0.18)
+    for box in word_boxes:
+        same_side = (
+            box.x1 < page_w * 0.56
+            if anchor_center < page_w * 0.50
+            else box.x0 > page_w * 0.44
+        )
+        near_column = (
+            box.x1 >= anchor.box.x0 - column_pad
+            and box.x0 <= anchor.box.x1 + column_pad
+        )
+        # Include the company/contact lines immediately under the carrier name,
+        # but never unrelated text farther down the page.
+        in_signature_lines = (
+            anchor.box.top - 10
+            <= box.top
+            <= anchor.box.bottom + 34
+        )
+        if same_side and near_column and in_signature_lines:
+            bottom = max(bottom, box.bottom)
+    return bottom
+
+
+def explicit_signature_population(
+    anchor: Anchor,
+    word_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+) -> int:
+    """Count printed fields below a signature label in the same page column."""
+    anchor_on_left = (anchor.box.x0 + anchor.box.x1) / 2 < page_w * 0.50
+    window_bottom = min(page_h - 12.0, anchor.box.bottom + page_h * 0.30)
+    count = 0
+    for box in word_boxes:
+        if box.bottom <= anchor.box.bottom + 2 or box.top >= window_bottom:
+            continue
+        same_column = box.x1 < page_w * 0.52 if anchor_on_left else box.x0 > page_w * 0.48
+        if same_column:
+            count += 1
+    return count
+
+
+def select_explicit_signature_anchors(
+    anchors: list[Anchor],
+    word_boxes: list[list[Box]],
+    page_sizes: list[tuple[float, float]],
+) -> list[Anchor] | None:
+    """Choose one explicit signature/stamp cell on every page that has one."""
+    candidates = [
+        anchor
+        for anchor in anchors
+        if anchor.phrase in SIGNATURE_LABEL_TARGETS
+        and anchor.box.top < page_sizes[anchor.page_index][1] * 0.96
+        and looks_like_carrier_signature_label(
+            norm(anchor.line_text),
+            anchor.phrase,
+            anchor.box,
+            page_sizes[anchor.page_index][1],
+        )
+    ]
+    if not candidates:
+        return None
+
+    company_sides = []
+    for anchor in anchors:
+        if anchor.phrase not in TRANSPORTER_NAME_TARGETS:
+            continue
+        page_w, _page_h = page_sizes[anchor.page_index]
+        company_sides.append((anchor.box.x0 + anchor.box.x1) / 2 >= page_w * 0.50)
+    preferred_right = None
+    if company_sides:
+        preferred_right = sum(company_sides) * 2 >= len(company_sides)
+
+    by_page: dict[int, list[Anchor]] = {}
+    for anchor in candidates:
+        by_page.setdefault(anchor.page_index, []).append(anchor)
+
+    selected = []
+    for page_index in sorted(by_page):
+        page_w, page_h = page_sizes[page_index]
+
+        def candidate_rank(anchor: Anchor) -> tuple[int, int, int, float]:
+            population = explicit_signature_population(
+                anchor,
+                word_boxes[page_index],
+                page_w,
+                page_h,
+            )
+            is_right = (anchor.box.x0 + anchor.box.x1) / 2 >= page_w * 0.50
+            side_penalty = 0 if preferred_right is None or is_right == preferred_right else 1
+            return (population, side_penalty, -anchor.score, -anchor.box.x0)
+
+        selected.append(min(by_page[page_index], key=candidate_rank))
+    return selected
+
+
+def choose_explicit_signature_candidate(
+    anchor: Anchor,
+    word_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+    stamp_w: float,
+    stamp_h: float,
+    page_image: Image.Image | None = None,
+) -> tuple[str, Box]:
+    """Place the stamp inside the blank cell directly below its explicit label."""
+    if anchor.phrase in OVERLAP_OK_SIGNATURE_TARGETS:
+        width = min(max(stamp_w, 78.0), page_w * 0.22)
+        height = width * (stamp_h / max(stamp_w, 1.0))
+        anchor_center = (anchor.box.x0 + anchor.box.x1) / 2
+        x = min(max(anchor_center - width / 2, 16.0), page_w - width - 16.0)
+        top = anchor.box.bottom + 2.0
+        if top + height > page_h - 12.0:
+            top = max(12.0, page_h - height - 12.0)
+        return (
+            "explicit_carrier_signature_overlap_allowed",
+            Box(x, top, x + width, top + height),
+        )
+
+    ratio = stamp_h / max(stamp_w, 1.0)
+    best_any: tuple[str, Box, float, float] | None = None
+    on_left = (anchor.box.x0 + anchor.box.x1) / 2 < page_w * 0.50
+    column_left = 24.0 if on_left else page_w * 0.52
+    column_right = page_w * 0.48 if on_left else page_w - 24.0
+
+    for scale in (1.0, 0.92, 0.84, 0.76, 0.68, 0.60):
+        width = max(58.0, stamp_w * scale)
+        height = width * ratio
+        center_x = (column_left + column_right) / 2
+        x = min(max(center_x - width / 2, column_left + 8), column_right - width - 8)
+        start_top = anchor.box.bottom + 6
+        candidates = []
+        for offset in (0.0, 16.0, 34.0, 56.0, 82.0):
+            top = start_top + offset
+            if top + height > page_h - 20:
+                continue
+            candidates.append(
+                (
+                    f"inside_explicit_signature_cell_{int(offset)}",
+                    Box(x, top, x + width, top + height),
+                )
+            )
+        if not candidates:
+            continue
+        scored = score_candidates(
+            candidates,
+            word_boxes,
+            page_w,
+            page_h,
+            anchor,
+            page_image,
+        )
+        safe = [
+            item
+            for item in scored
+            if is_safe_rect(item[1], word_boxes, page_image, page_w, page_h)
+            and item[1].top >= anchor.box.bottom + 4
+        ]
+        if safe:
+            reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
+            return reason, rect
+        attempt_best = max(scored, key=lambda item: item[2])
+        if best_any is None or attempt_best[2] > best_any[2]:
+            best_any = attempt_best
+    if best_any is None:
+        return "explicit_signature_unavailable", clamp_rect(
+            Box(anchor.box.x0, anchor.box.bottom + 6, anchor.box.x0 + stamp_w, anchor.box.bottom + 6 + stamp_h),
+            page_w,
+            page_h,
+        )
+    return best_any[0], best_any[1]
+
+
+def select_transporter_signature_anchors(
+    anchors: list[Anchor],
+    word_boxes: list[list[Box]],
+    image_boxes: list[list[Box]],
+    page_sizes: list[tuple[float, float]],
+) -> list[Anchor] | None:
+    """Return one carrier signature anchor for every page that contains one."""
+    signature_anchors = []
+    for anchor in anchors:
+        if anchor.phrase not in TRANSPORTER_NAME_TARGETS:
+            continue
+        page_w, page_h = page_sizes[anchor.page_index]
+        if is_signature_block_anchor(anchor, page_w, page_h) or is_paired_signature_anchor(
+            anchor,
+            image_boxes[anchor.page_index],
+            page_w,
+            page_h,
+        ):
+            signature_anchors.append(anchor)
+    page_indexes = {anchor.page_index for anchor in signature_anchors}
+    if not page_indexes:
+        return None
+
+    anchors_by_page: dict[int, list[Anchor]] = {}
+    for anchor in signature_anchors:
+        anchors_by_page.setdefault(anchor.page_index, []).append(anchor)
+
+    return [
+        max(
+            anchors_by_page[page_index],
+            key=lambda item: anchor_rank(item, *page_sizes[page_index]),
+        )
+        for page_index in sorted(page_indexes)
+    ]
+
+
+def render_visual_pages(pdf_path: Path, page_indexes: set[int], dpi: int = 120) -> dict[int, Image.Image]:
+    if convert_from_path is None:
+        return {}
+
+    rendered: dict[int, Image.Image] = {}
+    for page_index in sorted(page_indexes):
+        try:
+            images = convert_from_path(
+                str(pdf_path),
+                dpi=dpi,
+                first_page=page_index + 1,
+                last_page=page_index + 1,
+                fmt="png",
+                thread_count=1,
+            )
+        except Exception:
+            continue
+        if images:
+            rendered[page_index] = images[0].convert("RGB")
+    return rendered
+
+
+def visual_ink_ratio(rect: Box, page_image: Image.Image | None, page_w: float, page_h: float) -> float:
+    if page_image is None or rect.area <= 0:
+        return 0.0
+
+    scale_x = page_image.width / max(page_w, 1.0)
+    scale_y = page_image.height / max(page_h, 1.0)
+    pad = 3.0
+    left = max(0, int((rect.x0 + pad) * scale_x))
+    top = max(0, int((rect.top + pad) * scale_y))
+    right = min(page_image.width, int((rect.x1 - pad) * scale_x))
+    bottom = min(page_image.height, int((rect.bottom - pad) * scale_y))
+    if right <= left or bottom <= top:
+        return 1.0
+
+    gray = page_image.crop((left, top, right, bottom)).convert("L")
+    hist = gray.histogram()
+    total = sum(hist)
+    if total <= 0:
+        return 1.0
+
+    dark = sum(hist[:232])
+    medium = sum(hist[232:244])
+    return (dark + medium * 0.35) / total
+
+
+def is_safe_rect(
+    rect: Box,
+    word_boxes: list[Box],
+    page_image: Image.Image | None,
+    page_w: float,
+    page_h: float,
+) -> bool:
+    if overlap_ratio(rect, word_boxes) > 0.012:
+        return False
+    if visual_ink_ratio(rect, page_image, page_w, page_h) > 0.022:
+        return False
+    return True
+
+
+def choose_signature_block_candidate(
+    anchor: Anchor,
+    word_boxes: list[Box],
+    image_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+    stamp_w: float,
+    stamp_h: float,
+    page_image: Image.Image | None = None,
+) -> tuple[str, Box]:
+    ref = reference_stamp_box(anchor, image_boxes)
+    text_bottom = signature_block_text_bottom(anchor, word_boxes, page_w)
+    best_any: tuple[str, Box, float, float] | None = None
+    for scale in (1.0, 0.92, 0.84, 0.76, 0.68, 0.60, 0.52):
+        width = max(58.0, stamp_w * scale)
+        height = width * (stamp_h / max(stamp_w, 1.0))
+        anchor_center = (anchor.box.x0 + anchor.box.x1) / 2
+        if anchor_center < page_w * 0.50:
+            center_x = max(anchor_center, width / 2 + 35)
+        else:
+            center_x = min(
+                max(anchor_center, page_w * 0.64),
+                page_w - width / 2 - 35,
+            )
+        x = center_x - width / 2
+        preferred_top = text_bottom + 3
+        if ref is not None:
+            ref_centered_top = ref.top + (ref.height - height) / 2
+            preferred_top = max(preferred_top, ref_centered_top)
+        aligned_x = min(max(anchor.box.x0, 28), page_w - width - 28)
+        candidates = []
+        if ref is not None:
+            aligned_top = max(text_bottom + 3, ref.top + (ref.height - height) / 2)
+            candidates.extend(
+                [
+                    (
+                        "signature_block_align_client_stamp",
+                        Box(aligned_x, aligned_top, aligned_x + width, aligned_top + height),
+                    ),
+                    (
+                        "below_signature_block_match_client",
+                        Box(x, aligned_top, x + width, aligned_top + height),
+                    ),
+                    (
+                        "signature_block_client_higher",
+                        Box(
+                            aligned_x,
+                            max(text_bottom + 3, aligned_top - 10),
+                            aligned_x + width,
+                            max(text_bottom + 3, aligned_top - 10) + height,
+                        ),
+                    ),
+                    (
+                        "signature_block_client_lower",
+                        Box(aligned_x, aligned_top + 10, aligned_x + width, aligned_top + 10 + height),
+                    ),
+                ]
+            )
+        else:
+            candidates.extend(
+                [
+                    ("below_signature_block_match_client", Box(x, preferred_top, x + width, preferred_top + height)),
+                    ("below_signature_block_aligned", Box(aligned_x, preferred_top, aligned_x + width, preferred_top + height)),
+                    ("signature_block_lower", Box(x, preferred_top + 18, x + width, preferred_top + 18 + height)),
+                ]
+            )
+        safe_candidates = [
+            (reason, clamp_rect(rect, page_w, page_h))
+            for reason, rect in candidates
+        ]
+        scored = score_candidates(safe_candidates, word_boxes, page_w, page_h, anchor, page_image)
+        safe = [
+            item for item in scored
+            if is_safe_rect(item[1], word_boxes, page_image, page_w, page_h)
+        ]
+        if safe:
+            reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
+            return reason, rect
+        attempt_best = max(scored, key=lambda item: item[2])
+        if best_any is None or attempt_best[2] > best_any[2]:
+            best_any = attempt_best
+    assert best_any is not None
+    return best_any[0], best_any[1]
+
+
+def score_rect(rect: Box, word_boxes: list[Box], page_w: float, page_h: float, anchor: Anchor | None) -> float:
+    text_overlap = overlap_ratio(rect, word_boxes)
+    score = 1000.0 - (text_overlap * 9000.0)
+
+    if rect.top < 15 or rect.bottom > page_h - 15 or rect.x0 < 15 or rect.x1 > page_w - 15:
+        score -= 500
+    if rect.bottom > page_h - 28:
+        score -= 500
+    if anchor is not None:
+        dist = math.hypot(rect.x0 - anchor.box.x0, rect.top - anchor.box.top)
+        score += anchor.score * 5
+        score -= dist * 0.18
+    else:
+        if rect.top > page_h * 0.42:
+            score += 120
+        if rect.x0 > page_w * 0.45:
+            score += 70
+    return score
+
+
+def score_rect_with_visual(
+    rect: Box,
+    word_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+    anchor: Anchor | None,
+    page_image: Image.Image | None = None,
+) -> float:
+    score = score_rect(rect, word_boxes, page_w, page_h, anchor)
+    ink = visual_ink_ratio(rect, page_image, page_w, page_h)
+    if ink > 0.008:
+        score -= ink * 18000.0
+    return score
+
+
+def choose_best_candidate(
+    candidates: list[tuple[str, Box]],
+    word_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+    anchor: Anchor | None,
+    page_image: Image.Image | None = None,
+) -> tuple[str, Box]:
+    scored = score_candidates(candidates, word_boxes, page_w, page_h, anchor, page_image)
+    safe = [
+        item for item in scored
+        if is_safe_rect(item[1], word_boxes, page_image, page_w, page_h)
+    ]
+    pool = safe or scored
+    best_reason, best_rect, _score, _text_overlap = max(pool, key=lambda item: item[2])
+    return best_reason, best_rect
+
+
+def score_candidates(
+    candidates: list[tuple[str, Box]],
+    word_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+    anchor: Anchor | None,
+    page_image: Image.Image | None = None,
+) -> list[tuple[str, Box, float, float]]:
+    reason_bonus = {
+        "below_signature_block_match_client": 220.0,
+        "signature_block_align_client_stamp": 340.0,
+        "signature_block_client_higher": 230.0,
+        "signature_block_client_lower": 170.0,
+        "below_signature_block_right": 170.0,
+        "signature_block_lower": 80.0,
+        "above_signature_label_center": 180.0,
+        "above_signature_label_left": 140.0,
+        "above_signature_label_right": 120.0,
+        "higher_signature_label_center": 80.0,
+        "under_confirmation_heading": 150.0,
+        "right_of_confirmation_heading": 120.0,
+        "above_footer_name": 180.0,
+        "right_of_footer_name": 100.0,
+        "above_footer_right": 80.0,
+    }
+    return [
+        (
+            reason,
+            rect,
+            score_rect_with_visual(rect, word_boxes, page_w, page_h, anchor, page_image) + reason_bonus.get(reason, 0.0),
+            overlap_ratio(rect, word_boxes),
+        )
+        for reason, rect in candidates
+    ]
+
+
+def choose_footer_candidate(
+    anchor: Anchor,
+    word_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+    stamp_w: float,
+    stamp_ratio: float,
+    page_image: Image.Image | None = None,
+) -> tuple[str, Box]:
+    attempts = [stamp_w, stamp_w * 0.86, stamp_w * 0.72, stamp_w * 0.58]
+    best_any: tuple[str, Box, float, float] | None = None
+    for width in attempts:
+        width = max(52.0, width)
+        height = width * stamp_ratio
+        candidates = [
+            (reason, clamp_rect(rect, page_w, page_h))
+            for reason, rect in placement_candidates(anchor, page_w, page_h, width, height)
+        ]
+        scored = score_candidates(candidates, word_boxes, page_w, page_h, anchor, page_image)
+        safe = [
+            item for item in scored
+            if is_safe_rect(item[1], word_boxes, page_image, page_w, page_h)
+        ]
+        if safe:
+            preferred = [item for item in safe if item[0] == "above_footer_name"]
+            if preferred:
+                reason, rect, _score, _overlap = max(preferred, key=lambda item: item[2])
+                return reason, rect
+            reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
+            return reason, rect
+        attempt_best = max(scored, key=lambda item: item[2])
+        if best_any is None or attempt_best[2] > best_any[2]:
+            best_any = attempt_best
+    assert best_any is not None
+    return best_any[0], best_any[1]
+
+
+def choose_fallback_page_candidate(
+    word_boxes: list[Box],
+    page_w: float,
+    page_h: float,
+    stamp_w: float,
+    stamp_ratio: float,
+    page_image: Image.Image | None = None,
+) -> tuple[str, Box] | None:
+    attempts = [stamp_w, stamp_w * 0.90, stamp_w * 0.80, stamp_w * 0.70, stamp_w * 0.60]
+    best_any: tuple[str, Box, float, float] | None = None
+    for width in attempts:
+        width = max(52.0, width)
+        height = width * stamp_ratio
+        candidates = [
+            (reason, clamp_rect(rect, page_w, page_h))
+            for reason, rect in fallback_candidates(page_w, page_h, width, height)
+        ]
+        scored = score_candidates(candidates, word_boxes, page_w, page_h, None, page_image)
+        safe = [
+            item for item in scored
+            if is_safe_rect(item[1], word_boxes, page_image, page_w, page_h)
+        ]
+        if safe:
+            reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
+            return reason, rect
+        attempt_best = max(scored, key=lambda item: item[2])
+        if best_any is None or attempt_best[2] > best_any[2]:
+            best_any = attempt_best
+    if best_any is None:
+        return None
+    return best_any[0], best_any[1]
+
+
+def choose_placements(
+    anchors: list[Anchor],
+    word_boxes: list[list[Box]],
+    image_boxes: list[list[Box]],
+    page_sizes: list[tuple[float, float]],
+    stamp_w: float,
+    stamp_ratio: float,
+    allow_fallback: bool = False,
+    visual_pages: dict[int, Image.Image] | None = None,
+) -> list[Placement]:
+    placements: list[Placement] = []
+    page_count = len(page_sizes)
+    explicit_signature_anchors = select_explicit_signature_anchors(
+        anchors,
+        word_boxes,
+        page_sizes,
+    )
+    if explicit_signature_anchors:
+        for anchor in explicit_signature_anchors:
+            page_index = anchor.page_index
+            page_w, page_h = page_sizes[page_index]
+            page_image = (visual_pages or {}).get(page_index)
+            page_stamp_w, page_stamp_h = stamp_size_for_anchor(
+                anchor,
+                page_w,
+                page_h,
+                stamp_w,
+                stamp_ratio,
+                image_boxes[page_index],
+            )
+            best_reason, best_rect = choose_explicit_signature_candidate(
+                anchor,
+                word_boxes[page_index],
+                page_w,
+                page_h,
+                page_stamp_w,
+                page_stamp_h,
+                page_image,
+            )
+            if (
+                anchor.phrase not in OVERLAP_OK_SIGNATURE_TARGETS
+                and not is_safe_rect(best_rect, word_boxes[page_index], page_image, page_w, page_h)
+            ):
+                return []
+            placements.append(
+                Placement(
+                    page_index=page_index,
+                    rect=best_rect,
+                    score=score_rect(best_rect, word_boxes[page_index], page_w, page_h, anchor),
+                    anchor_phrase=anchor.phrase,
+                    reason=best_reason,
+                )
+            )
+        return placements
+
+    selected_signature_anchors = select_transporter_signature_anchors(
+        anchors,
+        word_boxes,
+        image_boxes,
+        page_sizes,
+    )
+
+    # A company name, tax ID, or generic transport word elsewhere in the
+    # document is not a reliable signing location. When fallback is enabled,
+    # only an explicit signature label or a verified carrier signature block
+    # may select individual pages. Otherwise stamp every page in the safest
+    # bottom-right area instead of guessing from a weak anchor.
+    if not selected_signature_anchors and page_count and allow_fallback:
+        for page_index in range(page_count):
+            page_w, page_h = page_sizes[page_index]
+            page_stamp_w = min(max(stamp_w, 78.0), 112.0, page_w * 0.19)
+            best = choose_fallback_page_candidate(
+                word_boxes[page_index],
+                page_w,
+                page_h,
+                page_stamp_w,
+                stamp_ratio,
+                (visual_pages or {}).get(page_index),
+            )
+            if best is None:
+                continue
+            best_reason, best_rect = best
+            placements.append(
+                Placement(
+                    page_index=page_index,
+                    rect=best_rect,
+                    score=score_rect(best_rect, word_boxes[page_index], page_w, page_h, None),
+                    anchor_phrase="FALLBACK_EACH_PAGE",
+                    reason=best_reason,
+                )
+            )
+        return placements
+
+    high_anchors = selected_signature_anchors or [a for a in anchors if a.score >= 95]
+    if not high_anchors:
+        high_anchors = sorted(anchors, key=lambda a: a.score, reverse=True)[:1]
+
+    by_page: dict[int, Anchor] = {}
+    for anchor in sorted(
+        high_anchors,
+        key=lambda a: anchor_rank(a, *page_sizes[a.page_index]),
+        reverse=True,
+    ):
+        by_page.setdefault(anchor.page_index, anchor)
+
+    for page_index, anchor in sorted(by_page.items(), key=lambda kv: kv[0]):
+        page_w, page_h = page_sizes[page_index]
+        page_image = (visual_pages or {}).get(page_index)
+        page_stamp_w, page_stamp_h = stamp_size_for_anchor(
+            anchor,
+            page_w,
+            page_h,
+            stamp_w,
+            stamp_ratio,
+            image_boxes[page_index],
+        )
+        is_selected_signature = bool(
+            selected_signature_anchors
+            and anchor in selected_signature_anchors
+        )
+        if is_signature_block_anchor(anchor, page_w, page_h) or is_selected_signature:
+            best_reason, best_rect = choose_signature_block_candidate(
+                anchor,
+                word_boxes[page_index],
+                image_boxes[page_index],
+                page_w,
+                page_h,
+                page_stamp_w,
+                page_stamp_h,
+                page_image,
+            )
+        elif is_footer_anchor(anchor, page_w, page_h):
+            best_reason, best_rect = choose_footer_candidate(
+                anchor,
+                word_boxes[page_index],
+                page_w,
+                page_h,
+                page_stamp_w,
+                stamp_ratio,
+                page_image,
+            )
+        else:
+            candidates = [
+                (reason, clamp_rect(rect, page_w, page_h))
+                for reason, rect in placement_candidates(anchor, page_w, page_h, page_stamp_w, page_stamp_h)
+            ]
+            best_reason, best_rect = choose_best_candidate(
+                candidates,
+                word_boxes[page_index],
+                page_w,
+                page_h,
+                anchor,
+                page_image,
+            )
+        if not is_safe_rect(best_rect, word_boxes[page_index], page_image, page_w, page_h):
+            continue
+        placements.append(
+            Placement(
+                page_index=page_index,
+                rect=best_rect,
+                score=score_rect(best_rect, word_boxes[page_index], page_w, page_h, anchor),
+                anchor_phrase=anchor.phrase,
+                reason=best_reason,
+            )
+        )
+
+    # Never return a partially confirmed document when several carrier
+    # signature pages were detected. Make will route an empty result to review.
+    if selected_signature_anchors and len(placements) != len(selected_signature_anchors):
+        return []
+
+    if not placements and page_count and allow_fallback:
+        for page_index in range(page_count):
+            page_w, page_h = page_sizes[page_index]
+            page_stamp_w = min(max(stamp_w, 78.0), 112.0, page_w * 0.19)
+            best = choose_fallback_page_candidate(
+                word_boxes[page_index],
+                page_w,
+                page_h,
+                page_stamp_w,
+                stamp_ratio,
+                (visual_pages or {}).get(page_index),
+            )
+            if best is None:
+                continue
+            best_reason, best_rect = best
+            placements.append(
+                Placement(
+                    page_index=page_index,
+                    rect=best_rect,
+                    score=score_rect(best_rect, word_boxes[page_index], page_w, page_h, None),
+                    anchor_phrase="FALLBACK_EACH_PAGE",
+                    reason=best_reason,
+                )
+            )
+    return placements
+
+
+def stamp_pdf(
+    input_pdf: Path,
+    stamp_image: Path,
+    output_pdf: Path,
+    stamp_width: float = 175.0,
+    allow_fallback: bool = False,
+) -> dict:
+    with Image.open(stamp_image) as img:
+        ratio = img.height / max(img.width, 1)
+
+    anchors, word_boxes, image_boxes, page_sizes = find_anchors(input_pdf)
+    visual_page_indexes = {anchor.page_index for anchor in anchors}
+    if allow_fallback and page_sizes:
+        visual_page_indexes.update(range(len(page_sizes)))
+    visual_pages = render_visual_pages(input_pdf, visual_page_indexes)
+    placements = choose_placements(
+        anchors,
+        word_boxes,
+        image_boxes,
+        page_sizes,
+        stamp_width,
+        ratio,
+        allow_fallback=allow_fallback,
+        visual_pages=visual_pages,
+    )
+
+    reader = PdfReader(str(input_pdf))
+    writer = PdfWriter()
+    stamp_reader = ImageReader(str(stamp_image))
+
+    placement_by_page = {p.page_index: p for p in placements}
+    for page_index, page in enumerate(reader.pages):
+        if page_index not in placement_by_page:
+            writer.add_page(page)
+            continue
+
+        page_w = float(page.mediabox.width)
+        page_h = float(page.mediabox.height)
+        p = placement_by_page[page_index]
+        packet = io.BytesIO()
+        c = canvas.Canvas(packet, pagesize=(page_w, page_h))
+        x = p.rect.x0
+        y = page_h - p.rect.bottom
+        c.drawImage(stamp_reader, x, y, width=p.rect.width, height=p.rect.height, mask="auto")
+        c.save()
+        packet.seek(0)
+        overlay = PdfReader(packet).pages[0]
+        page.merge_page(overlay)
+        writer.add_page(page)
+
+    output_pdf.parent.mkdir(parents=True, exist_ok=True)
+    with output_pdf.open("wb") as f:
+        writer.write(f)
+
+    return {
+        "input": str(input_pdf),
+        "output": str(output_pdf),
+        "placements": [
+            {
+                "page": p.page_index + 1,
+                "rect_top_left": {
+                    "x0": round(p.rect.x0, 2),
+                    "top": round(p.rect.top, 2),
+                    "x1": round(p.rect.x1, 2),
+                    "bottom": round(p.rect.bottom, 2),
+                },
+                "score": round(p.score, 2),
+                "anchor": p.anchor_phrase,
+                "reason": p.reason,
+            }
+            for p in placements
+        ],
+        "anchor_count": len(anchors),
+        "stamped": bool(placements),
+        "needs_review": not bool(placements),
+    }
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="DEGEI deterministic PDF stamp engine")
+    parser.add_argument("--input", required=True, type=Path)
+    parser.add_argument("--stamp", required=True, type=Path)
+    parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--stamp-width", type=float, default=175.0)
+    parser.add_argument("--allow-fallback", action="store_true")
+    args = parser.parse_args()
+
+    result = stamp_pdf(args.input, args.stamp, args.output, args.stamp_width, args.allow_fallback)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    main()
