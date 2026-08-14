@@ -16,7 +16,7 @@ from pathlib import Path
 import stamp_engine as _stamp_engine
 
 
-ENGINE_VERSION = "2026-08-14-weak-anchor-fallback-all-pages-v23"
+ENGINE_VERSION = "2026-08-14-carrier-role-company-pair-v24"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -111,6 +111,44 @@ def patch_stamp_engine() -> None:
             and (anchor.box.x0 >= page_w * 0.48 or anchor.box.x1 <= page_w * 0.52)
         )
 
+    def is_verified_caraus_company_pair(anchor, anchors, page_w, page_h):
+        """Recognize an explicit Caraus + DEGEI carrier confirmation block.
+
+        Some Romanian orders place this two-line block around the upper third
+        of the page, so the normal lower-page signature heuristic cannot see
+        it. The role label alone is never enough: it must be immediately above
+        the DEGEI company name in the same visual column.
+        """
+        if anchor.phrase not in _stamp_engine.TRANSPORTER_NAME_TARGETS:
+            return False
+        if not (page_h * 0.16 <= anchor.box.top <= page_h * 0.92):
+            return False
+
+        anchor_center = (anchor.box.x0 + anchor.box.x1) / 2
+        anchor_on_right = anchor_center >= page_w * 0.50
+        for role in anchors:
+            if role.page_index != anchor.page_index or role.phrase != "CARAUS":
+                continue
+
+            role_center = (role.box.x0 + role.box.x1) / 2
+            same_side = (role_center >= page_w * 0.50) == anchor_on_right
+            vertical_gap = anchor.box.top - role.box.bottom
+            horizontally_related = (
+                role.box.x1 >= anchor.box.x0 - page_w * 0.10
+                and role.box.x0 <= anchor.box.x1 + page_w * 0.10
+                and abs(role_center - anchor_center) <= page_w * 0.16
+            )
+            short_role_line = len(_stamp_engine.norm(role.line_text).split()) <= 4
+            if (
+                same_side
+                and horizontally_related
+                and short_role_line
+                and -6.0 <= vertical_gap <= max(58.0, page_h * 0.085)
+                and role.box.top >= page_h * 0.16
+            ):
+                return True
+        return False
+
     def is_carrier_identity_header(anchor, anchors, page_w, page_h):
         """Reject carrier company-data rows that are not signature fields."""
         if anchor.phrase not in _stamp_engine.TRANSPORTER_NAME_TARGETS:
@@ -159,6 +197,11 @@ def patch_stamp_engine() -> None:
                 page_w,
                 page_h,
             ) or is_split_transporter_name_pair(
+                anchor,
+                anchors,
+                page_w,
+                page_h,
+            ) or is_verified_caraus_company_pair(
                 anchor,
                 anchors,
                 page_w,
@@ -766,6 +809,7 @@ def patch_stamp_engine() -> None:
     _stamp_engine.looks_like_carrier_signature_block = looks_like_carrier_signature_block
     _stamp_engine.signature_block_text_bottom = signature_block_text_bottom
     _stamp_engine.is_split_transporter_name_pair = is_split_transporter_name_pair
+    _stamp_engine.is_verified_caraus_company_pair = is_verified_caraus_company_pair
     _stamp_engine.is_carrier_identity_header = is_carrier_identity_header
     _stamp_engine.choose_tight_labeled_candidate = choose_tight_labeled_candidate
     _stamp_engine.choose_signature_block_candidate = choose_signature_block_candidate

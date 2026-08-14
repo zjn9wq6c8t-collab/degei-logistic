@@ -36,6 +36,7 @@ TARGET_PHRASES = [
     ("SEMNATURA TRANSPORTATOR", 115),
     ("STAMPILA TRANSPORTATOR", 115),
     ("TRANSPORTATOR", 90),
+    ("CARAUS", 100),
     ("CARRIER", 90),
     ("HAULIER", 90),
     ("VETTORE", 90),
@@ -48,7 +49,7 @@ TARGET_PHRASES = [
     ("SUBCONTRACTANT", 65),
 ]
 
-GENERIC_TARGETS = {"TRANSPORTATOR", "CARRIER", "HAULIER", "VETTORE"}
+GENERIC_TARGETS = {"TRANSPORTATOR", "CARAUS", "CARRIER", "HAULIER", "VETTORE"}
 FOOTER_TARGETS = {"DEGEI LOGISTIC", "RO36256981"}
 TRANSPORTER_NAME_TARGETS = {"DEGEI LOGISTIC", "RO36256981"}
 SUPPLIER_SIGNATURE_TARGETS = {"FURNIZOR", "PRESTATOR", "SUBCONTRACTANT"}
@@ -311,7 +312,12 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                         if phrase in GENERIC_TARGETS:
                             if len(line_norm) > 38:
                                 continue
-                            if line["box"].width > page.width * 0.42:
+                            split_column_caraus = (
+                                phrase == "CARAUS"
+                                and len(line_norm.split()) <= 3
+                                and all(box.width <= page.width * 0.18 for box in matched_boxes)
+                            )
+                            if line["box"].width > page.width * 0.42 and not split_column_caraus:
                                 continue
                         for anchor_box in matched_boxes:
                             score = base_score
