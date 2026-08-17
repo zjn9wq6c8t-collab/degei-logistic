@@ -1177,7 +1177,6 @@ def choose_placements(
                     reason=best_reason,
                 )
             )
-        return placements
 
     selected_signature_anchors = select_transporter_signature_anchors(
         anchors,
@@ -1185,13 +1184,25 @@ def choose_placements(
         image_boxes,
         page_sizes,
     )
+    if selected_signature_anchors and placements:
+        explicit_pages = {placement.page_index for placement in placements}
+        selected_signature_anchors = [
+            anchor
+            for anchor in selected_signature_anchors
+            if anchor.page_index not in explicit_pages
+        ]
+
+    # An explicit label on one page must not suppress a verified carrier block
+    # on another page of the same order.
+    if placements and not selected_signature_anchors:
+        return placements
 
     # A company name, tax ID, or generic transport word elsewhere in the
     # document is not a reliable signing location. When fallback is enabled,
     # only an explicit signature label or a verified carrier signature block
     # may select individual pages. Otherwise stamp every page in the safest
     # bottom-right area instead of guessing from a weak anchor.
-    if not selected_signature_anchors and page_count and allow_fallback:
+    if not placements and not selected_signature_anchors and page_count and allow_fallback:
         for page_index in range(page_count):
             page_w, page_h = page_sizes[page_index]
             page_stamp_w = min(max(stamp_w, 78.0), 112.0, page_w * 0.19)

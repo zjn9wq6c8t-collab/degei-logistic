@@ -16,7 +16,7 @@ from pathlib import Path
 import stamp_engine as _stamp_engine
 
 
-ENGINE_VERSION = "2026-08-14-carrier-role-company-pair-v24"
+ENGINE_VERSION = "2026-08-17-multipage-evidence-union-v25"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -103,11 +103,11 @@ def patch_stamp_engine() -> None:
             ):
                 return True
 
-        # Avoid interpreting the "Transportator: Nume firma" header near the
-        # top of page one as a signature block.
+        # A two-column party block can be the confirmation area even when it
+        # appears in the upper half of a continuation or final page.
         return (
             same_line_pair
-            and anchor.box.top >= page_h * 0.52
+            and page_h * 0.08 <= anchor.box.top <= page_h * 0.95
             and (anchor.box.x0 >= page_w * 0.48 or anchor.box.x1 <= page_w * 0.52)
         )
 
@@ -563,8 +563,8 @@ def patch_stamp_engine() -> None:
             word_boxes,
             page_sizes,
         )
+        placements = []
         if explicit_signature_anchors:
-            explicit_placements = []
             for anchor in explicit_signature_anchors:
                 page_index = anchor.page_index
                 page_w, page_h = page_sizes[page_index]
@@ -605,7 +605,7 @@ def patch_stamp_engine() -> None:
                         page_stamp_w,
                         page_stamp_h,
                     )
-                explicit_placements.append(
+                placements.append(
                     _stamp_engine.Placement(
                         page_index=page_index,
                         rect=best_rect,
@@ -620,7 +620,6 @@ def patch_stamp_engine() -> None:
                         reason=best_reason,
                     )
                 )
-            return explicit_placements
 
         selected_signature_anchors = select_transporter_signature_anchors(
             anchors,
@@ -628,8 +627,15 @@ def patch_stamp_engine() -> None:
             image_boxes,
             page_sizes,
         )
+        if selected_signature_anchors and placements:
+            explicit_pages = {placement.page_index for placement in placements}
+            selected_signature_anchors = [
+                anchor
+                for anchor in selected_signature_anchors
+                if anchor.page_index not in explicit_pages
+            ]
+
         if selected_signature_anchors:
-            signature_placements = []
             for anchor in selected_signature_anchors:
                 page_index = anchor.page_index
                 page_w, page_h = page_sizes[page_index]
@@ -668,7 +674,7 @@ def patch_stamp_engine() -> None:
                         page_stamp_w,
                         page_stamp_h,
                     )
-                signature_placements.append(
+                placements.append(
                     _stamp_engine.Placement(
                         page_index=page_index,
                         rect=best_rect,
@@ -683,7 +689,8 @@ def patch_stamp_engine() -> None:
                         reason=best_reason,
                     )
                 )
-            return signature_placements
+        if placements:
+            return sorted(placements, key=lambda placement: placement.page_index)
 
         page_count = len(page_sizes)
         if page_count and allow_fallback:

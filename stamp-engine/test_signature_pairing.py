@@ -306,6 +306,102 @@ class SignaturePairingTests(unittest.TestCase):
             self.assertGreater(placement.rect.x0, self.page_w * 0.50)
             self.assertLessEqual(placement.rect.bottom, self.page_h - 12.0)
 
+    def test_first_page_explicit_label_does_not_hide_last_page_carrier_block(self) -> None:
+        explicit_label = stamp_engine.Anchor(
+            page_index=0,
+            box=stamp_engine.Box(390.0, 700.0, 565.0, 714.0),
+            score=170,
+            phrase="STAMPILA SI SEMNATURA TRANSPORTATORULUI",
+            line_text="Stampila si semnatura transportatorului",
+        )
+        last_transportator = stamp_engine.Anchor(
+            page_index=2,
+            box=stamp_engine.Box(450.0, 748.0, 548.0, 760.0),
+            score=98,
+            phrase="TRANSPORTATOR",
+            line_text="Transportator",
+        )
+        last_company = stamp_engine.Anchor(
+            page_index=2,
+            box=stamp_engine.Box(438.0, 768.0, 558.0, 780.0),
+            score=178,
+            phrase="DEGEI LOGISTIC",
+            line_text="DEGEI LOGISTIC S.R.L.",
+        )
+        anchors = [explicit_label, last_transportator, last_company]
+        words = [
+            [explicit_label.box],
+            [],
+            [last_transportator.box, last_company.box],
+        ]
+
+        placements = stamp_engine.choose_placements(
+            anchors,
+            words,
+            [[], [], []],
+            [(self.page_w, self.page_h)] * 3,
+            stamp_w=105.0,
+            stamp_ratio=0.40,
+            allow_fallback=True,
+        )
+
+        self.assertEqual([placement.page_index for placement in placements], [0, 2])
+        self.assertEqual(
+            [placement.anchor_phrase for placement in placements],
+            ["STAMPILA SI SEMNATURA TRANSPORTATORULUI", "DEGEI LOGISTIC"],
+        )
+        self.assertGreaterEqual(
+            placements[1].rect.top,
+            last_company.box.bottom + 1.0,
+        )
+
+    def test_upper_half_transportator_degei_block_is_kept_on_final_page(self) -> None:
+        first_company = stamp_engine.Anchor(
+            page_index=0,
+            box=stamp_engine.Box(369.0, 73.9, 480.0, 84.0),
+            score=75,
+            phrase="DEGEI LOGISTIC",
+            line_text="Beneficiar: SC AVB TRANSPORT SRL Transportator: DEGEI LOGISTIC S.R.L.",
+        )
+        first_tax_id = stamp_engine.Anchor(
+            page_index=0,
+            box=stamp_engine.Box(369.0, 102.6, 438.0, 113.0),
+            score=70,
+            phrase="RO36256981",
+            line_text="CIF: RO 35901256 CIF: RO36256981",
+        )
+        final_company = stamp_engine.Anchor(
+            page_index=2,
+            box=stamp_engine.Box(363.4, 224.1, 480.0, 235.0),
+            score=90,
+            phrase="DEGEI LOGISTIC",
+            line_text="Expeditor: SC AVB TRANSPORT SRL Transportator: DEGEI LOGISTIC S.R.L.",
+        )
+        anchors = [first_company, first_tax_id, final_company]
+        words = [
+            [first_company.box, first_tax_id.box],
+            [],
+            [final_company.box],
+        ]
+        client_stamp = stamp_engine.Box(90.0, 85.0, 180.0, 160.0)
+
+        placements = stamp_engine.choose_placements(
+            anchors,
+            words,
+            [[client_stamp], [], []],
+            [(self.page_w, self.page_h)] * 3,
+            stamp_w=105.0,
+            stamp_ratio=0.40,
+            allow_fallback=True,
+        )
+
+        self.assertEqual([placement.page_index for placement in placements], [0, 2])
+        self.assertEqual(placements[1].anchor_phrase, "DEGEI LOGISTIC")
+        self.assertGreaterEqual(
+            placements[1].rect.top,
+            final_company.box.bottom + 1.0,
+        )
+
     def test_company_identity_header_is_not_a_signature_zone_even_with_image(self) -> None:
         header_company = stamp_engine.Anchor(
             page_index=0,
