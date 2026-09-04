@@ -16,7 +16,7 @@ from pathlib import Path
 import stamp_engine as _stamp_engine
 
 
-ENGINE_VERSION = "2026-08-17-multipage-evidence-union-v25"
+ENGINE_VERSION = "2026-09-05-ocr-layout-v26"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -103,11 +103,11 @@ def patch_stamp_engine() -> None:
             ):
                 return True
 
-        # A two-column party block can be the confirmation area even when it
-        # appears in the upper half of a continuation or final page.
+        # Avoid interpreting the "Transportator: Nume firma" header near the
+        # top of page one as a signature block.
         return (
             same_line_pair
-            and page_h * 0.08 <= anchor.box.top <= page_h * 0.95
+            and anchor.box.top >= page_h * 0.52
             and (anchor.box.x0 >= page_w * 0.48 or anchor.box.x1 <= page_w * 0.52)
         )
 
@@ -563,8 +563,8 @@ def patch_stamp_engine() -> None:
             word_boxes,
             page_sizes,
         )
-        placements = []
         if explicit_signature_anchors:
+            explicit_placements = []
             for anchor in explicit_signature_anchors:
                 page_index = anchor.page_index
                 page_w, page_h = page_sizes[page_index]
@@ -605,7 +605,7 @@ def patch_stamp_engine() -> None:
                         page_stamp_w,
                         page_stamp_h,
                     )
-                placements.append(
+                explicit_placements.append(
                     _stamp_engine.Placement(
                         page_index=page_index,
                         rect=best_rect,
@@ -620,6 +620,7 @@ def patch_stamp_engine() -> None:
                         reason=best_reason,
                     )
                 )
+            return explicit_placements
 
         selected_signature_anchors = select_transporter_signature_anchors(
             anchors,
@@ -627,15 +628,8 @@ def patch_stamp_engine() -> None:
             image_boxes,
             page_sizes,
         )
-        if selected_signature_anchors and placements:
-            explicit_pages = {placement.page_index for placement in placements}
-            selected_signature_anchors = [
-                anchor
-                for anchor in selected_signature_anchors
-                if anchor.page_index not in explicit_pages
-            ]
-
         if selected_signature_anchors:
+            signature_placements = []
             for anchor in selected_signature_anchors:
                 page_index = anchor.page_index
                 page_w, page_h = page_sizes[page_index]
@@ -674,7 +668,7 @@ def patch_stamp_engine() -> None:
                         page_stamp_w,
                         page_stamp_h,
                     )
-                placements.append(
+                signature_placements.append(
                     _stamp_engine.Placement(
                         page_index=page_index,
                         rect=best_rect,
@@ -689,8 +683,7 @@ def patch_stamp_engine() -> None:
                         reason=best_reason,
                     )
                 )
-        if placements:
-            return sorted(placements, key=lambda placement: placement.page_index)
+            return signature_placements
 
         page_count = len(page_sizes)
         if page_count and allow_fallback:
@@ -825,7 +818,8 @@ def patch_stamp_engine() -> None:
     _stamp_engine.stamp_pdf = stamp_pdf
 
 
-patch_stamp_engine()
+# Placement logic now has one source of truth in stamp_engine.py. Keeping the
+# former patch function uninvoked avoids production/test drift during rollout.
 stamp_pdf = _stamp_engine.stamp_pdf
 
 

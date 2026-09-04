@@ -6,7 +6,17 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libjpeg62-turbo zlib1g poppler-utils \
+    && apt-get install -y --no-install-recommends \
+        libjpeg62-turbo \
+        zlib1g \
+        poppler-utils \
+        tesseract-ocr \
+        tesseract-ocr-deu \
+        tesseract-ocr-eng \
+        tesseract-ocr-fra \
+        tesseract-ocr-ita \
+        tesseract-ocr-ron \
+        tesseract-ocr-spa \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
