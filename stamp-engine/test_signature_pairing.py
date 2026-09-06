@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -887,6 +888,22 @@ class SignaturePairingTests(unittest.TestCase):
             self.assertEqual(result_page.rotation, 0)
             self.assertAlmostEqual(float(result_page.mediabox.width), 595.0, delta=0.1)
             self.assertAlmostEqual(float(result_page.mediabox.height), 842.0, delta=0.1)
+
+            content = result_page.get_contents().get_data().decode("latin-1")
+            image_matrices = re.findall(
+                r"([-\\d.]+)\\s+([-\\d.]+)\\s+([-\\d.]+)\\s+([-\\d.]+)\\s+"
+                r"([-\\d.]+)\\s+([-\\d.]+)\\s+cm\\s+/FormXob\\.[^\\s]+\\s+Do",
+                content,
+            )
+            self.assertTrue(image_matrices)
+            width, skew_y, skew_x, height, _x, _y = map(
+                float, image_matrices[-1]
+            )
+            self.assertGreater(width, 0.0)
+            self.assertGreater(height, 0.0)
+            self.assertGreater(width, height)
+            self.assertAlmostEqual(skew_x, 0.0, delta=0.0001)
+            self.assertAlmostEqual(skew_y, 0.0, delta=0.0001)
 
 
 if __name__ == "__main__":
