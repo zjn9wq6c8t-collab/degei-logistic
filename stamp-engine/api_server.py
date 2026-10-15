@@ -16,7 +16,7 @@ from pathlib import Path
 import stamp_engine as _stamp_engine
 
 
-ENGINE_VERSION = "2026-09-05-ocr-layout-v26"
+ENGINE_VERSION = "2026-10-15-manual-placement-v27"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -978,6 +978,7 @@ class StampHandler(BaseHTTPRequestHandler):
                 output_pdf=output_pdf,
                 stamp_width=stamp_width,
                 allow_fallback=allow_fallback,
+                manual_targets=payload.get("manual_targets"),
             )
 
             if result["needs_review"]:

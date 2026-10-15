@@ -1997,31 +1997,64 @@ def choose_placements(
     return sorted(placements, key=lambda placement: placement.page_index)
 
 
+def manual_stamp_placements(input_pdf: Path, targets: list, ratio: float) -> list[Placement]:
+    if not isinstance(targets, list) or not 1 <= len(targets) <= 100:
+        raise ValueError("Selecteaza intre 1 si 100 de pagini pentru corectia manuala.")
+    reader = PdfWriter(clone_from=str(input_pdf))
+    placements = []
+    seen = set()
+    for target in targets:
+        if not isinstance(target, dict):
+            raise ValueError("Zona manuala nu este valida.")
+        number = target.get("page")
+        if isinstance(number, bool) or not isinstance(number, int) or not 1 <= number <= len(reader.pages) or number in seen:
+            raise ValueError("Pagina manuala lipseste, este duplicata sau nu exista in PDF.")
+        seen.add(number)
+        values = [target.get(key) for key in ("leftPct", "topPct", "widthPct")]
+        if any(isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) for value in values):
+            raise ValueError("Coordonatele manuale trebuie sa fie numere finite.")
+        left, top, width_pct = values
+        if not 0 <= left <= 100 or not 0 <= top <= 100 or not 2 <= width_pct <= 40:
+            raise ValueError("Coordonatele manuale sunt in afara limitelor.")
+        page = reader.pages[number - 1]
+        if page.rotation:
+            page.transfer_rotation_to_content()
+        if tuple(page.mediabox) != tuple(page.cropbox) or float(page.mediabox.left) != 0 or float(page.mediabox.bottom) != 0:
+            raise ValueError("PDF cu decupaj special: zona manuala necesita verificare in editorul PDF.")
+        page_w, page_h = float(page.mediabox.width), float(page.mediabox.height)
+        x, y = page_w * left / 100, page_h * top / 100
+        width = page_w * width_pct / 100
+        height = width * ratio
+        if x + width > page_w or y + height > page_h:
+            raise ValueError("Stampila manuala ar iesi din pagina. Corecteaza zona.")
+        placements.append(Placement(number - 1, Box(x, y, x + width, y + height), 1000, "MANUAL_VERIFIED", "manual_exact_zone_no_rotation"))
+    return placements
+
+
 def stamp_pdf(
     input_pdf: Path,
     stamp_image: Path,
     output_pdf: Path,
     stamp_width: float = 175.0,
     allow_fallback: bool = False,
+    manual_targets: list | None = None,
 ) -> dict:
     with Image.open(stamp_image) as img:
         ratio = img.height / max(img.width, 1)
 
-    anchors, word_boxes, image_boxes, page_sizes = find_anchors(input_pdf)
-    visual_page_indexes = {anchor.page_index for anchor in anchors}
-    if allow_fallback and page_sizes:
-        visual_page_indexes.update(range(len(page_sizes)))
-    visual_pages = render_visual_pages(input_pdf, visual_page_indexes)
-    placements = choose_placements(
-        anchors,
-        word_boxes,
-        image_boxes,
-        page_sizes,
-        stamp_width,
-        ratio,
-        allow_fallback=allow_fallback,
-        visual_pages=visual_pages,
-    )
+    if manual_targets is not None:
+        anchors = []
+        placements = manual_stamp_placements(input_pdf, manual_targets, ratio)
+    else:
+        anchors, word_boxes, image_boxes, page_sizes = find_anchors(input_pdf)
+        visual_page_indexes = {anchor.page_index for anchor in anchors}
+        if allow_fallback and page_sizes:
+            visual_page_indexes.update(range(len(page_sizes)))
+        visual_pages = render_visual_pages(input_pdf, visual_page_indexes)
+        placements = choose_placements(
+            anchors, word_boxes, image_boxes, page_sizes, stamp_width, ratio,
+            allow_fallback=allow_fallback, visual_pages=visual_pages,
+        )
 
     reader = PdfReader(str(input_pdf))
     writer = PdfWriter()

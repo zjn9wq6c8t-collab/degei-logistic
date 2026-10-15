@@ -891,8 +891,8 @@ class SignaturePairingTests(unittest.TestCase):
 
             content = result_page.get_contents().get_data().decode("latin-1")
             image_matrices = re.findall(
-                r"([-\\d.]+)\\s+([-\\d.]+)\\s+([-\\d.]+)\\s+([-\\d.]+)\\s+"
-                r"([-\\d.]+)\\s+([-\\d.]+)\\s+cm\\s+/FormXob\\.[^\\s]+\\s+Do",
+                r"([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+"
+                r"([-\d.]+)\s+([-\d.]+)\s+cm\s+/FormXob\.[^\s]+\s+Do",
                 content,
             )
             self.assertTrue(image_matrices)
