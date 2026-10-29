@@ -38,6 +38,9 @@ TARGET_PHRASES = [
     ("TRANSPORTATOR CONFIRMARE", 130),
     ("CONFIRMARE TRANSPORTATOR", 120),
     ("CONFIRMAREA TRANSPORTATORULUI", 120),
+    ("CONFIRMARE TRANSPORT", 120),
+    ("CONFIRM TRANSPORT", 120),
+    ("CONFIRMARE", 100),
     ("SEMNATURA SI STAMPILA", 115),
     ("SEMNATURA SI SEMNATURA", 100),
     ("SEMNATURA TRANSPORTATOR", 115),
@@ -85,6 +88,14 @@ FOOTER_TARGETS = {"DEGEI LOGISTIC", "RO36256981"}
 TRANSPORTER_NAME_TARGETS = {"DEGEI LOGISTIC", "RO36256981"}
 SUPPLIER_SIGNATURE_TARGETS = {"FURNIZOR", "PRESTATOR", "SUBCONTRACTANT"}
 SIGNATURE_LABEL_TARGETS = {
+    "CONFIRMARE TRANSPORT",
+    "CONFIRM TRANSPORT",
+    "CARRIER CONFIRMATION",
+    "HAULIER CONFIRMATION",
+    "TRANSPORTATOR CONFIRMARE",
+    "CONFIRMARE TRANSPORTATOR",
+    "CONFIRMAREA TRANSPORTATORULUI",
+    "CONFIRMARE",
     "STAMPILA SI SEMNATURA TRANSPORTATORULUI",
     "SEMNATURA SI STAMPILA TRANSPORTATORULUI",
     "STAMPILA SI SEMNATURA TRANSPORTATOR",
@@ -156,6 +167,8 @@ CARRIER_SIGNATURE_MARKERS = {
     "DEGEI",
 }
 CONFIRMATION_HEADING_TARGETS = {
+    "CONFIRMARE TRANSPORT",
+    "CONFIRM TRANSPORT",
     "CARRIER CONFIRMATION",
     "HAULIER CONFIRMATION",
     "TRANSPORTATOR CONFIRMARE",
@@ -379,6 +392,11 @@ def looks_like_carrier_signature_label(
     """Reject legal prose and signature fields that belong to another party."""
     if phrase not in SIGNATURE_LABEL_TARGETS:
         return True
+    if len(line_norm.split()) > 16 or any(
+        marker in line_norm
+        for marker in ("IN CAZUL", "PREZENTUL CONTRACT", "SE CONSIDERA", "VA RUGAM", "TREBUIE SA")
+    ):
+        return False
     has_non_carrier_marker = any(
         marker in line_norm for marker in NON_CARRIER_SIGNATURE_MARKERS
     )
@@ -470,6 +488,22 @@ def phrase_box(line_words: list[dict], phrase: str) -> Box | None:
     return matches[0] if matches else None
 
 
+def signature_cell_words(line_words: list[dict], box: Box) -> list[dict]:
+    """Keep nearby words in one visual cell, not the page counter or other party."""
+    groups: list[list[dict]] = []
+    for word in sorted(line_words, key=lambda item: float(item["x0"])):
+        if not groups or float(word["x0"]) - float(groups[-1][-1]["x1"]) > 26.0:
+            groups.append([])
+        groups[-1].append(word)
+    return next(
+        (group for group in groups if any(
+            float(word["x1"]) > box.x0 and float(word["x0"]) < box.x1
+            for word in group
+        )),
+        line_words,
+    )
+
+
 def role_line_is_signature_context(line_norm: str, phrase: str) -> bool:
     tokens = line_norm.split()
     phrase_tokens = set(phrase.split())
@@ -525,6 +559,7 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                 y_tolerance=3,
                 keep_blank_chars=False,
                 use_text_flow=False,
+                return_chars=True,
             )
             page_w = float(page.width)
             page_h = float(page.height)
@@ -538,6 +573,10 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                 )
                 if len(ocr_words) > len(native_words):
                     words = ocr_words
+                if words and not words_have_signature_signal(words, page_w, page_h):
+                    band_words = ocr_page_words(pdf_path, page_index, page_w, page_h, crop_top_ratio=0.60)
+                    if words_have_signature_signal(band_words, page_w, page_h):
+                        words = [word for word in words if float(word["top"]) < page_h * 0.60] + band_words
             elif not words_have_signature_signal(native_words, page_w, page_h):
                 signature_band_words = ocr_page_words(
                     pdf_path,
@@ -552,10 +591,21 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                         for word in native_words
                         if float(word["top"]) < page_h * 0.38
                     ] + signature_band_words
-            boxes = [
-                Box(float(w["x0"]), float(w["top"]), float(w["x1"]), float(w["bottom"]))
-                for w in words
-            ]
+            boxes = []
+            for word in words:
+                text = str(word.get("text", ""))
+                x1 = float(word["x1"])
+                # Blank form rules are writable space, not a full-width text label.
+                prefix = re.sub(r"_{4,}$", "", text)
+                if prefix != text:
+                    if not prefix.strip():
+                        continue
+                    prefix_chars = [char for char in word.get("chars", []) if char["text"] != "_"]
+                    if prefix_chars:
+                        x1 = max(float(char["x1"]) for char in prefix_chars)
+                    else:
+                        x1 = min(x1, float(word["x0"]) + (x1 - float(word["x0"])) * len(prefix) / len(text) + 4.0)
+                boxes.append(Box(float(word["x0"]), float(word["top"]), x1, float(word["bottom"])))
             all_word_boxes.append(boxes)
             all_image_boxes.append(
                 [
@@ -573,18 +623,6 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                         matched_boxes = phrase_boxes(line["words"], phrase)
                         if not matched_boxes:
                             matched_boxes = [line["box"]]
-                        if phrase in SIGNATURE_LABEL_TARGETS and (
-                            len(matched_boxes) == 1
-                            and (len(line_norm) > 55 or line["box"].width > page.width * 0.55)
-                        ):
-                            continue
-                        if phrase in SIGNATURE_LABEL_TARGETS and not looks_like_carrier_signature_label(
-                            line_norm,
-                            phrase,
-                            line["box"],
-                            float(page.height),
-                        ):
-                            continue
                         # Generic words appear often in legal/payment paragraphs. They are valid
                         # anchors only when they look like a short field label, not body text.
                         if phrase in GENERIC_TARGETS:
@@ -601,6 +639,35 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                             if line["box"].width > page.width * 0.42 and not split_column_role:
                                 continue
                         for anchor_box in matched_boxes:
+                            cell_words = signature_cell_words(line["words"], anchor_box)
+                            cell_text = " ".join(str(word["text"]) for word in cell_words)
+                            cell_norm = norm(cell_text)
+                            if phrase in SIGNATURE_LABEL_TARGETS and not looks_like_carrier_signature_label(
+                                cell_norm, phrase, anchor_box, page_h
+                            ):
+                                continue
+                            if phrase == "CONFIRMARE":
+                                field_words = {
+                                    token for word in words
+                                    if anchor_box.bottom <= float(word["top"]) <= anchor_box.bottom + 90
+                                    and anchor_box.x0 - 12 <= float(word["x0"]) <= anchor_box.x1 + 140
+                                    for token in norm(str(word["text"])).split()
+                                }
+                                has_vehicle_fields = cell_norm == phrase and len(
+                                    field_words & {"AUTO", "SOFER", "SEMNATURA", "STAMPILA"}
+                                ) >= 2
+                                # OCR can split the end of "confirmare" into a second "re" token.
+                                has_transport_fields = bool(re.fullmatch(
+                                    r"CONFIRMARE (?:RE )?TRANSPORT", cell_norm
+                                )) and "DIRECTOR" in field_words
+                                if anchor_box.top < page_h * 0.40 or not (has_vehicle_fields or has_transport_fields):
+                                    continue
+                            if phrase in TRANSPORTER_NAME_TARGETS and (
+                                len(cell_norm.split()) > 18 or any(marker in cell_norm for marker in (
+                                    "IN CAZUL", "SUBSCRISA", "DECLAR SI", "PREZENTUL CONTRACT", "SE OBLIGA"
+                                ))
+                            ):
+                                continue
                             score = base_score
                             if page_index == len(pdf.pages) - 1:
                                 score += 15
@@ -630,7 +697,7 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                                     box=anchor_box,
                                     score=score,
                                     phrase=phrase,
-                                    line_text=line["text"],
+                                    line_text=cell_text if phrase in SIGNATURE_LABEL_TARGETS else line["text"],
                                 )
                             )
     return anchors, all_word_boxes, all_image_boxes, page_sizes
@@ -876,6 +943,9 @@ def reference_stamp_box(anchor: Anchor, image_boxes: list[Box]) -> Box | None:
             and 40 <= box.height <= 190
             and 0.35 <= ratio <= 2.80
         ):
+            continue
+        # Header logos sit above recipient identity rows and are not signing evidence.
+        if box.bottom < anchor.box.top - 28.0:
             continue
 
         # Client stamps are normally in the opposite signature column. Support
@@ -1209,6 +1279,8 @@ def choose_explicit_signature_candidate(
         x_values = [
             min(max(anchor.box.x0, column_left + 5.0), column_right - width - 5.0),
             min(max(center_x, column_left + 5.0), column_right - width - 5.0),
+            min(max(anchor.box.x1 + 10.0, column_left + 5.0), column_right - width - 5.0),
+            column_right - width - 5.0,
         ]
         if ref is not None:
             mirrored_x = (
@@ -1222,6 +1294,17 @@ def choose_explicit_signature_candidate(
             )
 
         top_values: list[tuple[str, float]] = []
+        if anchor.phrase in CONFIRMATION_HEADING_TARGETS or anchor.phrase == "CONFIRMARE":
+            field_bottom = max(
+                [anchor.box.bottom, *[
+                    box.bottom for box in word_boxes
+                    if anchor.box.bottom <= box.top <= anchor.box.bottom + 45.0
+                    and min(column_left, anchor.box.x0 - 3.0) <= box.x0 <= column_right
+                    and box.x0 >= anchor.box.x0 - 20.0
+                    and box.x1 <= anchor.box.x1 + 140.0
+                ]]
+            )
+            top_values.append(("explicit_below_carrier_fields", field_bottom + 3.0))
         if ref is not None:
             top_values.append(
                 (
@@ -1263,6 +1346,7 @@ def choose_explicit_signature_candidate(
             page_image,
         )
         reason_bonus = {
+            "explicit_below_carrier_fields": 850.0,
             "explicit_align_client_stamp": 620.0,
             "explicit_right_of_caption": 310.0,
             "explicit_above_caption": 250.0,
@@ -1291,6 +1375,10 @@ def choose_explicit_signature_candidate(
                     or visual_ink_ratio(item[1], page_image, page_w, page_h) <= 0.085
                 )
             ]
+        if anchor.phrase in CONFIRMATION_HEADING_TARGETS or anchor.phrase == "CONFIRMARE":
+            below_heading = [item for item in safe if item[1].top >= anchor.box.bottom + 2.0]
+            if below_heading:
+                safe = below_heading
         if safe:
             reason, rect, _score, _overlap = max(safe, key=lambda item: item[2])
             return reason, rect
@@ -1335,7 +1423,8 @@ def choose_tight_labeled_candidate(
         and item.box.top <= text_bottom + 12
         and item.box.bottom >= anchor.box.top - 70
     ]
-    signature_allowance = 52.0 if anchor.phrase in SIGNATURE_LABEL_TARGETS else 0.0
+    is_heading = anchor.phrase in CONFIRMATION_HEADING_TARGETS or anchor.phrase == "CONFIRMARE"
+    signature_allowance = 52.0 if anchor.phrase in SIGNATURE_LABEL_TARGETS and not is_heading else 0.0
     block_top = min(
         [anchor.box.top - signature_allowance, *[box.top for box in nearby_anchor_boxes]]
     )
@@ -1370,10 +1459,10 @@ def choose_tight_labeled_candidate(
             )
         ideal_top = (
             anchor.box.top - height * 0.58
-            if anchor.phrase in SIGNATURE_LABEL_TARGETS
+            if anchor.phrase in SIGNATURE_LABEL_TARGETS and not is_heading
             else text_bottom + 2.0
         )
-        top_options = (
+        top_options = (ideal_top,) if is_heading else (
             ideal_top,
             max(14.0, anchor.box.top - height * 0.40),
             max(14.0, anchor.box.top - height * 0.72),
@@ -1499,8 +1588,19 @@ def visual_ink_ratio(rect: Box, page_image: Image.Image | None, page_w: float, p
     if total <= 0:
         return 1.0
 
-    dark = sum(hist[:232])
-    medium = sum(hist[232:244])
+    cumulative = 0
+    paper_level = 255
+    for level, count in enumerate(hist):
+        cumulative += count
+        if cumulative >= total * 0.90:
+            paper_level = level
+            break
+    if paper_level < 160:
+        return 1.0
+    dark_limit = min(232, max(0, paper_level - 23))
+    medium_limit = min(244, max(dark_limit, paper_level - 11))
+    dark = sum(hist[:dark_limit])
+    medium = sum(hist[dark_limit:medium_limit])
     return (dark + medium * 0.35) / total
 
 
@@ -1738,7 +1838,6 @@ def choose_fallback_page_candidate(
     page_image: Image.Image | None = None,
 ) -> tuple[str, Box] | None:
     attempts = [stamp_w, stamp_w * 0.92, stamp_w * 0.84, stamp_w * 0.76, stamp_w * 0.68]
-    best_any: tuple[str, Box, float, float] | None = None
     for width in attempts:
         width = max(64.0, width)
         height = width * stamp_ratio
@@ -1761,12 +1860,8 @@ def choose_fallback_page_candidate(
                 ),
             )
             return reason, rect
-        attempt_best = max(scored, key=lambda item: item[2])
-        if best_any is None or attempt_best[2] > best_any[2]:
-            best_any = attempt_best
-    if best_any is None:
-        return None
-    return best_any[0], best_any[1]
+    # No signing anchor means there is no permission to cover contractual text.
+    return None
 
 
 def choose_placements(
@@ -1867,7 +1962,7 @@ def choose_placements(
                 (visual_pages or {}).get(page_index),
             )
             if best is None:
-                continue
+                return []
             best_reason, best_rect = best
             placements.append(
                 Placement(
@@ -1983,7 +2078,7 @@ def choose_placements(
                 (visual_pages or {}).get(page_index),
             )
             if best is None:
-                continue
+                return []
             best_reason, best_rect = best
             placements.append(
                 Placement(

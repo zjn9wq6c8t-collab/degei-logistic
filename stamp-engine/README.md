@@ -21,3 +21,11 @@ Example body:
 ```
 
 If `needs_review=true`, Make must stop and notify Telegram. It must not email the client.
+
+## Placement safeguards
+
+- Carrier signature/confirmation cells take precedence over recipient headers and contractual mentions.
+- Repeated carrier cells are stamped on every matching page, not on unrelated pages.
+- Without a dedicated cell, fallback requires free bottom-right space on every page; an unsafe or partial fallback returns review instead.
+- Stamps remain upright, including rotated source pages. Source-bound manual placements remain supported.
+- Run `python -m unittest discover -s . -p 'test_*.py'` before deployment.
