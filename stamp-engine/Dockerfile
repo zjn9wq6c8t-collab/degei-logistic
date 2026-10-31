@@ -22,7 +22,7 @@ RUN apt-get update \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY api_server.py stamp_engine.py ./
+COPY api_server.py api_auth.py stamp_engine.py ./
 
 ENV PORT=8080
 EXPOSE 8080

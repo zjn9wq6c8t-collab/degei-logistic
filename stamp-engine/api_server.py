@@ -14,6 +14,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import stamp_engine as _stamp_engine
+from api_auth import authorized_key
 
 
 ENGINE_VERSION = "2026-10-30-signature-cell-audit-v28"
@@ -887,9 +888,13 @@ class StampHandler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def authorized(self) -> bool:
-        if not API_KEY:
-            return True
-        return self.headers.get("X-API-Key") == API_KEY
+        return authorized_key(
+            self.headers.get("X-API-Key"), API_KEY,
+            os.environ.get("STAMP_API_KEY_NEXT", ""),
+            os.environ.get("STAMP_API_KEY_NEXT_VALID_UNTIL", ""),
+            os.environ.get("STAMP_API_KEY_PREVIOUS", ""),
+            os.environ.get("STAMP_API_KEY_PREVIOUS_VALID_UNTIL", ""),
+        )
 
     def read_json_body(self) -> dict:
         try:
