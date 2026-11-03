@@ -17,7 +17,7 @@ import stamp_engine as _stamp_engine
 from api_auth import authorized_key
 
 
-ENGINE_VERSION = "2026-10-30-signature-cell-audit-v28"
+ENGINE_VERSION = "2026-11-03-company-signoff-context-v29"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")

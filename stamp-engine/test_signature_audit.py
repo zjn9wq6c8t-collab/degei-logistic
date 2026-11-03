@@ -20,6 +20,49 @@ class SignatureAuditTests(unittest.TestCase):
             with patch.object(engine, 'ocr_page_words', return_value=[]):
                 return engine.find_anchors(path)
 
+    def test_upper_page_company_signoff_is_selected_below_name(self):
+        anchors, words, images, sizes = self.extract([
+            (80, 164, 'Va solicitam in mod obligatoriu sa confirmati prezenta comanda cu semnatura si stampila!'),
+            (25, 201, 'GETIX BLUE SRL'),
+            (376, 201, 'DEGEI LOGISTIC S.R.L.'),
+            (425, 213, '.'),
+        ])
+        company = next(a for a in anchors if a.phrase == 'DEGEI LOGISTIC')
+        self.assertTrue(company.signature_context)
+        placements = engine.choose_placements(anchors, words, images, sizes, 105, .68, True)
+        self.assertEqual(len(placements), 1)
+        self.assertEqual(placements[0].anchor_phrase, 'DEGEI LOGISTIC')
+        self.assertGreaterEqual(placements[0].rect.top, company.box.bottom + 2)
+        self.assertLess(placements[0].rect.top, company.box.bottom + 25)
+        self.assertLess(engine.overlap_ratio(placements[0].rect, words[0]), .001)
+
+    def test_upper_company_without_order_signoff_stays_unverified(self):
+        for instruction in (
+            'Va rugam sa confirmati CMR cu semnatura si stampila!',
+            'Comanda neconfirmata prin semnatura si stampila nu se plateste.',
+            'Va rugam sa confirmati factura cu semnatura si stampila!',
+            'In cazul in care va rugam sa confirmati comanda cu semnatura si stampila',
+            'Date de facturare',
+        ):
+            with self.subTest(instruction=instruction):
+                anchors, *_ = self.extract([(80, 164, instruction),
+                                           (376, 201, 'DEGEI LOGISTIC S.R.L.')])
+                self.assertFalse(any(a.signature_context for a in anchors))
+
+    def test_signoff_does_not_turn_recipient_header_into_signature(self):
+        anchors, *_ = self.extract([
+            (80, 164, 'Va rugam sa confirmati prezenta comanda cu semnatura si stampila!'),
+            (376, 201, 'Catre: DEGEI LOGISTIC SRL'),
+        ])
+        self.assertFalse(any(a.signature_context for a in anchors))
+
+    def test_signoff_context_cannot_cross_to_another_column(self):
+        anchors, *_ = self.extract([
+            (20, 164, 'Va rugam confirmati comanda cu semnatura si stampila'),
+            (440, 201, 'DEGEI LOGISTIC SRL'),
+        ])
+        self.assertFalse(any(a.signature_context for a in anchors))
+
     def test_contractual_company_mention_is_not_a_signing_anchor(self):
         anchors, *_ = self.extract([
             (25, 170, 'q) In cazul in care imi sunt opozabile, subscrisa Degei Logistic S.R.L. declar si asigur')

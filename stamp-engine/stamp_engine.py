@@ -247,6 +247,7 @@ class Anchor:
     score: int
     phrase: str
     line_text: str
+    signature_context: bool = False
 
 
 @dataclass(frozen=True)
@@ -504,6 +505,40 @@ def signature_cell_words(line_words: list[dict], box: Box) -> list[dict]:
     )
 
 
+def company_has_signoff_context(
+    cell_norm: str, box: Box, lines: list[dict], page_w: float, page_h: float,
+) -> bool:
+    """Identify an isolated carrier name below an order-signing request.
+
+    A final-page signoff may be near the top. Require positive local context,
+    not just the company name or a rule mentioning signatures in legal prose.
+    """
+    if not re.fullmatch(r"(?:SC )?DEGEI LOGISTIC(?: S ?R ?L)?", cell_norm):
+        return False
+    if not (page_h * 0.14 <= box.top <= page_h * 0.975):
+        return False
+    if not (box.x1 < page_w * 0.48 or box.x0 > page_w * 0.52):
+        return False
+    for line in lines:
+        gap = box.top - line["box"].bottom
+        if not 4 <= gap <= 100:
+            continue
+        text = line["norm"]
+        # Only the order itself, never a request to sign CMRs/invoices or a
+        # conditional/non-confirmation clause, establishes this signing area.
+        if not re.fullmatch(
+            r"(?:VA )?(?:RUGAM|SOLICITAM)(?: IN MOD OBLIGATORIU)? "
+            r"(?:SA )?CONFIRMATI (?:PREZENTA |ACEASTA )?COMANDA "
+            r"(?:DE TRANSPORT )?CU (?:SEMNATURA SI STAMPILA|STAMPILA SI SEMNATURA)",
+            text,
+        ):
+            continue
+        # The request must reach this column rather than belong to another cell.
+        if line["box"].x1 >= box.x0 and line["box"].x0 <= box.x1:
+            return True
+    return False
+
+
 def role_line_is_signature_context(line_norm: str, phrase: str) -> bool:
     tokens = line_norm.split()
     phrase_tokens = set(phrase.split())
@@ -669,6 +704,11 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                             ):
                                 continue
                             score = base_score
+                            signature_context = phrase in TRANSPORTER_NAME_TARGETS and company_has_signoff_context(
+                                cell_norm, anchor_box, lines, page_w, page_h,
+                            )
+                            if signature_context:
+                                score += 95
                             if page_index == len(pdf.pages) - 1:
                                 score += 15
                             if anchor_box.top > page.height * 0.45:
@@ -698,6 +738,7 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                                     score=score,
                                     phrase=phrase,
                                     line_text=cell_text if phrase in SIGNATURE_LABEL_TARGETS else line["text"],
+                                    signature_context=signature_context,
                                 )
                             )
     return anchors, all_word_boxes, all_image_boxes, page_sizes
@@ -1510,7 +1551,8 @@ def select_transporter_signature_anchors(
             if is_carrier_identity_header(anchor, anchors, page_w, page_h):
                 continue
             verified = (
-                is_signature_block_anchor(anchor, page_w, page_h)
+                anchor.signature_context
+                or is_signature_block_anchor(anchor, page_w, page_h)
                 or is_paired_signature_anchor(
                     anchor,
                     image_boxes[anchor.page_index],
