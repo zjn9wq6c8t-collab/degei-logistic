@@ -135,6 +135,31 @@ class SignatureAuditTests(unittest.TestCase):
             [(595, 842)] * 2, 102, .68, True)
         self.assertFalse(placements)
 
+    def test_dense_contract_can_use_clear_compact_footer_on_every_page(self):
+        page_w, page_h = 612, 792
+        content = engine.Box(55, 58, 556, 729)
+        footer = engine.Box(20, 768, 138, 776)
+        page = Image.new('RGB', (page_w, page_h), 'white')
+        draw = ImageDraw.Draw(page)
+        for box in (content, footer):
+            draw.rectangle((box.x0, box.top, box.x1, box.bottom), fill='black')
+        words = [content, footer]
+        self.assertIsNone(engine.choose_fallback_page_candidate(words, page_w, page_h, 102, .68))
+
+        placements = engine.choose_placements([], [[], words], [[], []],
+            [(page_w, page_h)] * 2, 105, .68, True, {1: page})
+        self.assertEqual([p.page_index for p in placements], [0, 1])
+        compact = placements[1]
+        self.assertEqual(compact.reason, 'fallback_bottom_right_compact')
+        self.assertGreaterEqual(compact.rect.top, content.bottom + 3)
+        self.assertGreaterEqual(compact.rect.x0, page_w * .55)
+        self.assertGreaterEqual(compact.rect.width, 64)
+        self.assertLessEqual(compact.rect.bottom, page_h - 10)
+        self.assertFalse(any(engine.overlap_area(compact.rect, word) for word in words))
+
+        draw.rectangle((400, 730, page_w, page_h), fill='black')
+        self.assertIsNone(engine.choose_fallback_page_candidate(words, page_w, page_h, 102, .68, page))
+
     def test_form_rule_does_not_expand_the_printed_label_collision_box(self):
         _, words, _, _ = self.extract([(300, 750, 'Sofer:_________________________________')])
         self.assertLess(words[0][0].x1, 335)

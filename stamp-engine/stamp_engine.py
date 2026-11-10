@@ -1902,6 +1902,27 @@ def choose_fallback_page_candidate(
                 ),
             )
             return reason, rect
+    # Dense terms can leave a usable strip closer to the edge than the usual
+    # margins. Only use it when a rendered page confirms that it is clear.
+    if page_image is not None:
+        compact_width = min(stamp_w, 86.0, page_w * 0.18)
+        for width in (compact_width, compact_width * .92, compact_width * .84, 64.0):
+            if not 64.0 <= width <= compact_width:
+                continue
+            height = width * stamp_ratio
+            for bottom_margin in (10.0, 14.0, 18.0, 22.0):
+                bottom = page_h - bottom_margin
+                for right_margin in (24.0, 18.0, 12.0, 36.0, 48.0):
+                    right = page_w - right_margin
+                    rect = Box(right - width, bottom - height, right, bottom)
+                    if rect.x0 < page_w * .55 or rect.top < page_h * .75:
+                        continue
+                    guard = Box(rect.x0 - 3, rect.top - 3, rect.x1 + 3, rect.bottom + 3)
+                    if any(overlap_area(guard, word) > 0 for word in word_boxes):
+                        continue
+                    if visual_ink_ratio(guard, page_image, page_w, page_h) <= .005:
+                        return "fallback_bottom_right_compact", rect
+
     # No signing anchor means there is no permission to cover contractual text.
     return None
 
