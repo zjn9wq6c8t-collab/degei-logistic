@@ -1879,6 +1879,10 @@ def choose_fallback_page_candidate(
     stamp_ratio: float,
     page_image: Image.Image | None = None,
 ) -> tuple[str, Box] | None:
+    # Missing rendering is not evidence of clear space, especially on scans.
+    if page_image is None:
+        return None
+
     attempts = [stamp_w, stamp_w * 0.92, stamp_w * 0.84, stamp_w * 0.76, stamp_w * 0.68]
     for width in attempts:
         width = max(64.0, width)
