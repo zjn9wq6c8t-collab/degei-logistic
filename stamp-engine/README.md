@@ -22,6 +22,9 @@ Example body:
 
 If `needs_review=true`, Make must stop and notify Telegram. It must not email the client.
 
+`allow_fallback` must be a JSON boolean. The HTTP API keeps its existing default of `true` when omitted; send `false` to disable fallback explicitly. The CLI and Python function keep their existing defaults.
+Fallback requires a successfully rendered page to verify clear space. A missing rendering on any fallback page returns `needs_review=true` for the whole document.
+
 ## Placement safeguards
 
 - Carrier signature/confirmation cells take precedence over recipient headers and contractual mentions.
