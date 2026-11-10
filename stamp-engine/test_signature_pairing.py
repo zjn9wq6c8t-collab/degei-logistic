@@ -568,6 +568,10 @@ class SignaturePairingTests(unittest.TestCase):
             stamp_w=105.0,
             stamp_ratio=0.40,
             allow_fallback=True,
+            visual_pages={
+                i: Image.new("RGB", (round(self.page_w), round(self.page_h)), "white")
+                for i in range(page_count)
+            },
         )
 
         self.assertEqual(
@@ -606,6 +610,10 @@ class SignaturePairingTests(unittest.TestCase):
             stamp_w=105.0,
             stamp_ratio=0.40,
             allow_fallback=True,
+            visual_pages={
+                i: Image.new("RGB", (round(self.page_w), round(self.page_h)), "white")
+                for i in range(page_count)
+            },
         )
 
         self.assertEqual(
@@ -643,6 +651,10 @@ class SignaturePairingTests(unittest.TestCase):
             stamp_w=105.0,
             stamp_ratio=0.40,
             allow_fallback=True,
+            visual_pages={
+                i: Image.new("RGB", (round(self.page_w), round(self.page_h)), "white")
+                for i in range(page_count)
+            },
         )
 
         self.assertEqual(
