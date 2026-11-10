@@ -965,10 +965,10 @@ class StampHandler(BaseHTTPRequestHandler):
                 raise ValueError("pdf_url si stamp_url sunt obligatorii.")
 
             stamp_width = float(payload.get("stamp_width", 175.0))
-            # Fallback is now a required safety behavior: if no clear carrier
-            # confirmation zone is found, stamp every page in the safest
-            # bottom-right free area instead of returning needs_review.
-            allow_fallback = True
+            # Preserve the existing API default, but honor an explicit opt-out.
+            allow_fallback = payload.get("allow_fallback", True)
+            if not isinstance(allow_fallback, bool):
+                raise ValueError("allow_fallback trebuie sa fie boolean (true/false).")
             filename = clean_filename(str(payload.get("filename", "comanda_stampilata.pdf")))
 
             input_pdf = work_dir / "input.pdf"
