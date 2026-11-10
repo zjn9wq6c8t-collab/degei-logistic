@@ -130,9 +130,10 @@ class SignatureAuditTests(unittest.TestCase):
 
     def test_full_text_page_never_gets_unverified_fallback_stamp(self):
         full = engine.Box(0, 0, 595, 842)
-        self.assertIsNone(engine.choose_fallback_page_candidate([full], 595, 842, 102, .68))
+        page = Image.new("RGB", (595, 842), "white")
+        self.assertIsNone(engine.choose_fallback_page_candidate([full], 595, 842, 102, .68, page))
         placements = engine.choose_placements([], [[], [full]], [[], []],
-            [(595, 842)] * 2, 102, .68, True)
+            [(595, 842)] * 2, 102, .68, True, {0: page, 1: page})
         self.assertFalse(placements)
 
     def test_dense_contract_can_use_clear_compact_footer_on_every_page(self):
@@ -147,7 +148,8 @@ class SignatureAuditTests(unittest.TestCase):
         self.assertIsNone(engine.choose_fallback_page_candidate(words, page_w, page_h, 102, .68))
 
         placements = engine.choose_placements([], [[], words], [[], []],
-            [(page_w, page_h)] * 2, 105, .68, True, {1: page})
+            [(page_w, page_h)] * 2, 105, .68, True,
+            {0: Image.new("RGB", (page_w, page_h), "white"), 1: page})
         self.assertEqual([p.page_index for p in placements], [0, 1])
         compact = placements[1]
         self.assertEqual(compact.reason, 'fallback_bottom_right_compact')
