@@ -26,6 +26,8 @@ If `needs_review=true`, Make must stop and notify Telegram. It must not email th
 
 - Carrier signature/confirmation cells take precedence over recipient headers and contractual mentions.
 - Repeated carrier cells are stamped on every matching page, not on unrelated pages.
-- Without a dedicated cell, fallback requires free bottom-right space on every page; an unsafe or partial fallback returns review instead.
+- Split carrier / signature / stamp captions in one column form a dedicated cell, including on an upper final page.
+- Without a dedicated cell, fallback stamps every page at bottom right. It first searches clear space, then minimizes text/visual overlap in that corner when no clear space exists (owner policy, 13.11.2026).
+- The low-level candidate helper keeps overlap disabled by default; automatic all-page fallback opts in. Invalid PDFs and manual coordinates still fail validation.
 - Stamps remain upright, including rotated source pages. Source-bound manual placements remain supported.
 - Run `python -m unittest discover -s . -p 'test_*.py'` before deployment.

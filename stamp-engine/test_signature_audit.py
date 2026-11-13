@@ -128,12 +128,63 @@ class SignatureAuditTests(unittest.TestCase):
         ImageDraw.Draw(paper).rectangle((450, 720, 552, 790), fill='black')
         self.assertFalse(engine.is_safe_rect(rect, [], paper, 595, 842))
 
-    def test_full_text_page_never_gets_unverified_fallback_stamp(self):
+    def test_dense_page_uses_authorized_all_page_fallback(self):
         full = engine.Box(0, 0, 595, 842)
         self.assertIsNone(engine.choose_fallback_page_candidate([full], 595, 842, 102, .68))
         placements = engine.choose_placements([], [[], [full]], [[], []],
             [(595, 842)] * 2, 102, .68, True)
-        self.assertFalse(placements)
+        self.assertEqual([p.page_index for p in placements], [0, 1])
+        self.assertEqual(placements[1].reason, 'fallback_bottom_right_authorized_overlap')
+
+    def test_split_carrier_signature_labels_select_the_final_page(self):
+        anchors, words, images, sizes = self.extract([
+            (25, 241, 'SC IB CARGO SRL'), (417, 241, 'Transportator'),
+            (417, 259, 'SEMNATURA'), (417, 277, 'STAMPILA'),
+        ])
+        explicit = [a for a in anchors if a.phrase == 'SEMNATURA SI STAMPILA TRANSPORTATOR']
+        self.assertEqual(len(explicit), 1)
+        placements = engine.choose_placements(anchors, words, images, sizes, 105, .68, True)
+        self.assertEqual(len(placements), 1)
+        self.assertEqual(placements[0].anchor_phrase, explicit[0].phrase)
+        self.assertGreaterEqual(placements[0].rect.top, explicit[0].box.bottom)
+        self.assertLess(engine.overlap_ratio(placements[0].rect, words[0]), .001)
+
+    def test_split_fields_never_cross_columns_or_use_legal_prose(self):
+        cases = [
+            [(417, 241, 'Transportator'), (25, 259, 'SEMNATURA'), (25, 277, 'STAMPILA')],
+            [(417, 241, 'Destinatar'), (417, 259, 'SEMNATURA'), (417, 277, 'STAMPILA')],
+            [(417, 241, 'Transportator'), (417, 259, 'SEMNATURA'), (417, 277, 'STAMPILA pe CMR este obligatorie')],
+            [(417, 241, 'Transportator'), (417, 259, 'SEMNATURA'), (417, 350, 'STAMPILA')],
+            [(417, 241, 'Transportator')],
+        ]
+        for lines in cases:
+            with self.subTest(lines=lines):
+                anchors, *_ = self.extract(lines)
+                self.assertFalse(any(a.phrase == 'SEMNATURA SI STAMPILA TRANSPORTATOR' for a in anchors))
+
+    def test_authorized_overlap_stays_in_corner_and_prefers_larger_stamp(self):
+        for page_w, page_h in ((595, 842), (842, 595), (612, 792)):
+            with self.subTest(size=(page_w, page_h)):
+                full = engine.Box(0, 0, page_w, page_h)
+                reason, box = engine.choose_fallback_page_candidate(
+                    [full], page_w, page_h, 102, .68, allow_text_overlap=True)
+                self.assertEqual(reason, 'fallback_bottom_right_authorized_overlap')
+                self.assertEqual(box.width, 102)
+                self.assertGreaterEqual(box.x0, page_w * .60)
+                self.assertGreaterEqual(box.top, page_h * .75)
+                self.assertLessEqual(box.x1, page_w - 12)
+                self.assertLessEqual(box.bottom, page_h - 12)
+
+    def test_fallback_still_prefers_clear_space_without_overlap(self):
+        reason, box = engine.choose_fallback_page_candidate(
+            [], 595, 842, 102, .68, allow_text_overlap=True)
+        self.assertNotIn('authorized_overlap', reason)
+        self.assertEqual(engine.overlap_ratio(box, []), 0)
+
+    def test_overlap_policy_does_not_override_fallback_disabled(self):
+        full = engine.Box(0, 0, 595, 842)
+        self.assertEqual(engine.choose_placements([], [[full]], [[]], [(595, 842)],
+                                                 102, .68, False), [])
 
     def test_dense_contract_can_use_clear_compact_footer_on_every_page(self):
         page_w, page_h = 612, 792

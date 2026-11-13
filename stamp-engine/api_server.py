@@ -17,7 +17,7 @@ import stamp_engine as _stamp_engine
 from api_auth import authorized_key
 
 
-ENGINE_VERSION = "2026-11-10-compact-page-footer-v30"
+ENGINE_VERSION = "2026-11-13-split-signature-authorized-footer-v31"
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.environ.get("STAMP_OUTPUT_DIR", tempfile.gettempdir())) / "degei_stamp_engine"
 API_KEY = os.environ.get("STAMP_API_KEY", "")
@@ -967,7 +967,8 @@ class StampHandler(BaseHTTPRequestHandler):
             stamp_width = float(payload.get("stamp_width", 175.0))
             # Fallback is now a required safety behavior: if no clear carrier
             # confirmation zone is found, stamp every page in the safest
-            # bottom-right free area instead of returning needs_review.
+            # bottom-right area. Prefer free space; the owner explicitly permits
+            # minimum text overlap when no clear footer exists (13.11.2026).
             allow_fallback = True
             filename = clean_filename(str(payload.get("filename", "comanda_stampilata.pdf")))
 

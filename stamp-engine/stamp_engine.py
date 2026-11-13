@@ -580,6 +580,35 @@ def words_have_signature_signal(words: list[dict], page_w: float, page_h: float)
     return False
 
 
+def split_carrier_signature_box(
+    role: str, box: Box, lines: list[dict], page_w: float, page_h: float,
+) -> Box | None:
+    """Join isolated carrier/signature/stamp captions within one form column."""
+    if role not in GENERIC_TARGETS or not page_h * .14 <= box.top <= page_h * .92:
+        return None
+    captions: dict[str, Box] = {}
+    for line in lines:
+        if not -2 <= line["box"].top - box.bottom <= 80:
+            continue
+        for word in line["words"]:
+            caption = norm(str(word.get("text", "")))
+            if caption not in {"SEMNATURA", "STAMPILA"}:
+                continue
+            candidate = Box(float(word["x0"]), float(word["top"]),
+                            float(word["x1"]), float(word["bottom"]))
+            cell = signature_cell_words(line["words"], candidate)
+            if norm(" ".join(str(w["text"]) for w in cell)) != caption:
+                continue
+            same_side = (candidate.x0 + candidate.x1 >= page_w) == (box.x0 + box.x1 >= page_w)
+            if same_side and abs(candidate.x0 - box.x0) <= 24:
+                captions.setdefault(caption, candidate)
+    if set(captions) != {"SEMNATURA", "STAMPILA"}:
+        return None
+    fields = [box, *captions.values()]
+    return Box(min(b.x0 for b in fields), min(b.top for b in fields),
+               max(b.x1 for b in fields), max(b.bottom for b in fields))
+
+
 def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[list[Box]], list[tuple[float, float]]]:
     anchors: list[Anchor] = []
     all_word_boxes: list[list[Box]] = []
@@ -677,6 +706,14 @@ def find_anchors(pdf_path: Path) -> tuple[list[Anchor], list[list[Box]], list[li
                             cell_words = signature_cell_words(line["words"], anchor_box)
                             cell_text = " ".join(str(word["text"]) for word in cell_words)
                             cell_norm = norm(cell_text)
+                            if phrase in GENERIC_TARGETS:
+                                split_box = split_carrier_signature_box(
+                                    cell_norm, anchor_box, lines, page_w, page_h,
+                                )
+                                if split_box is not None:
+                                    caption = "SEMNATURA SI STAMPILA TRANSPORTATOR"
+                                    anchors.append(Anchor(page_index, split_box, 175,
+                                                          caption, caption, True))
                             if phrase in SIGNATURE_LABEL_TARGETS and not looks_like_carrier_signature_label(
                                 cell_norm, phrase, anchor_box, page_h
                             ):
@@ -1335,7 +1372,7 @@ def choose_explicit_signature_candidate(
             )
 
         top_values: list[tuple[str, float]] = []
-        if anchor.phrase in CONFIRMATION_HEADING_TARGETS or anchor.phrase == "CONFIRMARE":
+        if anchor.phrase in CONFIRMATION_HEADING_TARGETS or anchor.phrase == "CONFIRMARE" or anchor.signature_context:
             field_bottom = max(
                 [anchor.box.bottom, *[
                     box.bottom for box in word_boxes
@@ -1416,7 +1453,7 @@ def choose_explicit_signature_candidate(
                     or visual_ink_ratio(item[1], page_image, page_w, page_h) <= 0.085
                 )
             ]
-        if anchor.phrase in CONFIRMATION_HEADING_TARGETS or anchor.phrase == "CONFIRMARE":
+        if anchor.phrase in CONFIRMATION_HEADING_TARGETS or anchor.phrase == "CONFIRMARE" or anchor.signature_context:
             below_heading = [item for item in safe if item[1].top >= anchor.box.bottom + 2.0]
             if below_heading:
                 safe = below_heading
@@ -1878,6 +1915,7 @@ def choose_fallback_page_candidate(
     stamp_w: float,
     stamp_ratio: float,
     page_image: Image.Image | None = None,
+    allow_text_overlap: bool = False,
 ) -> tuple[str, Box] | None:
     attempts = [stamp_w, stamp_w * 0.92, stamp_w * 0.84, stamp_w * 0.76, stamp_w * 0.68]
     for width in attempts:
@@ -1923,7 +1961,26 @@ def choose_fallback_page_candidate(
                     if visual_ink_ratio(guard, page_image, page_w, page_h) <= .005:
                         return "fallback_bottom_right_compact", rect
 
-    # No signing anchor means there is no permission to cover contractual text.
+    # Explicit user policy: prefer clear space, but dense text must not stop an
+    # all-page fallback. Keep it readable, upright and in the bottom-right.
+    if allow_text_overlap:
+        ranked = []
+        for width in sorted({min(stamp_w, 102.0), min(stamp_w, 86.0), 78.0, 70.0, 64.0}, reverse=True):
+            height = width * stamp_ratio
+            for bottom_margin in (12.0, 18.0, 24.0, 36.0, 48.0, 60.0):
+                for right_margin in (12.0, 18.0, 24.0, 36.0, 48.0, 60.0):
+                    rect = Box(page_w - right_margin - width, page_h - bottom_margin - height,
+                               page_w - right_margin, page_h - bottom_margin)
+                    if rect.x0 < page_w * .60 or rect.top < page_h * .75:
+                        continue
+                    cost = (min(1.0, overlap_ratio(rect, word_boxes)) * 30000
+                            + visual_ink_ratio(rect, page_image, page_w, page_h) * 5000
+                            + bottom_margin + right_margin * .5
+                            + max(0.0, min(stamp_w, 102.0) - width) * 4)
+                    ranked.append((cost, rect))
+        if ranked:
+            return "fallback_bottom_right_authorized_overlap", min(ranked, key=lambda item: item[0])[1]
+
     return None
 
 
@@ -2023,6 +2080,7 @@ def choose_placements(
                 page_stamp_w,
                 stamp_ratio,
                 (visual_pages or {}).get(page_index),
+                allow_text_overlap=True,
             )
             if best is None:
                 return []
@@ -2139,6 +2197,7 @@ def choose_placements(
                 page_stamp_w,
                 stamp_ratio,
                 (visual_pages or {}).get(page_index),
+                allow_text_overlap=True,
             )
             if best is None:
                 return []
